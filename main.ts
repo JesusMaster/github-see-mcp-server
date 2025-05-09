@@ -184,29 +184,29 @@ server.tool(
 
 
 
-const transport = new StdioServerTransport();
-await server.connect(transport);
+// const transport = new StdioServerTransport();
+// await server.connect(transport);
 
 
-// const ssePort = process.env.MCP_SSE_PORT ? parseInt(process.env.MCP_SSE_PORT, 10) : 8080; // Default port 8080
-// if (isNaN(ssePort)) {
-//     console.error(`Invalid MCP_SSE_PORT environment variable: "${process.env.MCP_SSE_PORT}". Must be a number.`);
-// }
-// const httpServer = createSseServer(server, ssePort);
+const ssePort = process.env.MCP_SSE_PORT ? parseInt(process.env.MCP_SSE_PORT, 10) : 8080; // Default port 8080
+if (isNaN(ssePort)) {
+    console.error(`Invalid MCP_SSE_PORT environment variable: "${process.env.MCP_SSE_PORT}". Must be a number.`);
+}
+const httpServer = createSseServer(server, ssePort);
 
 // Graceful shutdown
 process.on('SIGINT', async () => {
-    //   httpServer.close(() => {
-    //     process.exit(0);
-    //   });
+      httpServer.close(() => {
+        process.exit(0);
+      });
     process.exit(0);
 
 });
 
 process.on('SIGTERM', async () => {
-    //   httpServer.close(() => {
-    //     process.exit(0);
-    //   });
+      httpServer.close(() => {
+        process.exit(0);
+      });
 
     process.exit(0);
 });
