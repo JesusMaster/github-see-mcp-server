@@ -9,9 +9,17 @@
       "forceConsistentCasingInFileNames": true, // Disallow inconsistently-cased references to the same file.
       "strict": true, // Enable all strict type-checking options
       "skipLibCheck": true, // Skip type checking of declaration files
-      "resolveJsonModule": true // Allow importing JSON files
+      "resolveJsonModule": true, // Allow importing JSON files
+      "baseUrl": ".",
+      "paths": {
+            "@controllers/*": [
+                "controllers/*"
+            ],
+            "@tools/*": [
+                "tools/*"
+            ],
+        }
     },
     "include": ["*.ts"], // Compile all TypeScript files in the root directory
     "exclude": ["node_modules", "dist"] // Specify directories to exclude
   }
-  

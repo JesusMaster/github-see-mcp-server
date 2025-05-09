@@ -47,14 +47,6 @@ For Docker deployments, you can pass configuration options directly:
 docker run -d -p 3200:3200 -e GITHUB_TOKEN={YOUR_TOKEN_HERE} -e MCP_SSE_PORT=3200 --name github-see-mcp-server github-see-mcp-server
 ```
 
-## 🌐 AI Model Integration
-
-To connect your AI model to this system:
-
-1. Ensure your model supports the Model Context Protocol (MCP)
-2. Generate an API key for secure communication
-3. Configure the endpoints in your environment variables
-
 
 ## 📦 Project Structure
 
