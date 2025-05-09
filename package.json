@@ -1,5 +1,5 @@
 {
-  "name": "mcp-github",
+  "name": "mcp-sse-github",
   "version": "1.0.0",
   "description": "GitHub MCP SSE Server",
   "main": "dist/main.js",
