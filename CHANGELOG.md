@@ -5,6 +5,21 @@ All notable changes to the GitHub See MCP Server project will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.1.0] - 2025-05-09
+
+### Added
+
+- Pull Request management functionality with new controller
+- Complete API for interacting with GitHub Pull Requests
+- Modular project structure with improved code organization
+- Path aliases in tsconfig.json for better imports
+
+### Changed
+
+- Refactored tools registration into dedicated files
+- Moved GitHub API integration logic to separate modules
+- Improved imports using path aliases
+
 ## [1.0.0] - 2025-05-09
 
 ### Added
