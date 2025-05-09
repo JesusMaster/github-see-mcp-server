@@ -17,7 +17,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Event-driven architecture for processing repository actions
 - Custom configuration for repository-to-model mapping
 - Secure authentication with GitHub OAuth
-- Docker and Docker Compose deployment support
+- Docker deployment support
 - Comprehensive logging and monitoring capabilities
 - REST API for managing repositories, models, and contexts
 - Health check endpoint for monitoring server status

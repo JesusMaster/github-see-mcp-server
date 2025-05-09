@@ -1,9 +1,8 @@
 
-import  GitHubClient  from './github.js';
+import  GitHubClient  from '@controllers/github.js';
 import axios from 'axios';
 
 class Issues extends GitHubClient{
-
 
     // método para obtener la informacion de issues 
     async getIssues(owner: string, repo: string, issueNumber: number) {
