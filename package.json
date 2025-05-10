@@ -7,7 +7,10 @@
   "files": [
     "dist"
   ],
-
+  "imports": {
+    "#controllers/*": "./dist/controllers/*.js",
+    "#tools/*": "./dist/tools/*.js"
+  },
   "scripts": {
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1"
