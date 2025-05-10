@@ -23,6 +23,7 @@ const REPOSITORIES = new Repositories(GITHUB_TOKEN || "");
 
 
 
+
 const server = new McpServer({
     name: "mcp-sse-github",
     version: "1.0.0",
@@ -45,19 +46,20 @@ if (isNaN(ssePort)) {
 }
 const httpServer = createSseServer(server, ssePort);
 
+
 // Graceful shutdown
 process.on('SIGINT', async () => {
-      httpServer.close(() => {
-        process.exit(0);
-      });
+    //   httpServer.close(() => {
+    //     process.exit(0);
+    //   });
     process.exit(0);
 
 });
 
 process.on('SIGTERM', async () => {
-      httpServer.close(() => {
-        process.exit(0);
-      });
+    //   httpServer.close(() => {
+    //     process.exit(0);
+    //   });
 
     process.exit(0);
 });
