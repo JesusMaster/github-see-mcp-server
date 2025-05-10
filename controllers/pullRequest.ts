@@ -1,5 +1,5 @@
 
-import GitHubClient from '@controllers/github.js';
+import GitHubClient from '#controllers/github';
 import axios from 'axios';
 
 class PullRequest extends GitHubClient {
