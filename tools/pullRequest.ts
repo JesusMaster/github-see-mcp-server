@@ -18,7 +18,7 @@ export function registerPullRequestTools(server: McpServer, pullRequestInstance:
         async (args) => {
             try {
                 let info = await pullRequestInstance.getPullRequest(args.owner, args.repo, args.pullNumber);
-                return { content: [{ type: 'text', text: JSON.stringify(info) }] };
+                return { content: [info] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -40,7 +40,7 @@ export function registerPullRequestTools(server: McpServer, pullRequestInstance:
         async (args) => {
             try {
                 let info = await pullRequestInstance.getListPullRequests(args.owner, args.repo, args.state, args.sort, args.direction, args.perPage, args.page);
-                return { content: [{ type: 'text', text: JSON.stringify(info) }] };
+                return { content: [info] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -61,7 +61,7 @@ export function registerPullRequestTools(server: McpServer, pullRequestInstance:
         async (args) => {
             try {
                 let info = await pullRequestInstance.mergePullRequest(args.owner, args.repo, args.pullNumber, args.commitMessage, args.commit_title, args.merge_method);
-                return { content: [{ type: 'text', text: JSON.stringify(info) }] };
+                return { content: [info] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -79,7 +79,7 @@ export function registerPullRequestTools(server: McpServer, pullRequestInstance:
         async (args) => {
             try {
                 let info = await pullRequestInstance.getPullRequestFiles(args.owner, args.repo, args.pullNumber);
-                return { content: [{ type: 'text', text: JSON.stringify(info) }] };
+                return { content: [info] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -97,7 +97,7 @@ export function registerPullRequestTools(server: McpServer, pullRequestInstance:
         async (args) => {
             try {
                 let info = await pullRequestInstance.getPullRequestStatus(args.owner, args.repo, args.pullNumber);
-                return { content: [{ type: 'text', text: JSON.stringify(info) }] };
+                return { content: [info] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -116,7 +116,7 @@ export function registerPullRequestTools(server: McpServer, pullRequestInstance:
         async (args) =>{
             try {
                 let info = await pullRequestInstance.updatePullRequestBranch(args.owner, args.repo, args.pullNumber, args.expectedHeadSha);
-                return { content: [{ type: 'text', text: JSON.stringify(info) }] };
+                return { content: [info] };
             }catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -134,7 +134,7 @@ export function registerPullRequestTools(server: McpServer, pullRequestInstance:
         async (args) => {
             try {
                 let info = await pullRequestInstance.getPullRequestComments(args.owner, args.repo, args.pullNumber);
-                return { content: [{ type: 'text', text: JSON.stringify(info) }] };
+                return { content: [info] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -152,7 +152,7 @@ export function registerPullRequestTools(server: McpServer, pullRequestInstance:
         async (args) => {
             try {
                 let info = await pullRequestInstance.getPullRequestReviews(args.owner, args.repo, args.pullNumber);
-                return { content: [{ type: 'text', text: JSON.stringify(info) }] };
+                return { content: [info] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -174,7 +174,7 @@ export function registerPullRequestTools(server: McpServer, pullRequestInstance:
         async (args) => {
             try {
                 let info = await pullRequestInstance.createPullRequestReview(args.owner, args.repo, args.pullNumber, args.body, args.event, args.commitId, args.comments);
-                return { content: [{ type: 'text', text: JSON.stringify(info) }] };
+                return { content: [info] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -197,7 +197,7 @@ export function registerPullRequestTools(server: McpServer, pullRequestInstance:
         async (args) => {
             try {
                 let info = await pullRequestInstance.createPullRequest(args.owner, args.repo, args.title, args.head, args.base, args.body, args.draft, args.maintainer_can_modify);
-                return { content: [{ type: 'text', text: JSON.stringify(info) }] };
+                return { content: [info] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -224,7 +224,7 @@ export function registerPullRequestTools(server: McpServer, pullRequestInstance:
         async (args) => {
             try {
                 let info = await pullRequestInstance.addPullRequestReviewComment(args.owner, args.repo, args.pullNumber, args.body, args.path, args.commit_id, args.in_reply_to, args.subject_type, args.line, args.side, args.start_line, args.start_side);
-                return { content: [{ type: 'text', text: JSON.stringify(info) }] };
+                return { content: [info] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -247,7 +247,7 @@ export function registerPullRequestTools(server: McpServer, pullRequestInstance:
         async (args) => {
             try {
                 let info = await pullRequestInstance.updatePullRequest(args.owner, args.repo, args.pullNumber, args.title, args.body, args.state, args.base, args.maintainer_can_modify);
-                return { content: [{ type: 'text', text: JSON.stringify(info) }] };
+                return { content: [info] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
