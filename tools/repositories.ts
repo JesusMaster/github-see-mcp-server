@@ -288,4 +288,23 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
         }
     )
 
+
+    server.tool(
+        'get_specific_commit',
+        'Get details for an specific commit from a repository',
+        {
+            owner: z.string().describe('Repository owner (string, required)'),
+            repo: z.string().describe('Repository name (string, required)'),
+            sha: z.string().describe('Branch name, tag, or commit SHA (string, optional)'),
+        },
+        async(args)=>{
+            try {
+                let info = await repositoriesInstance.getSpecificCommit(args.owner, args.repo, args.sha);
+                return { content: [info] };
+            } catch (error: any) {
+                return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
+            }
+        }
+    )
+
 }

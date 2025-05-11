@@ -404,6 +404,18 @@ class Repositories extends GitHubClient {
         return response.data;
     }
 
+    async getSpecificCommit(owner: string, repo: string, sha: string){
+
+        const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/commits/${sha}`, {
+            headers: {
+                Authorization: `Bearer ${this.token}`,
+                Accept: 'application/vnd.github.v3+json',
+            },
+        });
+
+        return response.data;
+    }
+
 }
 
 export default Repositories;
