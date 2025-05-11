@@ -1,7 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from 'zod';
 import Repositories from "#controllers/repositories"; // Adjusted path
-
 // Adjusted path
 
 export function registerRepositoriesTools(server: McpServer, repositoriesInstance: Repositories) {

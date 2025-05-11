@@ -285,6 +285,12 @@ class Repositories extends GitHubClient {
             },
         });
 
+        if (response.data && response.data.content) {
+            // Decode the base64 content
+            const decodedContent = Buffer.from(response.data.content, 'base64').toString('utf-8');
+            response.data.decodedContent = decodedContent;
+        }
+
 
         return response.data;
     }
