@@ -291,7 +291,6 @@ class Repositories extends GitHubClient {
             response.data.decodedContent = decodedContent;
         }
 
-
         return response.data;
     }
 
