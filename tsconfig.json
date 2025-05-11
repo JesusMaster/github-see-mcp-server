@@ -12,6 +12,10 @@
       "resolveJsonModule": true, // Allow importing JSON files
       "baseUrl": ".",
       "paths": {
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/main
             "#controllers/*": [
                 "controllers/*"
             ],
@@ -23,3 +27,7 @@
     "include": ["*.ts", "controllers/*.ts", "tools/*.ts"], // Compile all TypeScript files
     "exclude": ["node_modules", "dist"] // Specify directories to exclude
   }
+<<<<<<< HEAD
+=======
+
+>>>>>>> origin/main

@@ -276,7 +276,6 @@ class PullRequest extends GitHubClient {
     // function to update pull request
     async updatePullRequest(owner: string, repo: string, pullNumber: number, title?: string, body?: string , state?: string , base?: string , maintainer_can_modify?: boolean ) {
 
-
         const payload: {
             title?: string,
             body?: string,

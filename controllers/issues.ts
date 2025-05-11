@@ -159,13 +159,13 @@ class Issues extends GitHubClient{
     async searchIssues(owner: string, repo: string, query: string, sort?: string, order?: string, page?: number, per_page?: number) {
 
         const payload:{
-            query: string, 
+            q: string, 
             sort?: string,
             order?: string, 
             page?: number, 
             per_page?: number
         }={
-            query:query
+            q:query
         }
 
         if(sort) payload.sort = sort;

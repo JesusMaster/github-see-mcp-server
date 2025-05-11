@@ -159,13 +159,13 @@ class Repositories extends GitHubClient {
     async searchRepositories(query: string, page?: number, per_page?: number, sort?: string, order?: string) {
 
         const payload: {
-            query: string,
+            q: string,
             page?: number,
             per_page?: number,
             sort?: string,
             order?: string
         } = {
-            query: query
+            q: query
         };
         if (page !== undefined) {
             payload.page = page;
