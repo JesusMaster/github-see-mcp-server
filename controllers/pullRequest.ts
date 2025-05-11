@@ -27,7 +27,9 @@ class PullRequest extends GitHubClient {
             direction?: string,
             per_page?: number,
             page?: number
-        } = {};
+        } = {
+            state: state || "all"
+        };
 
         if (state !== undefined) {
             payload.state = state;
@@ -44,6 +46,10 @@ class PullRequest extends GitHubClient {
         if (page !== undefined) {
             payload.page = page;
         }
+
+
+        console.log(`PAYLOAD: ${JSON.stringify(payload)}`);
+        console.log(`URL: ${this.baseUrl}/repos/${owner}/${repo}/pulls`);
 
         const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/pulls`, {
             headers: {

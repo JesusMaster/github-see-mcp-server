@@ -12,7 +12,7 @@ class Repositories extends GitHubClient {
     }
 
 
-    async createOrUpdateFileContents(owner: string, repo: string, path: string, message: string, content: string, branch?: string, sha?: string) {
+    async CreateFileContents(owner: string, repo: string, path: string, message: string, content: string, branch?: string, sha?: string) {
 
         const payload: {
             message: string,
@@ -24,12 +24,10 @@ class Repositories extends GitHubClient {
             content: content,
         }
 
-        if (branch !== undefined) {
-            payload.branch = branch;
-        }
-        if (sha !== undefined) {
-            payload.sha = sha;
-        }
+        if (branch) payload.branch = branch;
+        if (sha) payload.sha = sha;
+        
+        payload.content = payload.content.replace(/\n/g,'');
 
         this.isBase64(payload.content);
         if (!this.isBase64(payload.content)) {
@@ -37,14 +35,12 @@ class Repositories extends GitHubClient {
         }
 
         try {
-
             const response = await axios.put(`${this.baseUrl}/repos/${owner}/${repo}/contents/${path}`, payload, {
                 headers: {
                     Authorization: `Bearer ${this.token}`,
                     Accept: 'application/vnd.github.v3+json',
                 },
             });
-
             sha = response.data.sha;
             return response.data;
         }
@@ -54,10 +50,55 @@ class Repositories extends GitHubClient {
                 throw error; // If it's not a 404 error, rethrow it
             }
             return error
-            // If it's a 404 error, it means the file doesn't exist, so we can proceed without setting sha
         }
-        // Check if content is base64 encoded
+    }
 
+
+    async UpdateFileContents(owner: string, repo: string, path: string, message: string, content: string, sha: string, branch?: string) {
+
+        const payload: {
+            message: string,
+            content: string,
+            branch?: string,
+            sha: string
+        } = {
+            message: message,
+            content: content,
+            sha:sha
+        }
+
+        if (branch) payload.branch = branch;
+        
+        
+
+        this.isBase64(payload.content);
+        if (!this.isBase64(payload.content)) {
+            payload.content = Buffer.from(payload.content).toString('base64');
+        }else{
+            payload.content = payload.content.replace(/\n/g,'');
+        }
+
+        // console.log(`is Base: ${this.isBase64(payload.content)}`);
+        // console.log(`PAYLOAD: ${JSON.stringify(payload)}`);
+        // console.log(`URL: ${this.baseUrl}/repos/${owner}/${repo}/contents/${path}`);
+
+        try {
+            const response = await axios.put(`${this.baseUrl}/repos/${owner}/${repo}/contents/${path}`, payload, {
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                    Accept: 'application/vnd.github.v3+json',
+                },
+            });
+            sha = response.data.sha;
+            return response.data;
+        }
+        catch (error: any) {
+            console.error(`Error creating or updating file contents: ${error.message}`);
+            if (error.response && error.response.status !== 404) {
+                throw error; // If it's not a 404 error, rethrow it
+            }
+            return error
+        }
     }
 
     // function to List branches in a GitHub repository
@@ -234,9 +275,7 @@ class Repositories extends GitHubClient {
         const payload: {
             ref?: string
         } = {};
-        if (ref !== undefined) {
-            payload.ref = ref;
-        }
+        if (ref) payload.ref = ref;        
 
         const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/contents/${path}`, {
             params: payload,
@@ -246,11 +285,6 @@ class Repositories extends GitHubClient {
             },
         });
 
-        if (response.data && response.data.content) {
-            // Decode the base64 content
-            const decodedContent = Buffer.from(response.data.content, 'base64').toString('utf-8');
-            response.data.content = decodedContent;
-        }
 
         return response.data;
     }
