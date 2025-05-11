@@ -2,7 +2,6 @@ import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from 'zod';
 import PullRequest from "#controllers/pullRequest"; // Adjusted path
 
-
 // Adjusted path
 
 export function registerPullRequestTools(server: McpServer, pullRequestInstance: PullRequest) {

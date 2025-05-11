@@ -23,7 +23,6 @@ const REPOSITORIES = new Repositories(GITHUB_TOKEN || "");
 
 
 
-
 const server = new McpServer({
     name: "mcp-sse-github",
     version: "1.0.0",
