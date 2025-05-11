@@ -1,0 +1,25 @@
+{
+    "compilerOptions": {
+      "target": "ES2022", // Use a modern ECMAScript target
+      "module": "NodeNext", // Use Node.js's native ESM support
+      "moduleResolution": "NodeNext", // Align module resolution with Node.js ESM
+      "rootDir": "./", // Specify the root directory of input files
+      "outDir": "./dist", // Redirect output structure to the directory
+      "esModuleInterop": true, // Enables compatibility with CommonJS modules
+      "forceConsistentCasingInFileNames": true, // Disallow inconsistently-cased references to the same file.
+      "strict": true, // Enable all strict type-checking options
+      "skipLibCheck": true, // Skip type checking of declaration files
+      "resolveJsonModule": true, // Allow importing JSON files
+      "baseUrl": ".",
+      "paths": {
+            "#controllers/*": [
+                "controllers/*"
+            ],
+            "#tools/*": [
+                "tools/*"
+            ],
+        }
+    },
+    "include": ["*.ts", "controllers/*.ts", "tools/*.ts"], // Compile all TypeScript files
+    "exclude": ["node_modules", "dist"] // Specify directories to exclude
+  }

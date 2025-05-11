@@ -1,0 +1,48 @@
+{
+  "name": "mcp-sse-github",
+  "version": "1.0.0",
+  "description": "GitHub MCP SSE Server",
+  "main": "dist/main.js",
+  "type": "module",
+  "files": [
+    "dist"
+  ],
+  "imports": {
+    "#controllers/*": "./dist/controllers/*.js",
+    "#tools/*": "./dist/tools/*.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/JesusMaster/github-see-mcp-server.git"
+  },
+  "keywords": [
+    "MCP",
+    "GITHUB",
+    "SSE",
+    "MCP",
+    "SERVER"
+  ],
+  "author": "JesusMaster",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/JesusMaster/github-see-mcp-server/issues"
+  },
+  "homepage": "https://github.com/JesusMaster/github-see-mcp-server#readme",
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.11.1",
+    "axios": "^1.9.0",
+    "dotenv": "^16.5.0",
+    "express": "^5.1.0",
+    "raw-body": "^3.0.0",
+    "zod": "^3.24.4"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.1",
+    "@types/node": "^22.14.1",
+    "typescript": "^5.8.3"
+  }
+}
