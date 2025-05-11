@@ -12,6 +12,7 @@ class Repositories extends GitHubClient {
     }
 
 
+
     async CreateFileContents(owner: string, repo: string, path: string, message: string, content: string, branch?: string, sha?: string) {
 
         const payload: {
@@ -99,6 +100,7 @@ class Repositories extends GitHubClient {
             }
             return error
         }
+
     }
 
     // function to List branches in a GitHub repository
@@ -277,6 +279,7 @@ class Repositories extends GitHubClient {
         } = {};
         if (ref) payload.ref = ref;        
 
+
         const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/contents/${path}`, {
             params: payload,
             headers: {
@@ -284,7 +287,6 @@ class Repositories extends GitHubClient {
                 Accept: 'application/vnd.github.v3+json',
             },
         });
-
 
         return response.data;
     }

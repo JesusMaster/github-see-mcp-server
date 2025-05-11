@@ -47,10 +47,6 @@ class PullRequest extends GitHubClient {
             payload.page = page;
         }
 
-
-        console.log(`PAYLOAD: ${JSON.stringify(payload)}`);
-        console.log(`URL: ${this.baseUrl}/repos/${owner}/${repo}/pulls`);
-
         const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/pulls`, {
             headers: {
                 Authorization: `Bearer ${this.token}`,
