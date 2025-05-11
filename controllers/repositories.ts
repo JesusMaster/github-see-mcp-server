@@ -1,27 +1,67 @@
 import GitHubClient from '#controllers/github';
 import axios from 'axios';
+import { string } from 'zod';
 
 class Repositories extends GitHubClient {
     //function to Create or update a single file in a repository
 
-    async createOrUpdateFileContents(owner: string, repo: string, path: string, message: string, content: string, branch?:string, sha?: string) {
-        const response = await axios.put(`${this.baseUrl}/repos/${owner}/${repo}/contents/${path}`, {
-            message: message,
-            content: Buffer.from(content).toString('base64'),
-            branch: branch,
-            sha: sha
-        }, {
-            headers: {
-                Authorization: `Bearer ${this.token}`,
-                Accept: 'application/vnd.github.v3+json',
-            },
-        });
 
-        return response.data;
+    isBase64(encodedString: string) {
+        var regexBase64 = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+        return regexBase64.test(encodedString);   // return TRUE if its base64 string.
+    }
+
+
+    async createOrUpdateFileContents(owner: string, repo: string, path: string, message: string, content: string, branch?: string, sha?: string) {
+
+        const payload: {
+            message: string,
+            content: string,
+            branch?: string,
+            sha?: string
+        } = {
+            message: message,
+            content: content,
+        }
+
+        if (branch !== undefined) {
+            payload.branch = branch;
+        }
+        if (sha !== undefined) {
+            payload.sha = sha;
+        }
+
+        this.isBase64(payload.content);
+        if (!this.isBase64(payload.content)) {
+            payload.content = Buffer.from(payload.content).toString('base64');
+        }
+
+        try {
+
+            const response = await axios.put(`${this.baseUrl}/repos/${owner}/${repo}/contents/${path}`, payload, {
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                    Accept: 'application/vnd.github.v3+json',
+                },
+            });
+
+            sha = response.data.sha;
+            return response.data;
+        }
+        catch (error: any) {
+            console.error(`Error creating or updating file contents: ${error.message}`);
+            if (error.response && error.response.status !== 404) {
+                throw error; // If it's not a 404 error, rethrow it
+            }
+            return error
+            // If it's a 404 error, it means the file doesn't exist, so we can proceed without setting sha
+        }
+        // Check if content is base64 encoded
+
     }
 
     // function to List branches in a GitHub repository
-    async listBranches(owner: string, repo: string,page?: number, per_page?: number) {
+    async listBranches(owner: string, repo: string, page?: number, per_page?: number) {
         const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/branches`, {
             headers: {
                 Authorization: `Bearer ${this.token}`,
@@ -116,15 +156,33 @@ class Repositories extends GitHubClient {
     }
 
     // create function to search repositories
-    async searchRepositories(query: string, page?: number, per_page?: number, sort?: string, order?: 'desc' | 'asc') {
+    async searchRepositories(query: string, page?: number, per_page?: number, sort?: string, order?: string) {
+
+        const payload: {
+            query: string,
+            page?: number,
+            per_page?: number,
+            sort?: string,
+            order?: string
+        } = {
+            query: query
+        };
+        if (page !== undefined) {
+            payload.page = page;
+        }
+        if (per_page !== undefined) {
+            payload.per_page = per_page;
+        }
+        if (sort !== undefined) {
+            payload.sort = sort;
+        }
+        if (order !== undefined) {
+            payload.order = order;
+        }
+
+
         const response = await axios.get(`${this.baseUrl}/search/repositories`, {
-            params: {
-                q: query, // The search query string
-                sort: sort, // e.g., 'stars', 'forks', 'updated'
-                order: order, // 'asc' or 'desc'
-                per_page: per_page,
-                page: page,
-            },
+            params: payload,
             headers: {
                 Authorization: `Bearer ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
@@ -134,12 +192,22 @@ class Repositories extends GitHubClient {
     }
 
 
-    async getUserRepos(userName: string,page?: number, perPage?: number) {
-        const response = await axios.get(`${this.baseUrl}/users/${userName}/repos`,{
-            params: {
-                page: page,
-                per_page: perPage,
-            },
+    async getUserRepos(userName: string, page?: number, perPage?: number) {
+
+
+        const payload: {
+            page?: number,
+            per_page?: number
+        } = {};
+        if (page !== undefined) {
+            payload.page = page;
+        }
+        if (perPage !== undefined) { 
+            payload.per_page = perPage;
+        }
+
+        const response = await axios.get(`${this.baseUrl}/users/${userName}/repos`, {
+            params: payload,
             headers: {
                 Authorization: `Bearer ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
@@ -149,7 +217,7 @@ class Repositories extends GitHubClient {
     }
 
 
-    async getUserRepoInfo(repoName: string,userName: string) { // Consider swapping userName and repoName for conventional owner, repo order if preferred
+    async getUserRepoInfo(repoName: string, userName: string) { // Consider swapping userName and repoName for conventional owner, repo order if preferred
         const response = await axios.get(`${this.baseUrl}/repos/${userName}/${repoName}`, {
             headers: {
                 Authorization: `Bearer ${this.token}`,
@@ -163,24 +231,41 @@ class Repositories extends GitHubClient {
     // function to get file contents from a repository
     async getFileContents(owner: string, repo: string, path: string, ref?: string) {
 
+        const payload: {
+            ref?: string
+        } = {};
+        if (ref !== undefined) {
+            payload.ref = ref;
+        }
+
         const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/contents/${path}`, {
-            params: {
-                ref: ref,
-            },
+            params: payload,
             headers: {
                 Authorization: `Bearer ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
         });
 
+        if (response.data && response.data.content) {
+            // Decode the base64 content
+            const decodedContent = Buffer.from(response.data.content, 'base64').toString('utf-8');
+            response.data.content = decodedContent;
+        }
+
         return response.data;
     }
 
     //function to create a fork of a repository
     async createFork(owner: string, repo: string, organization?: string) {
-        const response = await axios.post(`${this.baseUrl}/repos/${owner}/${repo}/forks`, {
-            organization: organization,
-        }, {
+
+        const payload: {
+            organization?: string
+        } = {};
+        if (organization !== undefined) {
+            payload.organization = organization;
+        }
+
+        const response = await axios.post(`${this.baseUrl}/repos/${owner}/${repo}/forks`, payload, {
             headers: {
                 Authorization: `Bearer ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
@@ -193,7 +278,7 @@ class Repositories extends GitHubClient {
 
     async getBranchInfo(owner: string, repo: string, branch: string) {
         const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/git/ref/heads/${branch}`, {
-            headers: { 
+            headers: {
                 Authorization: `Bearer ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
@@ -218,14 +303,30 @@ class Repositories extends GitHubClient {
     }
 
     // function to get list of commits
-    async listCommits(owner: string, repo: string,sha?:string, path?:string, page?: number, perPage?: number) {
+    async listCommits(owner: string, repo: string, sha?: string, path?: string, page?: number, perPage?: number) {
+
+        const payload: {
+            sha?: string,
+            path?: string,
+            page?: number,
+            per_page?: number
+        } = {};
+
+        if (sha !== undefined) {
+            payload.sha = sha;
+        }
+        if (path !== undefined) {
+            payload.path = path;
+        }
+        if (page !== undefined) {
+            payload.page = page;
+        }
+        if (perPage !== undefined) {
+            payload.per_page = perPage;
+        }
+
         const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/commits`, {
-            params: {
-                sha:sha,
-                path:path,
-                page: page,
-                per_page: perPage,
-            },
+            params: payload,
             headers: {
                 Authorization: `Bearer ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
@@ -235,13 +336,26 @@ class Repositories extends GitHubClient {
     }
 
     //function to get a single commit
-    async getCommit(owner: string, repo: string, sha?: string, page?:number, perPage?:number) {
+    async getCommit(owner: string, repo: string, sha?: string, page?: number, perPage?: number) {
+
+
+        const payload: {
+            sha?: string,
+            page?: number,
+            per_page?: number
+        } = {};
+        if (sha !== undefined) {
+            payload.sha = sha;
+        }
+        if (page !== undefined) {
+            payload.page = page;
+        }
+        if (perPage !== undefined) {
+            payload.per_page = perPage;
+        }
+
         const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/commits`, {
-            params: {
-                sha:sha,
-                page: page,
-                per_page: perPage,
-            },
+            params: payload,
             headers: {
                 Authorization: `Bearer ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',

@@ -56,7 +56,7 @@ export function createSseServer(mcpServer: McpServer, port: number = 8080): http
             let body: string; 
             try {
                 body = await getRawBody(req, {
-                    limit: '4mb',
+                    limit: '100mb',
                     encoding: 'utf-8',
                 });
 
