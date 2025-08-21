@@ -1,100 +1,135 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
+import express from "express";
 import http from 'http';
-import { URL } from 'url';
-import getRawBody from 'raw-body';
+import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { 
+    StreamableHTTPServerTransport, 
+    StreamableHTTPServerTransportOptions 
+} from "@modelcontextprotocol/sdk/server/streamableHttp.js";
+import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
+import { randomUUID } from 'crypto';
 
-const connections = new Map<string, SSEServerTransport>();
+const sseTransports: Record<string, SSEServerTransport> = {};
 
 export function createSseServer(mcpServer: McpServer, port: number = 8080): http.Server {
-    const server = http.createServer(async (req, res) => {
-        const url = new URL(req.url || '/', `http://${req.headers.host}`);
-        const pathname = url.pathname;
+    const app = express();
 
-        if (req.method === 'GET' && pathname === '/') {
-            console.log('New SSE connection request');
+    app.use(express.json({ limit: '100mb' }));
 
-            const transport = new SSEServerTransport('/message', res);
+    // --- Configuración para StreamableHTTPServerTransport ---
+    const streamableTransportOptions: StreamableHTTPServerTransportOptions = {
+        sessionIdGenerator: () => randomUUID(),
+        // Opcional: callback para cuando se inicializa una sesión
+        onsessioninitialized: (sessionId) => {
+          console.log(`Streamable HTTP session initialized: ${sessionId}`);
+        },
+    };
 
-            try {
-                await mcpServer.connect(transport);
+    const mcpStreamableTransport = new StreamableHTTPServerTransport(streamableTransportOptions);
 
-                connections.set(transport.sessionId, transport);
-                console.log(`SSE connection established: ${transport.sessionId}`);
+    // Conectamos el McpServer al transporte Streamable una vez.
+    // Esto permite al McpServer enviar mensajes a través de este transporte.
+    mcpServer.connect(mcpStreamableTransport).catch(error => {
+        console.error("Failed to connect McpServer to StreamableHTTPServerTransport:", error);
+    });
 
-            } catch (error) {
-                console.error(`Error connecting MCP Server for SSE: ${error}`);
-                if (!res.writableEnded) {
-                    res.writeHead(500).end('MCP Server connection error');
-                }
-                return;
+    // Endpoint moderno para Streamable HTTP
+    app.all('/mcp', async (req, res) => {
+        console.log(`New Streamable HTTP request: ${req.method} ${req.url}`);
+        try {
+            // req.body es parseado por express.json() si el Content-Type es application/json.
+            await mcpStreamableTransport.handleRequest(req, res, req.body);
+        } catch (error) {
+            console.error(`Error handling Streamable HTTP request for ${req.url}:`, error);
+            if (!res.writableEnded) {
+                res.status(500).send('Error processing Streamable HTTP request');
             }
+        }
+    });
 
-            req.on('close', () => {
-                console.log(`SSE connection closed: ${transport.sessionId}`);
-                connections.delete(transport.sessionId);
-            });
+    // --- Configuración para SSEServerTransport (legado) ---
+    // Endpoint SSE legado para clientes antiguos (establecer conexión)
+    app.get('/sse', async (req, res) => {
+        console.log('New SSE connection request');
 
+        const transport = new SSEServerTransport('/messages', res); 
+        
+        try {
+            // Para SSE, conectamos el McpServer a cada transporte individual cuando se establece.
+            await mcpServer.connect(transport);
+            sseTransports[transport.sessionId] = transport;
+            console.log(`SSE connection established: ${transport.sessionId}`);
+        } catch (error) {
+            console.error(`Error connecting MCP Server for SSE: ${error}`);
+            if (!res.writableEnded) {
+                // Para SSE con http nativo, res.writeHead().end() es común.
+                // Con Express, podemos usar res.status().end() o res.status().send().
+                res.status(500).send('MCP Server connection error for SSE');
+            }
+            return; // Importante retornar aquí para no ejecutar código posterior en error.
+        }
+
+        req.on('close', () => {
+            console.log(`SSE connection closed: ${transport.sessionId}`);
+            delete sseTransports[transport.sessionId];
+        });
+    });
+
+    // Endpoint de mensajes legado para clientes antiguos (enviar mensajes al servidor vía SSE)
+    app.post('/messages', async (req, res) => {
+        const sessionId = req.query.sessionId as string;
+
+        if (!sessionId) {
+            console.error('POST /messages error: Missing sessionId parameter');
+            res.status(400).send('Missing sessionId parameter');
             return;
         }
 
-        if (req.method === 'POST' && pathname === '/message') {
-            const sessionId = url.searchParams.get('sessionId');
-            if (!sessionId) {
-                console.error('POST /message error: Missing sessionId parameter');
-                res.writeHead(400).end('Missing sessionId parameter');
-                return;
-            }
-
-            const transport = connections.get(sessionId);
-            if (!transport) {
-                console.error(`POST /message error: Session not found for ID ${sessionId}`);
-                res.writeHead(404).end('Session not found');
-                return;
-            }
-
-            let body: string; 
-            try {
-                body = await getRawBody(req, {
-                    limit: '100mb',
-                    encoding: 'utf-8',
-                });
-
-            } catch (error: any) {
-                console.error(`Error reading request body for session ${sessionId}:`, error);
-
-                if (error.type === 'entity.too.large') {
-                    res.writeHead(413).end('Payload Too Large');
-                } else {
-                    res.writeHead(400).end('Bad Request: Could not read body');
-                }
-                return;
-            }
-
-            try {
-                await transport.handlePostMessage(req as any, res as any, body);
-            } catch (error) {
-                console.error(`Error in transport.handlePostMessage for session ${sessionId}:`, error);
-
-                if (!res.writableEnded) {
-                    res.writeHead(500).end('Internal server error handling message');
-                }
-            }
-
+        const transport = sseTransports[sessionId];
+        if (!transport) {
+            console.error(`POST /messages error: Session not found for ID ${sessionId}`);
+            res.status(404).send('Session not found');
             return;
         }
+        
+        let bodyContent: string;
+        if (typeof req.body === 'string') {
+            bodyContent = req.body;
+        } else if (Buffer.isBuffer(req.body)) {
+            bodyContent = req.body.toString('utf-8');
+        } else if (typeof req.body === 'object' && req.body !== null) {
+            // express.json() ya parseó el cuerpo si era JSON.
+            // SSEServerTransport.handlePostMessage espera el cuerpo como string.
+            bodyContent = JSON.stringify(req.body);
+        } else {
+            console.warn(`POST /messages for session ${sessionId}: req.body is not a string, buffer, or parsable object. Type: ${typeof req.body}`);
+            bodyContent = ''; 
+        }
 
+        try {
+            await transport.handlePostMessage(req, res, bodyContent);
+        } catch (error) {
+            console.error(`Error in transport.handlePostMessage for session ${sessionId}:`, error);
+            if (!res.writableEnded) {
+                res.status(500).send('Internal server error handling SSE message');
+            }
+        }
+    });
+    
+    // Middleware para manejar rutas no encontradas (404)
+    app.use((req, res) => {
         console.log(`Unhandled request: ${req.method} ${req.url}`);
-        res.writeHead(404).end('Not found');
+        res.status(404).send('Not found');
     });
 
-    server.listen(port, () => {
-        console.log(`MCP SSE Server (http) listening on port ${port}`);
+    const httpServer = http.createServer(app);
+
+    httpServer.listen(port, () => {
+        console.log(`MCP Server (Express with SSE & Streamable HTTP) listening on port ${port}`);
     });
 
-    server.on('error', (error) => {
+    httpServer.on('error', (error) => {
         console.error('HTTP Server error:', error);
     });
 
-    return server;
+    return httpServer;
 }

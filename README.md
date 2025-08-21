@@ -2,7 +2,7 @@
 
 A server-side implementation for the GitHub See MCP (Model Context Protocol) project. This server handles the context processing and management between GitHub repositories and model interactions, enabling seamless integration of AI capabilities with your codebase.
 
-## ✨ Features
+## 🚀 Features
 
 - Real-time webhook processing for GitHub events
 - AI model communication via Model Context Protocol (MCP)
