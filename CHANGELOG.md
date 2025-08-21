@@ -47,10 +47,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- P{p©T\]Y\ÝX[YÙ[Y[[Ý[ۘ[]HÚ]]ÈÛ۝Û\HÛÛ\]HTH܈[\XÝ[ÈÚ]Ú]X[\]Y\ÝH[Ù[\ڙXÝÝXÝ\HÚ][\ݙYÛÙHܙØ[^][ۂH][X\Ù\È[ØÛۙY˚Ûۈ܈]\[\ܝÈÈÈÚ[ÙYHYXÝܙYÛÛÈYÚ\Ý][ۈ[ÈYXØ]Y[\H[ݙYÚ]XTH[Yܘ][ۈÙÚXÈÈÙ\\]H[Ù[\H[\ݙY[\ܝÈ\Ú[È][X\Ù\ÈÈÌKHHKL
-KLBÈÈÈYYH[]X[[X\ÙHوÚ]XÙYHPÔÙ\\HX[][YHÙXÛÚÈØÙ\ÜÚ[È܈Ú]X][HRH[Ù[ÛÛ[][XØ][ۈXH[Ù[Û۝^ÝØÛÛ
-PÔ
-BHÝ\ܝ܈][\H[Ù[ÛۛXÝ[ۜHÛ۝^X[YÙ[Y[Þ\Ý[H܈[[È\ÜÚ]ܞH]BH][Y][\Ú]XÝ\H܈ØÙ\ÜÚ[È\ÜÚ]ܞHXÝ[ۜHÝ\ÝÛHÛۙYÝ\][ۈ܈\ÜÚ]ܞK]Ë[[Ù[X\[ËHÙXÝ\H]][XØ][ۈÚ]Ú]XÐ]]HØÚÙ\\Þ[Y[Ý\ܝHÛÛ\Z[Ú]HÙÙÚ[È[[ۚ]ܚ[ÈØ\X[]Y\HTÕTH܈X[YÚ[È\ÜÚ]ܚY\Ë[Ù[Ë[Û۝^HX[ÚXÚÈ[Ú[܈[ۚ]ܚ[ÈÙ\\,´atus
+- Pull Request management functionality with new controller
+- Complete API for interacting with GitHub Pull Requests
+- Modular project structure with improved code organization
+- Path aliases in tsconfig.json for better imports
+
+### Changed
+
+- Refactored tools registration into dedicated files
+- Moved GitHub API integration logic to separate modules
+- Improved imports using path aliases
 
 ### Security
 
