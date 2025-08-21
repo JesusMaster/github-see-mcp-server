@@ -1,9 +1,10 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
+import { z } from 'zod';
 import { createSseServer } from './sse-server.js';
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"; // Commented out as it's unused after refactor
 
 import Issues from "#controllers/issues";
-import PullRequest from "#controllers/pullRequest";
+import PullRequest  from "#controllers/pullRequest";
 import Repositories from "#controllers/repositories";
 
 import { registerIssueTools } from "#tools/issues";
