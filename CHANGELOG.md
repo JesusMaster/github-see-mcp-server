@@ -1,1 +1,78 @@
-IyBDaGFuZ2Vsb2cKCkFsbCBub3RhYmxlIGNoYW5nZXMgdG8gdGhlIEdpdEh1YiBTZWUgTUNQIFNlcnZlciBwcm9qZWN0IHdpbGwgYmUgZG9jdW1lbnRlZCBpbiB0aGlzIGZpbGUuCgpUaGUgZm9ybWF0IGlzIGJhc2VkIG9uIFtLZWVwIGEgQ2hhbmdlbG9nXShodHRwczovL2tlZXBhY2hhbmdlbG9nLmNvbS9lbi8xLjAuMC8pLAphbmQgdGhpcyBwcm9qZWN0IGFkaGVyZXMgdG8gW1NlbWFudGljIFZlcnNpb25pbmddKGh0dHBzOi8vc2VtdmVyLm9yZy9zcGVjL3YyLjAuMC5odG1sKS4KCiMjIFsxLjQuMF0gLSAyMDI1LTA4LTIyCgojIyMgQWRkZWQKCi0gTWVqb3JhcyBlbiBsYSBzdWJpZGEgZGUgYXJjaGl2b3MgQmFzZTY0LCBpbmNsdXllbmRvIGxpbXBpZXphIGRlIGNhcmFjdGVyZXMgZXNwZWNpYWxlcyB5IGRlY29kaWZpY2FjacOzbi4KLSBFeHBhbnNpw7NuIGRlIGxhIEFQSSBjb24gbnVldm9zIGNvbnRyb2xhZG9yZXMgcGFyYSBwdWxsIHJlcXVlc3RzIHkgcmVwb3NpdG9yaW9zLgoKIyMjIENoYW5nZWQKCi0gQWN0dWFsaXphY2nDs24gc2lnbmlmaWNhdGl2YSBkZSBsYSBkb2N1bWVudGFjacOzbiAoUkVBRE1FLm1kIHkgQ0hBTkdFTE9HLm1kKS4KLSBNZWpvcmFzIGVuIGVsIG1hbmVqbyBkZSBQYXlsb2FkcyBhbCBlbnZpYXIgcGV0aWNpb25lcy4KCiMjIyBGaXhlZAoKLSBDb3JyZWNjaW9uZXMgbWVub3JlcywgaW5jbHV5ZW5kbyBwcm9ibGVtYXMgY29uIGBodHRwU2VydmVyLmNsb3NlYyB5IGVsIGhpc3RvcmlhbCBkZSBjb21taXRzLgoKIyMgWzEuMy4wXSAtIDIwMjUtMDgtMjEKCjIyIyBBZGRlZAoKLSBDYXBhY2lkYWQgcGFyYSBkZWNvZGlmaWNhciBlbCBjb250ZW5pZG8gZGUgYXJjaGl2b3MgYWwgb2J0ZW5lcmxvcwotIEltcGxlbWVudGFjacOzbiBkZSBsYSBmdW5jacOzbiBgZ3BldF9zcGVjaWZpY19jb21taXRgIHBhcmEgb2J0ZW5lciBkZXRhbGxlcyBkZSB1biBjb21taXQgZXNwZWNpZmljby4KCiMjIyBGaXhlZAoKLSBDb3JyZWNjacOzbiBlbiBlbCBtYW5lam8gZGVsIGNpZXJyZSBkZWwgc2Vydmlkb3IgSFRUUCAoYGh0dHBTZXJ2ZXIuY2xvc2VgKS4KLSBBanVzdGVzIGVuIGVsIG1hbmVqbyBkZSByZXNwdWVzdGFzIGRlIGxhIEFQSS4KCiMjIFsxLjIuMF0gLSAyMDI1LTA1LTExCgojIyMgRml4ZWQKCi0gTWVqb3JhIGVuIGVsIG1hbmVqbyBkZSBwYXlsb2FkcyBlbiBlbCBldmlvIGRlIHBldGljaW9uZXMgSFRUUC4KLSBDb3JyZWNjacOzbiBlbiBsYSB2YWxpZGFjacOzbiB5IHRyYW5zZm9ybWFjacOzbiBkZSBwYXlsb2FkcyBhbnRlcyBkZSBlbnZpYXIgcmVxdWljaW9uZXMgYSBsYSBBUEkgZGUgR2l0SHViLi0gTWVqb3JhIGVuIGxhIGRldGVjY2nDs24geSBjb2RpZmljYWNpw7NuIGRlIGNvbnRlbmlkb3MgQmFzZTY0Li0gT3B0aW1pemFjacOzbiBlbiBlbCBtYW5lbyBkZSBwYXLDoW1ldHJvcyBvcGNpb25hbGVzIGVuIGxhcyBwZXRpY2lvbmVzLgoKIyMjIEFkZGVkCi0gSW1wbGVtZW50YWNpw7NuIGRlbCBjb250cm9sYWRvciBkZSByZXBvc2l0b3Jpb3MgY29uIHRvZGFzIGxhcyBmdW5jaW9uYWxpZGFkZXMgcmVxdWVyZWRhcy4KCiMjIFsxLjEuMF0gLSAyMDI1LTA1LTA5CgojIyMgQWRkZWQKCi0gUHtכwqVSZXF1ZXN0IG1hbmFnZW1lbnQgZnVuY3Rpb25hbGl0eSB3aXRoIG5ldyBjb250cm9sbGVyCi0gQ29tcGxldGUgQVBJIGZvciBpbnRlcmFjdGluZyB3aXRoIEdpdEh1YiBQdWxsIFJlcXVlc3RzCi0gTW9kdWxhciBwcm9qZWN0IHN0cnVjdHVyZSB3aXRoIGltcHJvdmVkIGNvZGUgb3JnYW5pemF0aW9uCi0gUGF0aCBhbGlhc2VzIGluIHRzY29uZmlnLmpzb24gZm9yIGJldHRlciBpbXBvcnRzCgojIyMgQ2hhbmdlZAoKLSBSZWZhY3RvcmVkIHRvb2xzIHJlZ2lzdHJhdGlvbiBpbnRvIGRlZGljYXRlZCBmaWxlcwotIE1vdmVkIEdpdEh1YiBBUEkgaW50ZWdyYXRpb24gbG9naWMgdG8gc2VwYXJhdGUgbW9kdWxlcwotIEltcHJvdmVkIGltcG9ydHMgdXNpbmcgcGF0aCBhbGlhc2VzCgojIyBbMS4wLjBdIC0gMjAyNS0wNS0wOQoKIyMjIEFkZGVkCi0gSW5pdGlhbCByZWxlYXNlIG9mIEdpdEh1YiBTZWUgTUNQIFNlcnZlcgotIFJlYWwtdGltZSB3ZWJob29rIHByb2Nlc3NpbmcgZm9yIEdpdEh1YiBldmVudHMKLSBBSSBtb2RlbCBjb21tdW5pY2F0aW9uIHZpYSBNb2RlbCBDb250ZXh0IFByb3RvY29sIChNQ1ApCi0gU3VwcG9ydCBmb3IgbXVsdGlwbGUgbW9kZWwgY29ubmVjdGlvbnMKLSBDb250ZXh0IG1hbmFnZW1lbnQgc3lzdGVtIGZvciBoYW5kbGluZyByZXBvc2l0b3J5IGRhdGEKLSBFdmVudC1kcml2ZW4gYXJjaGl0ZWN0dXJlIGZvciBwcm9jZXNzaW5nIHJlcG9zaXRvcnkgYWN0aW9ucwotIEN1c3RvbSBjb25maWd1cmF0aW9uIGZvciByZXBvc2l0b3J5LXRvLW1vZGVsIG1hcHBpbmcsCi0gU2VjdXJlIGF1dGhlbnRpY2F0aW9uIHdpdGggR2l0SHViIE9BdXRoCi0gRG9ja2VyIGRlcGxveW1lbnQgc3VwcG9ydAotIENvbXByZWhlbnNpdmUgbG9nZ2luZyBhbmQgbW9uaXRvcmluZyBjYXBhYmlsaXRpZXMKLSBSRVNUIEFQSSBmb3IgbWFuYWdpbmcgcmVwb3NpdG9yaWVzLCBtb2RlbHMsIGFuZCBjb250ZXh0cwotIEhlYWx0aCBjaGVjayBlbmRwb2ludCBmb3IgbW9uaXRvcmluZyBzZXJ2ZXIgstGF0dXMKCiMjIyBTZWN1cml0eQoKLSBJbXBsZW1lbnRlZCBzZWN1cmUgdG9rZW4gdmFsaWRhdGlvbiBmb3IgR2l0SHViIHdlYmhvb2tzCi0gQWRkZWQgQVBJIGtleSBhdXRoZW50aWNhdGlvbiBmb3IgbW9kZWwgY29ubmVjdGlvbnMKLSBTZWN1cmVkIGVudmlyb25tZW50IHZhcmlhYmxlcyBmb3Igc2Vuc2l0aXZlIGNvbmZpZ3VyYXRpb24KLSBSYXRlIGxpbWl0aW5nIGZvciBwdWJsaWMgQVBJIGVuZHBvaW50cwotIElucHV0IHZhbGlkYXRpb24gZm9yIGFsbCBBUEkgZW5kcG9pbnRzCgojIyBbMC45LjBdIC0gMjAyNS0wNC0xNQoKIyMjIEFkZGVkCi0gQmV0YSByZWxlYXNlIGZvciBpbnRlcm5hbCB0ZXN0aW5nCi0gQ29yZSBNQ1AgaW50ZWdyYXRpb24gZnVuY3Rpb25hbGl0eQotIEJhc2ljIEdpdEh1YiB3ZWJob29rIHN1cHBvcnQKLSBTaW1wbGUgY29uZmlndXJhdGlvbiBzeXN0ZW0KLSBNb25nb0RCIGludGVncmF0aW9uIGZvciBkYXRhIHBlcnNpc3RlbmNlCi0gRG9ja2VyIGNvbnRhaW5lciBzdXBwb3J0Ci0gUHJlbGltaW5hcnkgZG9jdW1lbnRhdGlvbgqjIyMgRml4ZWQKCi0gUmVzb2x2ZWQgY29ubmVjdGlvbiBoYW5kbGluZyBpc3N1ZXMgd2l0aCBjZXJ0YWluIG1vZGVsIHR5cGVzCi0gRml4ZWQgd2ViaG9vayBwYXlsb2FkIHBhcnNpbmcgZm9yIGxhcmdlIGV2ZW50cwotIEltcHJvdmVkIGVycm9yIGhhbmRsaW5nIGFuZCBsb2dnaW5nCiAg
+# Changelog
+
+All notable changes to the GitHub See MCP Server project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.4.0] - 2025-08-22
+
+### Added
+
+- Mejoras en la subida de archivos Base64, incluyendo limpieza de caracteres especiales y decodificación.
+- Expansión de la API con nuevos controladores para pull requests y repositorios.
+
+### Changed
+
+- Actualización significativa de la documentación (README.md y CHANGELOG.md).
+- Mejoras en el manejo de Payloads al enviar peticiones.
+
+### Fixed
+
+- Correcciones menores, incluyendo problemas con `httpServer.closec y el historial de commits.
+
+## [1.3.0] - 2025-08-21
+
+22# Added
+
+- Capacidad para decodificar el contenido de archivos al obtenerlos
+- Implementación de la función `gpet_specific_commit` para obtener detalles de un commit especifico.
+
+### Fixed
+
+- Corrección en el manejo del cierre del servidor HTTP (`httpServer.close`).
+- Ajustes en el manejo de respuestas de la API.
+
+## [1.2.0] - 2025-05-11
+
+### Fixed
+
+- Mejora en el manejo de payloads en el evio de peticiones HTTP.
+- Corrección en la validación y transformación de payloads antes de enviar requiciones a la API de GitHub.- Mejora en la detección y codificación de contenidos Base64.- Optimización en el maneo de parámetros opcionales en las peticiones.
+
+### Added
+- Implementación del controlador de repositorios con todas las funcionalidades requeredas.
+
+## [1.1.0] - 2025-05-09
+
+### Added
+
+- P{p©T\]Y\ÝX[YÙ[Y[[Ý[ۘ[]HÚ]]ÈÛ۝Û\HÛÛ\]HTH܈[\XÝ[ÈÚ]Ú]X[\]Y\ÝH[Ù[\ڙXÝÝXÝ\HÚ][\ݙYÛÙHܙØ[^][ۂH][X\Ù\È[ØÛۙY˚Ûۈ܈]\[\ܝÈÈÈÚ[ÙYHYXÝܙYÛÛÈYÚ\Ý][ۈ[ÈYXØ]Y[\H[ݙYÚ]XTH[Yܘ][ۈÙÚXÈÈÙ\\]H[Ù[\H[\ݙY[\ܝÈ\Ú[È][X\Ù\ÈÈÌKHHKL
+KLBÈÈÈYYH[]X[[X\ÙHوÚ]XÙYHPÔÙ\\HX[][YHÙXÛÚÈØÙ\ÜÚ[È܈Ú]X][HRH[Ù[ÛÛ[][XØ][ۈXH[Ù[Û۝^ÝØÛÛ
+PÔ
+BHÝ\ܝ܈][\H[Ù[ÛۛXÝ[ۜHÛ۝^X[YÙ[Y[Þ\Ý[H܈[[È\ÜÚ]ܞH]BH][Y][\Ú]XÝ\H܈ØÙ\ÜÚ[È\ÜÚ]ܞHXÝ[ۜHÝ\ÝÛHÛۙYÝ\][ۈ܈\ÜÚ]ܞK]Ë[[Ù[X\[ËHÙXÝ\H]][XØ][ۈÚ]Ú]XÐ]]HØÚÙ\\Þ[Y[Ý\ܝHÛÛ\Z[Ú]HÙÙÚ[È[[ۚ]ܚ[ÈØ\X[]Y\HTÕTH܈X[YÚ[È\ÜÚ]ܚY\Ë[Ù[Ë[Û۝^HX[ÚXÚÈ[Ú[܈[ۚ]ܚ[ÈÙ\\,´atus
+
+### Security
+
+- Implemented secure token validation for GitHub webhooks
+- Added API key authentication for model connections
+- Secured environment variables for sensitive configuration
+- Rate limiting for public API endpoints
+- Input validation for all API endpoints
+
+## [0.9.0] - 2025-04-15
+
+### Added
+- Beta release for internal testing
+- Core MCP integration functionality
+- Basic GitHub webhook support
+- Simple configuration system
+- MongoDB integration for data persistence
+- Docker container support
+- Preliminary documentation
+£## Fixed
+
+- Resolved connection handling issues with certain model types
+- Fixed webhook payload parsing for large events
+- Improved error handling and logging
+  
