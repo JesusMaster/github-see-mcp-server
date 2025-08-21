@@ -1,10 +1,9 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from 'zod';
 import { createSseServer } from './sse-server.js';
 import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"; // Commented out as it's unused after refactor
 
 import Issues from "#controllers/issues";
-import PullRequest  from "#controllers/pullRequest";
+import PullRequest from "#controllers/pullRequest";
 import Repositories from "#controllers/repositories";
 
 import { registerIssueTools } from "#tools/issues";
@@ -22,7 +21,6 @@ const PULL_REQUEST = new PullRequest(GITHUB_TOKEN || "");
 const REPOSITORIES = new Repositories(GITHUB_TOKEN || "");
 
 
-
 const server = new McpServer({
     name: "mcp-sse-github",
     version: "1.0.0",
@@ -33,8 +31,6 @@ const server = new McpServer({
 registerIssueTools(server, ISSUES);
 registerPullRequestTools(server, PULL_REQUEST);
 registerRepositoriesTools(server, REPOSITORIES);
-
-
 
 // const transport = new StdioServerTransport(); // If you need Stdio transport, uncomment this
 // await server.connect(transport); // and this line.
@@ -48,17 +44,16 @@ const httpServer = createSseServer(server, ssePort);
 
 // Graceful shutdown
 process.on('SIGINT', async () => {
-    //   httpServer.close(() => {
-    //     process.exit(0);
-    //   });
+    httpServer.close(() => {
+        process.exit(0);
+    });
     process.exit(0);
 
 });
 
 process.on('SIGTERM', async () => {
-    //   httpServer.close(() => {
-    //     process.exit(0);
-    //   });
-
+    httpServer.close(() => {
+        process.exit(0);
+    });
     process.exit(0);
 });
