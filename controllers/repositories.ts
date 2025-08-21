@@ -30,6 +30,7 @@ class Repositories extends GitHubClient {
         payload.content = payload.content.replace(/\n/g,'');
 
         //this.isBase64(payload.content);
+
         if (this.isBase64(payload.content)) {
             payload.content = Buffer.from(payload.content, 'base64').toString('utf-8');
         }
@@ -72,6 +73,7 @@ class Repositories extends GitHubClient {
         
         payload.content = payload.content.replace(/\n/g,'');
         // this.isBase64(payload.content);
+
        if (this.isBase64(payload.content)) {
             payload.content = Buffer.from(payload.content, 'base64').toString('utf-8');
         }
