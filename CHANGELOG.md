@@ -1,63 +1,86 @@
-IyBDaGFuZ2Vsb2cKCkFsbCBub3RhYmxlIGNoYW5nZXMgdG8gdGhlIEdpdEh1
-YiBTZWUgTUNQIFNlcnZlciBwcm9qZWN0IHdpbGwgYmUgZG9jdW1lbnRlZCBp
-biB0aGlzIGZpbGUuCgpUaGUgZm9ybWF0IGlzIGJhc2VkIG9uIFtLZWVwIGEg
-Q2hhbmdlbG9nXShodHRwczovL2tlZXBhY2hhbmdlbG9nLmNvbS9lbi8xLjAu
-MC8pLAphbmQgdGhpcyBwcm9qZWN0IGFkaGVyZXMgdG8gW1NlbWFudGljIFZl
-cnNpb25pbmddKGh0dHBzOi8vc2VtdmVyLm9yZy9zcGVjL3YyLjAuMC5odG1s
-KS4KCiMjIFsxLjMuMF0gLSAyMDI1LTA4LTIxCgojIyMgQWRkZWQKCi0gQ2Fw
-YWNpZGFkIHBhcmEgZGVjb2RpZmljYXIgZWwgY29udGVuaWRvIGRlIGFyY2hp
-dm9zIGFsIG9idGVuZXJsb3MuCi0gSW1wbGVtZW50YWNpw7NuIGRlIGxhIGZ1
-bmNpw7NuIGBncGV0X3NwZWNpZmljX2NvbW1pdGAgcGFyYSBvYnRlbmVyIGRl
-dGFsbGVzIGRlIHVuIGNvbW1pdCBlc3BlY8O2Zmljby4KCiMjIyBGaXhlZAoK
-LSBDb3JyZWNjacOzbiBlbiBlbCBtYW5lam8gZGVsIGNpZXJyZSBkZWwgc2Vy
-dmlkb3IgSFRUUCAoYGh0dHBTZXJ2ZXIuY2xvc2VgKS4KLSBBanVzdGVzIGVu
-IGVsIG1hbmVqbyBkZSByZXNwdWVzdGFzIGRlIGxhIEFQSS4KCiMjIFsxLjIu
-MF0gLSAyMDI1LTA1LTExCgojIyMgRml4ZWQKCi0gTWVqb3JhIGVuIGVsIG1h
-bmVqbyBkZSBwYXlsb2FkcyBlbiBlbCBldmlvIGRlIHBldGljaW9uZXMgSFRU
-UC4KLSBDb3JyZWNjacOzbiBlbiBsYSB2YWxpZGFjacOzbiB5IHRyYW5zZm9y
-bWFjacOzbiBkZSBwYXlsb2FkcyBhbnRlcyBkZSBlbnZpYXIgcmVxdWljaW9u
-ZXMgYSBsYSBBUEkgZGUgR2l0SHViLi0gTWVqb3JhIGVuIGxhIGRldGVjY2nDs24
-geSBjb2RpZmljYWNpw7NuIGRlIGNvbnRlbmlkb3MgQmFzZTY0Li0gT3B0aW1p
-emFjacOzbiBlbiBlbCBtYW5lbyBkZSBwYXLDoW1ldHJvcyBvcGNpb25hbGVz
-IGVuIGxhcyBwZXRpY2lvbmVzLgoKIyMjIEFkZGVkCi0gSW1wbGVtZW50YWNp
-w7NuIGRlbCBjb250cm9sYWRvciBkZSByZXBvc2l0b3Jpb3MgY29uIHRvZGFz
-IGxhcyBmdW5jaW9uYWxpZGFkZXMgcmVxdWVyZWRhcy4KCiMjIFsxLjEuMF0g
-LSAyMDI1LTA1LTA5CgojIyMgQWRkZWQKCi0gUHullCBSZXF1ZXN0IG1hbmFn
-ZW1lbnQgZnVuY3Rpb25hbGl0eSB3aXRoIG5ldyBjb250cm9sbGVyCi0gQ29t
-cGxldGUgQVBJIGZvciBpbnRlcmFjdGluZyB3aXRoIEdpdEh1YiBQdWxsIFJl
-cXVlc3RzCi0gTW9kdWxhciBwcm9qZWN0IHN0cnVjdHVyZSB3aXRoIGltcHJv
-dmVkIGNvZGUgb3JnYW5pemF0aW9uCi0gUGF0aCBhbGlhc2VzIGluIHRzY29u
-ZmlnLmpzb24gZm9yIGJldHRlciBpbXBvcnRzCgojIyMgQ2hhbmdlZAoKLSBS
-ZWZhY3RvcmVkIHRvb2xzIHJlZ2lzdHJhdGlvbiBpbnRvIGRlZGljYXRlZCBm
-aWxlcwotIE1vdmVkIEdpdEh1YiBBUEkgaW50ZWdyYXRpb24gbG9naWMgdG8g
-c2VwYXJhdGUgbW9kdWxlcwotIEltcHJvdmVkIGltcG9ydHMgdXNpbmcgcGF0
-aCBhbGlhc2VzCgojIyBbMS4wLjBdIC0gMjAyNS0wNS0wOQoKIyMjIEFkZGVk
-CgotIEluaXRpYWwgcmVsZWFzZSBvZiBHaXRIdWIgU2VlIE1DUCBTZXJ2ZXIK
-LSBSZWFsLXRpbWUgd2ViaG9vayBwcm9jZXNzaW5nIGZvciBHaXRIdWIgZXZl
-bnRzCi0gQUkgbW9kZWwgY29tbXVuaWNhdGlvbiB2aWEgTW9kZWwgQ29udGV4
-dCBQcm90b2NvbCAoTUNQKQotIFN1cHBvcnQgZm9yIG11bHRpcGxlIG1vZGVs
-IGNvbm5lY3Rpb25zCi0gQ29udGV4dCBtYW5hZ2VtZW50IHN5c3RlbSBmb3Ig
-aGFuZGxpbmcgcmVwb3NpdG9yeSBkYXRhCi0gRXZlbnQtZHJpdmVuIGFyY2hp
-dGVjdHVyZSBmb3IgcHJvY2Vzc2luZyByZXBvc2l0b3J5IGFjdGlvbnMKLSBD
-dXN0b20gY29uZmlndXJhdGlvbiBmb3IgcmVwb3NpdG9yeS10by1tb2RlbCBt
-YXBwaW5nCi0gU2VjdXJlIGF1dGhlbnRpY2F0aW9uIHdpdGggR2l0SHViIE9B
-dXRoCi0gRG9ja2VyIGRlcGxveW1lbnQgc3VwcG9ydAotIENvbXByZWhlbnNp
-dmUgbG9nZ2luZyBhbmQgbW9uaXRvcmluZyBjYXBhYmlsaXRpZXMKLSBSRVNU
-IEFQSSBmb3IgbWFuYWdpbmcgcmVwb3NpdG9yaWVzLCBtb2RlbHMsIGFuZCBj
-b250ZXh0cwotIEhlYWx0aCBjaGVjayBlbmRwb2ludCBmb3IgbW9uaXRvcmlu
-ZyBzZXJ2ZXIgc3RhdHVzCgojIyMgU2VjdXJpdHkKCi0gSW1wbGVtZW50ZWQg
-c2VjdXJlIHRva2VuIHZhbGlkYXRpb24gZm9yIEdpdEh1YiB3ZWJob29rcwot
-IEFkZGVkIEFQSSBrZXkgYXV0aGVudGljYXRpb24gZm9yIG1vZGVsIGNvbm5l
-Y3Rpb25zCi0gU2VjdXJlZCBlbnZpcm9ubWVudCB2YXJpYWJsZXMgZm9yIHNl
-bnNpdGl2ZSBjb25maWd1cmF0aW9uCi0gUmF0ZSBsaW1pdGluZyBmb3IgcHVibGlj
-IEFQSSBlbmRwb2ludHMKLSBJbnB1dCB2YWxpZGF0aW9uIGZvciBhbGwgQVBJ
-IGVuZHBvaW50cwoKIyMgWzAuOS4wXSAtIDIwMjUtMDQtMTUKCiMjIyBBZGRl
-ZAoKLSBCZXRhIHJlbGVhc2UgZm9yIGludGVybmFsIHRlc3RpbmcKLSBDb3Jl
-IE1DUCBpbnRlZ3JhdGlvbiBmdW5jdGlvbmFsaXR5Ci0gQmFzaWMgR2l0SHVi
-IHdlYmhvb2sgc3VwcG9ydAotIFNpbXBsZSBjb25maWd1cmF0aW9uIHN5c3Rl
-bQotIE1vbmdvREIgaW50ZWdyYXRpb24gZm9yIGRhdGEgcGVyc2lzdGVuY2UK
-LSBEb2NrZXIgY29udGFpbmVyIHN1cHBvcnQKLSBQcmVsaW1pbmFyeSBkb2N1
-bWVudGF0aW9uCgojIyMgRml4ZWQKCi0gUmVzb2x2ZWQgY29ubmVjdGlvbiBo
-YW5kbGluZyBpc3N1ZXMgd2l0aCBjZXJ0YWluIG1vZGVsIHR5cGVzCi0gRml4
-ZWQgd2ViaG9vayBwYXlsb2FkIHBhcnNpbmcgZm9yIGxhcmdlIGV2ZW50cwot
-IEltcHJvdmVkIGVycm9yIGhhbmRsaW5nIGFuZCBsb2dnaW5nCg==
+# Changelog
+
+All notable changes to the GitHub See MCP Server project will be documented in this file.
+
+The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
+and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
+
+## [1.3.0] - 2025-08-21
+
+### Added
+
+- Capacidad para decodificar el contenido de archivos al obtenerlos.
+- Implementación de la función `gpet_specific_commit` para obtener detalles de un commit especöfico.
+
+### Fixed
+
+- Corrección en el manejo del cierre del servidor HTTP (`httpServer.close`).
+- Ajustes en el manejo de respuestas de la API.
+
+## [1.2.0] - 2025-05-11
+
+### Fixed
+
+- Mejora en el manejo de payloads en el evio de peticiones HTTP.
+- Corrección en la validación y transformación de payloads antes de enviar requiciones a la API de GitHub.- Mejora en la detección y codificación de contenidos Base64.- Optimización en el maneo de parámetros opcionales en las peticiones.
+
+### Added
+- Implementación del controlador de repositorios con todas las funcionalidades requeredas.
+
+## [1.1.0] - 2025-05-09
+
+### Added
+
+- P{¥ Request management functionality with new controller
+- Complete API for interacting with GitHub Pull Requests
+- Modular project structure with improved code organization
+- Path aliases in tsconfig.json for better imports
+
+### Changed
+
+- Refactored tools registration into dedicated files
+- Moved GitHub API integration logic to separate modules
+- Improved imports using path aliases
+
+## [1.0.0] - 2025-05-09
+
+### Added
+
+- Initial release of GitHub See MCP Server
+- Real-time webhook processing for GitHub events
+- AI model communication via Model Context Protocol (MCP)
+- Support for multiple model connections
+- Context management system for handling repository data
+- Event-driven architecture for processing repository actions
+- Custom configuration for repository-to-model mapping
+- Secure authentication with GitHub OAuth
+- Docker deployment support
+- Comprehensive logging and monitoring capabilities
+- REST API for managing repositories, models, and contexts
+- Health check endpoint for monitoring server status
+
+### Security
+
+- Implemented secure token validation for GitHub webhooks
+- Added API key authentication for model connections
+- Secured environment variables for sensitive configuration
+- Rate limiting for public API endpoints
+- Input validation for all API endpoints
+
+## [0.9.0] - 2025-04-15
+
+### Added
+
+- Beta release for internal testing
+- Core MCP integration functionality
+- Basic GitHub webhook support
+- Simple configuration system
+- MongoDB integration for data persistence
+- Docker container support
+- Preliminary documentation
+
+### Fixed
+
+- Resolved connection handling issues with certain model types
+- Fixed webhook payload parsing for large events
+- Improved error handling and logging
