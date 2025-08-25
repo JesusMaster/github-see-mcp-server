@@ -5,6 +5,12 @@ All notable changes to the GitHub See MCP Server project will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.0] - 2025-08-25
+
+### Added
+
+- Implementación de la funcionalidad "heartbeat" +[2416] -[321] líneas de codigo en [24] archivos.
+
 ## [1.4.0] - 2025-08-22
 
 ### Added
@@ -38,7 +44,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ### Fixed
 
 - Mejora en el manejo de payloads en el evio de peticiones HTTP.
-- Corrección en la validación y transformación de payloads antes de enviar requiciones a la API de GitHub.- Mejora en la detección y codificación de contenidos Base64.- Optimización en el maneo de parámetros opcionales en las peticiones.
+- Correccion en la validación y transformación de payloads antes de enviar requiciones a la API de GitHub.- Mejora izenconten reficiasi del contenidos Base64.- Optimización en el maneo de paråmetros opcionales en las peticiones.
 
 ### Added
 - Implementación del controlador de repositorios con todas las funcionalidades requeredas.
@@ -50,15 +56,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Pull Request management functionality with new controller
 - Complete API for interacting with GitHub Pull Requests
 - Modular project structure with improved code organization
-- Path aliases in tsconfig.json for better imports
+--Path aliases in tsconfig.json for better imports
 
 ### Changed
 
 - Refactored tools registration into dedicated files
 - Moved GitHub API integration logic to separate modules
-- Improved imports using path aliases
-
-### Security
+- Improved imports local con path aliases como recursos de configuración enserf
+ 
+### Securiety
 
 - Implemented secure token validation for GitHub webhooks
 - Added API key authentication for model connections
@@ -66,16 +72,16 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Rate limiting for public API endpoints
 - Input validation for all API endpoints
 
-## [0.9.0] - 2025-04-15
 
-### Added
+# [0.9.0] - 2025-04-15
+
+22# Added
 - Beta release for internal testing
 - Core MCP integration functionality
 - Basic GitHub webhook support
 - Simple configuration system
 - MongoDB integration for data persistence
-- Docker container support
-- Preliminary documentation
+- Docker container support*- Preliminary documentation
 £## Fixed
 
 - Resolved connection handling issues with certain model types
