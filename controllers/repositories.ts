@@ -31,8 +31,10 @@ class Repositories extends GitHubClient {
 
         //this.isBase64(payload.content);
 
-        if (this.isBase64(payload.content)) {
-            payload.content = Buffer.from(payload.content, 'base64').toString('utf-8');
+        if (!this.isBase64(payload.content)) {
+            payload.content = Buffer.from(payload.content).toString('base64');
+        }else{
+            payload.content = payload.content.replace(/\n/g,'');
         }
 
         try {
