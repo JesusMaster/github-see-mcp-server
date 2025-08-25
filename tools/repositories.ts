@@ -22,7 +22,14 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
         async (args) => {
             try {
                 let info = await repositoriesInstance.CreateFileContents(args.owner, args.repo, args.path, args.message, args.content, args.branch, args.sha);
-                return { content: [info] };
+                return { 
+                    content: [
+                        { 
+                            type: 'text', 
+                            text: JSON.stringify(info, null, 2) 
+                        }
+                    ] 
+                };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -44,7 +51,14 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
         async (args) => {
             try {
                 let info = await repositoriesInstance.UpdateFileContents(args.owner, args.repo, args.path, args.message, args.content, args.sha, args.branch);
-                return { content: [info] };
+                return { 
+                    content: [
+                        { 
+                            type: 'text', 
+                            text: JSON.stringify(info, null, 2) 
+                        }
+                    ] 
+                };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -63,7 +77,14 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
         async (args) => {
             try {
                 let info = await repositoriesInstance.listBranches(args.owner, args.repo, args.page, args.per_page);
-                return { content: [info] };
+                return { 
+                    content: [
+                        { 
+                            type: 'text', 
+                            text: JSON.stringify(info, null, 2) 
+                        }
+                    ] 
+                };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -83,7 +104,14 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
         async(args)=>{
             try {
                 let info = await repositoriesInstance.pushMultipleFiles(args.owner, args.repo, args.branch,args.message, args.files);
-                return { content: [info] };
+                return { 
+                    content: [
+                        { 
+                            type: 'text', 
+                            text: JSON.stringify(info, null, 2) 
+                        }
+                    ] 
+                };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -103,7 +131,16 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
         async(args)=>{
             try {
                 let info = await repositoriesInstance.searchRepositories(args.query, args.page, args.perPage, args.sort, args.order);
-                return { content: [info] };
+                
+                // Format the response as a properly typed content block
+                return { 
+                    content: [
+                        { 
+                            type: 'text', 
+                            text: JSON.stringify(info, null, 2) 
+                        }
+                    ] 
+                };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -122,7 +159,14 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
 
             try {
                 let info = await repositoriesInstance.createRepository(args.name,args.description,args.private,args.autoInit);
-                return { content: [info] };
+                return { 
+                    content: [
+                        { 
+                            type: 'text', 
+                            text: JSON.stringify(info, null, 2) 
+                        }
+                    ] 
+                };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -140,7 +184,14 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
 
             try {
                 let info = await repositoriesInstance.getUserRepoInfo(args.repo,args.owner);
-                return { content: [info] };
+                return { 
+                    content: [
+                        { 
+                            type: 'text', 
+                            text: JSON.stringify(info, null, 2) 
+                        }
+                    ] 
+                };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -159,7 +210,14 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
 
             try {
                 let info = await repositoriesInstance.getUserRepos(args.userName,args.page,args.perPage);
-                return { content: [info] };
+                return { 
+                    content: [
+                        { 
+                            type: 'text', 
+                            text: JSON.stringify(info, null, 2) 
+                        }
+                    ] 
+                };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -179,7 +237,14 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
         async(args)=>{
             try {
                 let info = await repositoriesInstance.getFileContents(args.owner, args.repo, args.path, args.ref);
-                return { content: [info] };
+                return { 
+                    content: [
+                        { 
+                            type: 'text', 
+                            text: JSON.stringify(info, null, 2) 
+                        }
+                    ] 
+                };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -197,7 +262,14 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
         async(args)=>{
             try {
                 let info = await repositoriesInstance.createFork(args.owner, args.repo, args.organization);
-                return { content: [info] };
+                return { 
+                    content: [
+                        { 
+                            type: 'text', 
+                            text: JSON.stringify(info, null, 2) 
+                        }
+                    ] 
+                };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -217,7 +289,14 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
 
             try {
                 let info = await repositoriesInstance.createBranch(args.owner, args.repo, args.branch, args.sha);
-                return { content: [info] };
+                return { 
+                    content: [
+                        { 
+                            type: 'text', 
+                            text: JSON.stringify(info, null, 2) 
+                        }
+                    ] 
+                };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -236,7 +315,14 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
 
             try {
                 let info = await repositoriesInstance.getBranchInfo(args.owner, args.repo, args.branch);
-                return { content: [info] };
+                return { 
+                    content: [
+                        { 
+                            type: 'text', 
+                            text: JSON.stringify(info, null, 2) 
+                        }
+                    ] 
+                };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -260,7 +346,14 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
         async(args)=>{
             try {
                 let info = await repositoriesInstance.listCommits(args.owner, args.repo, args.sha, args.path, args.page, args.perPage);
-                return { content: [info] };
+                return { 
+                    content: [
+                        { 
+                            type: 'text', 
+                            text: JSON.stringify(info, null, 2) 
+                        }
+                    ] 
+                };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -281,7 +374,14 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
         async(args)=>{
             try {
                 let info = await repositoriesInstance.getCommit(args.owner, args.repo, args.sha,args.page,args.perPage);
-                return { content: [info] };
+                return { 
+                    content: [
+                        { 
+                            type: 'text', 
+                            text: JSON.stringify(info, null, 2) 
+                        }
+                    ] 
+                };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -300,7 +400,14 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
         async(args)=>{
             try {
                 let info = await repositoriesInstance.getSpecificCommit(args.owner, args.repo, args.sha);
-                return { content: [info] };
+                return { 
+                    content: [
+                        { 
+                            type: 'text', 
+                            text: JSON.stringify(info, null, 2) 
+                        }
+                    ] 
+                };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }

@@ -40,6 +40,7 @@ class Repositories extends GitHubClient {
                     Authorization: `Bearer ${this.token}`,
                     Accept: 'application/vnd.github.v3+json',
                 },
+                timeout: this.timeout
             });
             sha = response.data.sha;
             return response.data;
@@ -86,6 +87,7 @@ class Repositories extends GitHubClient {
                     Authorization: `Bearer ${this.token}`,
                     Accept: 'application/vnd.github.v3+json',
                 },
+                timeout: this.timeout
             });
             sha = response.data.sha;
             return response.data;
@@ -106,6 +108,7 @@ class Repositories extends GitHubClient {
                 Authorization: `Bearer ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
+            timeout: this.timeout
         });
 
         return response.data;
@@ -119,6 +122,7 @@ class Repositories extends GitHubClient {
                 Authorization: `Bearer ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
+            timeout: this.timeout
         });
 
         const baseTreeSha = branchInfo.data.commit.commit.tree.sha;
@@ -136,6 +140,7 @@ class Repositories extends GitHubClient {
                 Authorization: `Bearer ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
+            timeout: this.timeout
         });
 
         const newTreeSha = tree.data.sha;
@@ -149,6 +154,7 @@ class Repositories extends GitHubClient {
                 Authorization: `Bearer ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
+            timeout: this.timeout
         });
 
         await axios.patch(`${this.baseUrl}/repos/${owner}/${repo}/git/refs/heads/${branch}`, {
@@ -157,7 +163,8 @@ class Repositories extends GitHubClient {
             headers: {
                 Authorization: `Bearer ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
-            }
+            },
+            timeout: this.timeout
         });
 
         return newCommit.data;
@@ -189,6 +196,7 @@ class Repositories extends GitHubClient {
                 Authorization: `Bearer ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
+            timeout: this.timeout
         });
 
         return response.data;
@@ -226,6 +234,7 @@ class Repositories extends GitHubClient {
                 Authorization: `Bearer ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
+            timeout: this.timeout
         });
         return response.data;
     }
@@ -251,6 +260,7 @@ class Repositories extends GitHubClient {
                 Authorization: `Bearer ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
+            timeout: this.timeout
         });
         return response.data;
     }
@@ -262,6 +272,7 @@ class Repositories extends GitHubClient {
                 Authorization: `Bearer ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
+            timeout: this.timeout
         });
         return response.data;
     }
@@ -281,6 +292,7 @@ class Repositories extends GitHubClient {
                 Authorization: `Bearer ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
+            timeout: this.timeout
         });
 
         if (response.data && response.data.content) {
@@ -307,6 +319,7 @@ class Repositories extends GitHubClient {
                 Authorization: `Bearer ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
+            timeout: this.timeout
         });
 
         return response.data;
@@ -319,6 +332,7 @@ class Repositories extends GitHubClient {
                 Authorization: `Bearer ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
+            timeout: this.timeout
         });
         return response.data;
     }
@@ -334,6 +348,7 @@ class Repositories extends GitHubClient {
                 Authorization: `Bearer ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
+            timeout: this.timeout
         });
 
         return response.data;
@@ -368,6 +383,7 @@ class Repositories extends GitHubClient {
                 Authorization: `Bearer ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
+            timeout: this.timeout
         });
         return response.data;
     }
@@ -397,6 +413,7 @@ class Repositories extends GitHubClient {
                 Authorization: `Bearer ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
+            timeout: this.timeout
         });
 
         return response.data;
@@ -409,6 +426,7 @@ class Repositories extends GitHubClient {
                 Authorization: `Bearer ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
+            timeout: this.timeout
         });
 
         return response.data;
