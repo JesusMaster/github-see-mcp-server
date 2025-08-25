@@ -1,25 +1,22 @@
-# GitHub See MCP Server
+# GitHub MCP SSE Server
 
-A server-side implementation for the GitHub See MCP (Model Context Protocol) project. This server handles the context processing and management between GitHub repositories and model interactions, enabling seamless integration of AI capabilities with your codebase.
+A Model Context Protocol (MCP) server that provides GitHub API integration through Server-Sent Events (SSE) transport.
 
-## 🚀 Features
+## Features
 
-- Real-time webhook processing for GitHub events
-- AI model communication via Model Context Protocol (MCP)
-- Event-driven architecture for handling repository actions
-- Custom configuration for repository-to-model mapping
-- Secure authentication with GitHub OAuth
-- Detailed logging and monitoring capabilities
+- GitHub API integration through MCP tools
+- Support for issues, pull requests, repositories, and more
+- Server-Sent Events (SSE) transport for real-time communication
+- Configurable through environment variables
+- Robust error handling and logging
 
-## 🛠️ Prerequisites
+## Prerequisites
 
-- Node.js (v16.x or higher)
-- Valid GitHub OAuth application credentials
-- Compatible AI model endpoints
+- Node.js (v16 or higher)
+- npm or pnpm
+- GitHub Personal Access Token (for API access)
 
-## ⚙️ Installation
-
-### Using Docker (Recommended)
+## Installation
 
 1. Clone the repository:
    ```bash
@@ -27,172 +24,146 @@ A server-side implementation for the GitHub See MCP (Model Context Protocol) pro
    cd github-see-mcp-server
    ```
 
-2. Build the Docker image:
+2. Install dependencies:
    ```bash
-   docker build -t github-see-mcp-server .
+   npm install
+   # or
+   pnpm install
    ```
 
-## 🚀 Ejecution
+3. Create a `.env` file in the root directory with the following content:
+   ```
+   # GitHub MCP SSE Server Configuration
 
-To run the Docker container, use the following command:
+   # GitHub API Token (required for API access)
+   # Generate a token at https://github.com/settings/tokens
+   GITHUB_TOKEN=your_github_token_here
 
-```bash
-docker run -d -p 3200:3200 -e GITHUB_TOKEN={YOUR_TOKEN_HERE} -e MCP_SSE_PORT=3200 --name github-see-mcp-server github-see-mcp-server
-```
+   # Server Port Configuration
+   MCP_SSE_PORT=3200
 
-**Note:** Replace `{YOUR_TOKEN_HERE}` with your actual GitHub Personal Access Token.
+   # Timeout Configuration (in milliseconds)
+   MCP_TIMEOUT=180000
 
-## 📝 Configuration
+   # Log Level (debug, info, warn, error)
+   LOG_LEVEL=info
 
-The server can be configured using:
+   # CORS Configuration
+   CORS_ALLOW_ORIGIN=*
+   ```
 
-1.  Environment variables
-2.  Docker environment variables
+4. Build the project:
+   ```bash
+   npm run build
+   # or
+   pnpm run build
+   ```
 
-## 🗂️ Project Structure
+## Usage
 
-```
-├── main.ts                # Main entry point of the application
-├── sse-server.ts          # SSE server setup for real-time events
-├── controllers/           # REST API route handlers
-│   ├── github.ts          # Logic for GitHub integration (webhooks, etc.)
-│   ├── issues.ts          # Operations related to GitHub Issues
-│   ├── pullRequest.ts     # Operations related to GitHub Pull Requests
-│   └── repositories.ts    # Operations for managing GitHub repositories
-├── tools/                 # Utility functions for interacting with the GitHub API
-│   ├── issues.ts          # Tools to simplify API calls for Issues
-│   ├── pullRequest.ts     # Tools to simplify API calls for Pull Requests
-│   └── repositories.ts    # Tools to simplify API calls for Repositories
-├── Dockerfile             # Configuration for building the Docker image
-├── package.json           # Project metadata and dependencies (npm)
-├── pnpm-lock.yaml         # Exact versions of dependencies (pnpm)
-├── tsconfig.json          # TypeScript compiler configuration
-├── .gitignore             # Files and directories ignored by Git
-├── CHANGELOG.md           # Project change history
-└── README.md              # Main project documentation
-```
-
-## 🤝 Contributing
-
-1.  Fork the repository
-2.  Create your feature branch (git checkout -b feature/amazing-feature)
-3.  Commit your changes (git commit -m 'Add some amazing feature')
-4.  Push to the branch (git push origin feature/amazing-feature)
-5.  Open a Pull Request
-
-## 📜 License
-
-This project is licensed under the MIT License.
-
-## 📞 Contact
-
-Project Owner: JesusMaster
-
-GitHub: [@JesusMaster](https://github.com/JesusMaster)
-
-## 🙏 Acknowledgements
-
-- [Model Context Protocol](https://example.com/mcp)
-- [GitHub Webhooks API](https://docs.github.com/en/developers/webhooks-and-events/about-webhooks)
-- [Node.js](https://nodejs.org/)
-- All the amazing contributors who have helped shape this project
-
-## 🇪🇸 GitHub See MCP Server
-
-Implementación del lado del servidor para el proyecto GitHub See MCP (Protocolo de Contexto del Modelo). Este servidor gestiona el procesamiento y la gestión del contexto entre los repositorios de GitHub y las interacciones del modelo, lo que permite una integración perfecta de las capacidades de la IA con su base de código.
-
-## ✨ Características
-
-- Procesamiento de webhooks en tiempo real para eventos de GitHub
-- Comunicación del modelo de IA a través del Protocolo de contexto del modelo (MCP)
-- Arquitectura basada en eventos para gestionar las acciones del repositorio
-- Configuración personalizada para la asignación de repositorio a modelo
-- Autenticación segura con GitHub OAuth
-- Capacidades detalladas de registro y supervisión
-
-## 🛠️ Requisitos previos
-
-- Node.js (v16.x o superior)
-- Credenciales válidas de la aplicación GitHub OAuth
-- Puntos finales de modelos de IA compatibles
-
-## ⚙️ Instalación
-
-### Usando Docker (Recomendado)
-
-1.  Clona el repositorio:
-
-    ```bash
-    git clone https://github.com/JesusMaster/github-see-mcp-server.git
-    cd github-see-mcp-server
-    ```
-2.  Crea la imagen de Docker:
-
-    ```bash
-    docker build -t github-see-mcp-server .
-    ```
-
-## 🚀 Ejecución
-
-Para ejecutar el contenedor Docker, utiliza el siguiente comando:
+### Starting the Server
 
 ```bash
-docker run -d -p 3200:3200 -e GITHUB_TOKEN={YOUR_TOKEN_HERE} -e MCP_SSE_PORT=3200 --name github-see-mcp-server github-see-mcp-server
+npm run start
+# or
+pnpm run start
 ```
 
-**Nota:** Reemplaza `{YOUR_TOKEN_HERE}` con tu token de acceso personal de GitHub.
+The server will start on the port specified in the `.env` file (default: 3200). If the port is in use, it will automatically find an available port.
 
-## 📝 Configuración
+### Development Mode
 
-El servidor se puede configurar utilizando:
-
-1.  Variables de entorno
-2.  Variables de entorno de Docker
-
-## 🗂️ Estructura del Proyecto
-
-```
-├── main.ts                # Punto de entrada principal de la aplicación
-├── sse-server.ts          # Configuración del servidor SSE para eventos en tiempo real
-├── controllers/           # Manejadores de las rutas de la API REST
-│   ├── github.ts          # Lógica para la integración con GitHub (webhooks, etc.)
-│   ├── issues.ts          # Operaciones relacionadas con las Issues de GitHub
-│   ├── pullRequest.ts     # Operaciones relacionadas con los Pull Requests de GitHub
-│   └── repositories.ts    # Operaciones para gestionar repositorios de GitHub
-├── tools/                 # Funciones de utilidad para interactuar con la API de GitHub
-│   ├── issues.ts          # Herramientas para simplificar las llamadas a la API de Issues
-│   ├── pullRequest.ts     # Herramientas para simplificar las llamadas a la API de Pull Requests
-│   └── repositories.ts    # Herramientas para simplificar las llamadas a la API de Repositorios
-├── Dockerfile             # Configuración para la creación de la imagen de Docker
-├── package.json           # Metadatos del proyecto y dependencias (npm)
-├── pnpm-lock.yaml         # Versiones exactas de las dependencias (pnpm)
-├── tsconfig.json          # Configuración del compilador de TypeScript
-├── .gitignore             # Archivos y directorios ignorados por Git
-├── CHANGELOG.md           # Historial de cambios del proyecto
-└── README.md              # Documentación principal del proyecto
+```bash
+npm run dev
+# or
+pnpm run dev
 ```
 
-## 🤝 Contribución
+This will build the TypeScript code and start the server.
 
-1.  Haz un fork del repositorio
-2.  Crea tu rama de funcionalidades (git checkout -b feature/increible-funcionalidad)
-3.  Commitea tus cambios (git commit -m 'Añade una increible funcionalidad')
-4.  Sube los cambios a la rama (git push origin feature/increible-funcionalidad)
-5.  Abre un Pull Request
+### Docker
 
-## 📜 Licencia
+You can also run the server using Docker:
 
-Este proyecto está licenciado bajo la Licencia MIT.
+```bash
+docker build -t github-mcp-server .
+docker run -p 3200:3200 -e GITHUB_TOKEN=your_github_token_here github-mcp-server
+```
 
-## 📞 Contacto
+## API Endpoints
 
-Dueño del Proyecto: JesusMaster
+- `/health` - Health check endpoint
+- `/mcp` - MCP Streamable HTTP endpoint
+- `/sse` - Server-Sent Events endpoint for legacy clients
+- `/messages` - Message endpoint for legacy SSE clients
 
-GitHub: [@JesusMaster](https://github.com/JesusMaster)
+## Available GitHub Tools
 
-## 🙏 Agradecimientos
+The server provides the following GitHub API tools:
 
-- [Protocolo de Contexto del Modelo](https://example.com/mcp)
-- [API de Webhooks de GitHub](https://docs.github.com/en/developers/webhooks-and-events/about-webhooks)
-- [Node.js](https://nodejs.org/)
-- A todos los increíbles contribuyentes que han ayudado a dar forma a este proyecto
+### Issues
+- `get_issue` - Get details of a specific issue
+- `get_issue_comments` - Get comments for a GitHub issue
+- `create_issue` - Create a new issue in a GitHub repository
+- `add_issue_comment` - Add a comment to an issue
+- `list_issues` - List and filter repository issues
+- `update_issue` - Update an issue in a GitHub repository
+- `search_issues` - Search for issues and pull requests
+
+### Pull Requests
+- `get_pull_request` - Get details of a specific pull request
+- `list_pull_requests` - List and filter repository pull requests
+- `merge_pull_request` - Merge a pull request
+- `get_pull_request_files` - Get the list of files changed in a pull request
+- `get_pull_request_status` - Get the combined status of all status checks for a pull request
+- `update_pull_request_branch` - Update a pull request branch with the latest changes from the base branch
+- `get_pull_request_comments` - Get the review comments on a pull request
+- `get_pull_request_reviews` - Get the reviews on a pull request
+- `create_pull_request_review` - Create a review on a pull request
+- `create_pull_request` - Create a new pull request
+- `add_pull_request_review_comment` - Add a review comment to a pull request
+- `update_pull_request` - Update an existing pull request
+
+### Repositories
+- `create_file` - Create a single file in a repository
+- `update_file` - Update a single file in a repository
+- `list_branches` - List branches in a GitHub repository
+- `push_files` - Push multiple files in a single commit
+- `search_repositories` - Search for GitHub repositories
+- `create_repository` - Create a new GitHub repository
+- `get_repository_info` - Get information about a GitHub repository
+- `get_user_repositories` - Get information about a GitHub user's repositories
+- `get_file_contents` - Get the contents of a file in a GitHub repository
+- `create_fork` - Create a fork of a GitHub repository
+- `create_branch` - Create a new branch in a GitHub repository
+- `get_branch_info` - Get information about a branch in a GitHub repository
+- `list_commits` - Get a list of commits of a branch in a repository
+- `get_commit` - Get details for a commit from a repository
+- `get_specific_commit` - Get details for a specific commit from a repository
+
+### User
+- `get_me` - Get details of the authenticated user
+
+## Troubleshooting
+
+### Connection Issues
+
+If you're experiencing connection issues:
+
+1. Check that the GitHub token is valid and has the necessary permissions
+2. Ensure the server is running and accessible
+3. Check the server logs for any error messages
+4. Verify that the client is connecting to the correct endpoint
+5. Check if there are any network issues or firewalls blocking the connection
+
+### Timeout Errors
+
+If you're experiencing timeout errors:
+
+1. Increase the `MCP_TIMEOUT` value in the `.env` file
+2. Check if the GitHub API is responding slowly
+3. Verify that the client is not sending too many requests
+
+## License
+
+MIT
