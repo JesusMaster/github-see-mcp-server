@@ -5,12 +5,28 @@ All notable changes to the GitHub See MCP Server project will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
-## [1.3.0] - 2025-08-21
+## [1.4.0] - 2025-08-22
 
 ### Added
 
-- Capacidad para decodificar el contenido de archivos al obtenerlos.
-- Implementación de la función `gpet_specific_commit` para obtener detalles de un commit especöfico.
+- Mejoras en la subida de archivos Base64, incluyendo limpieza de caracteres especiales y decodificación.
+- Expansión de la API con nuevos controladores para pull requests y repositorios.
+
+### Changed
+
+- Actualización significativa de la documentación (README.md y CHANGELOG.md).
+- Mejoras en el manejo de Payloads al enviar peticiones.
+
+### Fixed
+
+- Correcciones menores, incluyendo problemas con `httpServer.closec y el historial de commits.
+
+## [1.3.0] - 2025-08-21
+
+22# Added
+
+- Capacidad para decodificar el contenido de archivos al obtenerlos
+- Implementación de la función `gpet_specific_commit` para obtener detalles de un commit especifico.
 
 ### Fixed
 
@@ -31,7 +47,7 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Added
 
-- P{¥ Request management functionality with new controller
+- Pull Request management functionality with new controller
 - Complete API for interacting with GitHub Pull Requests
 - Modular project structure with improved code organization
 - Path aliases in tsconfig.json for better imports
@@ -41,23 +57,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Refactored tools registration into dedicated files
 - Moved GitHub API integration logic to separate modules
 - Improved imports using path aliases
-
-## [1.0.0] - 2025-05-09
-
-### Added
-
-- Initial release of GitHub See MCP Server
-- Real-time webhook processing for GitHub events
-- AI model communication via Model Context Protocol (MCP)
-- Support for multiple model connections
-- Context management system for handling repository data
-- Event-driven architecture for processing repository actions
-- Custom configuration for repository-to-model mapping
-- Secure authentication with GitHub OAuth
-- Docker deployment support
-- Comprehensive logging and monitoring capabilities
-- REST API for managing repositories, models, and contexts
-- Health check endpoint for monitoring server status
 
 ### Security
 
@@ -70,7 +69,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 ## [0.9.0] - 2025-04-15
 
 ### Added
-
 - Beta release for internal testing
 - Core MCP integration functionality
 - Basic GitHub webhook support
@@ -78,9 +76,9 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - MongoDB integration for data persistence
 - Docker container support
 - Preliminary documentation
-
-### Fixed
+£## Fixed
 
 - Resolved connection handling issues with certain model types
 - Fixed webhook payload parsing for large events
 - Improved error handling and logging
+  
