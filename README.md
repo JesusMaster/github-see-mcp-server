@@ -7,8 +7,12 @@ A Model Context Protocol (MCP) server that provides GitHub API integration throu
 - GitHub API integration through MCP tools
 - Support for issues, pull requests, repositories, and more
 - Server-Sent Events (SSE) transport for real-time communication
-- Configurable through environment variables
-- Robust error handling and logging
+- Multiplexing SSE transport for handling multiple client connections
+- Modern Streamable HTTP and legacy SSE transport support
+- Automatic port finding if the specified port is in use
+- Graceful shutdown handling for clean server termination
+- Configurable timeouts, CORS settings, and logging levels
+- Robust error handling and detailed logging
 
 ## Prerequisites
 
@@ -86,16 +90,26 @@ This will build the TypeScript code and start the server.
 You can also run the server using Docker:
 
 ```bash
-docker build -t github-mcp-server .
-docker run -p 3200:3200 -e GITHUB_TOKEN=your_github_token_here github-mcp-server
+docker build -t github-see-mcp-server .
+docker run -d -p 3200:3200 -e MCP_TIMEOUT="180000" -e LOG_LEVEL="info" -e CORS_ALLOW_ORIGIN="*" -e GITHUB_TOKEN={YOUR_TOKEN_HERE} -e MCP_SSE_PORT="3200" --name github-see-mcp-server github-see-mcp-server
 ```
+
+This command:
+- Runs the container in detached mode (`-d`)
+- Maps port 3200 on the host to port 3200 in the container
+- Sets all the environment variables with their default values
+- Names the container "github-see-mcp-server"
 
 ## API Endpoints
 
-- `/health` - Health check endpoint
-- `/mcp` - MCP Streamable HTTP endpoint
-- `/sse` - Server-Sent Events endpoint for legacy clients
-- `/messages` - Message endpoint for legacy SSE clients
+- `/health` - Health check endpoint that returns server status and version information
+- `/mcp` - Modern MCP Streamable HTTP endpoint for efficient bidirectional communication
+- `/sse` - Server-Sent Events endpoint for legacy clients (establishes SSE connection)
+- `/messages` - Message endpoint for legacy SSE clients (for sending messages to the server)
+
+The server supports both modern and legacy communication methods:
+1. **Modern Streamable HTTP** (`/mcp`): Recommended for new implementations, providing efficient bidirectional communication
+2. **Legacy SSE** (`/sse` and `/messages`): For backward compatibility with older clients
 
 ## Available GitHub Tools
 
@@ -163,6 +177,23 @@ If you're experiencing timeout errors:
 1. Increase the `MCP_TIMEOUT` value in the `.env` file
 2. Check if the GitHub API is responding slowly
 3. Verify that the client is not sending too many requests
+
+### Logging and Debugging
+
+The server supports different logging levels that can be set in the `.env` file:
+
+- `debug` - Verbose logging for detailed debugging
+- `info` - Standard logging for general operation information (default)
+- `warn` - Only warnings and errors
+- `error` - Only error messages
+
+To enable more detailed logging for troubleshooting:
+
+```
+LOG_LEVEL=debug
+```
+
+This will provide more detailed information about requests, responses, and internal operations.
 
 ## License
 
