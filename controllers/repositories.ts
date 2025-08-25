@@ -75,9 +75,13 @@ class Repositories extends GitHubClient {
         
         
         payload.content = payload.content.replace(/\n/g,'');
-        // this.isBase64(payload.content);
-       if (this.isBase64(payload.content)) {
-            payload.content = Buffer.from(payload.content, 'base64').toString('utf-8');
+        
+        // Check if content is already Base64 encoded
+        if (!this.isBase64(payload.content)) {
+            // If not Base64, encode it
+            payload.content = Buffer.from(payload.content).toString('base64');
+        }else{
+            payload.content = payload.content.replace(/\n/g,'');
         }
 
         // console.log(`is Base: ${this.isBase64(payload.content)}`);
