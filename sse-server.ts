@@ -182,7 +182,7 @@ export function createSseServer(mcpServer: McpServer, port: number = 8080): http
                                 timestamp: new Date().toISOString()
                             }
                         };
-                        res.write(`data: ${JSON.stringify(heartbeat)}\n\n`);
+                        res.send(`data: ${JSON.stringify(heartbeat)}\n\n`);
                     } catch (err) {
                         clearInterval(heartbeatInterval);
                     }
