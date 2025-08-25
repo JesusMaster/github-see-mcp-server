@@ -10,7 +10,14 @@ export function registerIssueTools(server: McpServer, issuesInstance: Issues) {
         async () => {
             try {
                 let info = await issuesInstance.getUserInfo();
-                return { content: [info] };
+                return { 
+                    content: [
+                        { 
+                            type: 'text', 
+                            text: JSON.stringify(info, null, 2) 
+                        }
+                    ] 
+                };
             } catch (error: any) {
     
                 return { content: [{ type: 'text', text: `Error: ${error.message}` }], isError: true };
@@ -29,7 +36,14 @@ export function registerIssueTools(server: McpServer, issuesInstance: Issues) {
         async (args) => {
             try {
                 let info = await issuesInstance.getIssues(args.owner, args.repo, args.issueNumber);
-                return { content: [info] };
+                return { 
+                    content: [
+                        { 
+                            type: 'text', 
+                            text: JSON.stringify(info, null, 2) 
+                        }
+                    ] 
+                };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -47,7 +61,14 @@ export function registerIssueTools(server: McpServer, issuesInstance: Issues) {
         async (args) => {
             try {
                 let info = await issuesInstance.getComments(args.owner, args.repo, args.issueNumber);
-                return { content: [info] };
+                return { 
+                    content: [
+                        { 
+                            type: 'text', 
+                            text: JSON.stringify(info, null, 2) 
+                        }
+                    ] 
+                };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -69,7 +90,14 @@ export function registerIssueTools(server: McpServer, issuesInstance: Issues) {
         async (args) => {
             try {
                 let info = await issuesInstance.createIssue(args.owner, args.repo, args.title, args.body, args.assignees, args.labels, args.milestone);
-                return { content: [info] };
+                return { 
+                    content: [
+                        { 
+                            type: 'text', 
+                            text: JSON.stringify(info, null, 2) 
+                        }
+                    ] 
+                };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -88,7 +116,14 @@ export function registerIssueTools(server: McpServer, issuesInstance: Issues) {
         async (args) => {
             try {
                 let info = await issuesInstance.addComment(args.owner, args.repo, args.issueNumber, args.comment);
-                return { content: [info] };
+                return { 
+                    content: [
+                        { 
+                            type: 'text', 
+                            text: JSON.stringify(info, null, 2) 
+                        }
+                    ] 
+                };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -112,7 +147,14 @@ export function registerIssueTools(server: McpServer, issuesInstance: Issues) {
         async (args) => {
             try {
                 let info = await issuesInstance.listIssues(args.owner, args.repo, args.state, args.labels, args.sort, args.direction, args.since, args.page, args.per_page);
-                return { content: [info] };
+                return { 
+                    content: [
+                        { 
+                            type: 'text', 
+                            text: JSON.stringify(info, null, 2) 
+                        }
+                    ] 
+                };
             }
             catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
@@ -137,7 +179,14 @@ export function registerIssueTools(server: McpServer, issuesInstance: Issues) {
         async (args) => {
             try {
                 let info = await issuesInstance.updateIssue(args.owner, args.repo, args.issueNumber, args.title, args.body,args.assignees, args.milestone,args.state, args.labels);
-                return { content: [info] };
+                return { 
+                    content: [
+                        { 
+                            type: 'text', 
+                            text: JSON.stringify(info, null, 2) 
+                        }
+                    ] 
+                };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -159,7 +208,14 @@ export function registerIssueTools(server: McpServer, issuesInstance: Issues) {
         async (args) => {
             try {
                 let info = await issuesInstance.searchIssues(args.owner, args.repo,args.q, args.sort, args.order, args.page, args.per_page);
-                return { content: [info] };
+                return { 
+                    content: [
+                        { 
+                            type: 'text', 
+                            text: JSON.stringify(info, null, 2) 
+                        }
+                    ] 
+                };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }

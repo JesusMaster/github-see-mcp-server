@@ -41,6 +41,7 @@
     
 
     ARG MCP_SSE_PORT=3200
+    ARG MCP_TIMEOUT=60000
     # Expose the port the app runs on
     EXPOSE ${MCP_SSE_PORT}
     

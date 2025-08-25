@@ -4,10 +4,12 @@ import axios from 'axios';
 class GitHubClient {
     public token: string;
     public baseUrl: string;
+    public timeout: number;
 
     constructor(token: string) {
         this.token = token;
         this.baseUrl = 'https://api.github.com';
+        this.timeout = 60000; // 60 seconds timeout for all GitHub API requests
     }
 
     // método para obtener información del usuario
@@ -17,6 +19,7 @@ class GitHubClient {
                 Authorization: `Bearer ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
+            timeout: this.timeout
         });
         return response.data;
     }
