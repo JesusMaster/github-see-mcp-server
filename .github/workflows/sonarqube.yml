@@ -32,7 +32,7 @@ jobs:
 
       - name: Install & Test
         run: |
-          npm ci
+          pnpm install
           npm run test
 
       # -- Scan oficial SonarQube self-hosted --
