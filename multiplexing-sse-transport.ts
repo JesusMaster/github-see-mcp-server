@@ -6,8 +6,8 @@ import { Response } from 'express';
 
 export class MultiplexingSSEServerTransport implements Transport {
     public readonly sessionId: string;
-    private clients: Map<string, Response> = new Map(); // Map of clientSessionId -> Response
-    private requestClientMap: Map<RequestId, string> = new Map(); // Map of requestId -> clientSessionId
+    private readonly clients: Map<string, Response> = new Map(); // Map of clientSessionId -> Response
+    private readonly requestClientMap: Map<RequestId, string> = new Map(); // Map of requestId -> clientSessionId
     public onmessage?: (message: JSONRPCMessage, extra?: { authInfo?: AuthInfo; }) => void;
     public onclose?: () => void;
     public onerror?: (error: Error) => void;

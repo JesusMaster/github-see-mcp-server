@@ -159,42 +159,10 @@ export function createSseServer(mcpServer: McpServer, port: number = 8080): http
             clearTimeout(connectionTimeout);
             sseTransports[transport.sessionId] = transport;
             logger.info(`SSE connection established: ${transport.sessionId}`);
-            
-            // // Send an initial heartbeat message in JSON-RPC format
-            // const initialHeartbeat = {
-            //     jsonrpc: "2.0",
-            //     method: "heartbeat",
-            //     params: {
-            //         sessionId: transport.sessionId,
-            //         timestamp: new Date().toISOString()
-            //     }
-            // };
-            // //res.write(`data: ${JSON.stringify(initialHeartbeat)}\n\n`);
-            
-            // // Set up a heartbeat to keep the connection alive
-            // const heartbeatInterval = setInterval(() => {
-            //     if (!res.writableEnded) {
-            //         try {
-            //             const heartbeat = {
-            //                 jsonrpc: "2.0",
-            //                 method: "heartbeat",
-            //                 params: {
-            //                     timestamp: new Date().toISOString()
-            //                 }
-            //             };
-            //             //res.send(`data: ${JSON.stringify(heartbeat)}\n\n`);
-            //         } catch (err) {
-            //             clearInterval(heartbeatInterval);
-            //         }
-            //     } else {
-            //         clearInterval(heartbeatInterval);
-            //     }
-            // }, 30000); // Send heartbeat every 30 seconds
-            
+                        
             req.on('close', () => {
                 logger.info(`SSE connection closed: ${transport.sessionId}`);
                 delete sseTransports[transport.sessionId];
-                //clearInterval(heartbeatInterval);
             });
         }).catch((error) => {
             clearTimeout(connectionTimeout);
