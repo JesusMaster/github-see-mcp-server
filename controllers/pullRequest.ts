@@ -28,7 +28,7 @@ class PullRequest extends GitHubClient {
             per_page?: number,
             page?: number
         } = {
-            state: state || "all"
+            state: state ?? "all"
         };
 
         if (state !== undefined) {

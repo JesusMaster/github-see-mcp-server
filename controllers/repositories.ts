@@ -1,13 +1,13 @@
 import GitHubClient from '#controllers/github';
 import axios from 'axios';
-import { string } from 'zod';
+
 
 class Repositories extends GitHubClient {
     //function to Create or update a single file in a repository
 
 
     isBase64(encodedString: string) {
-        var regexBase64 = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+        let regexBase64 = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
         return regexBase64.test(encodedString);   // return TRUE if its base64 string.
     }
 
@@ -29,7 +29,7 @@ class Repositories extends GitHubClient {
         
         payload.content = payload.content.replace(/\n/g,'');
 
-        //this.isBase64(payload.content);
+
 
         if (!this.isBase64(payload.content)) {
             payload.content = Buffer.from(payload.content).toString('base64');
@@ -45,7 +45,7 @@ class Repositories extends GitHubClient {
                 },
                 timeout: this.timeout
             });
-            sha = response.data.sha;
+            
             return response.data;
         }
         catch (error: any) {
@@ -84,10 +84,6 @@ class Repositories extends GitHubClient {
             payload.content = payload.content.replace(/\n/g,'');
         }
 
-        // console.log(`is Base: ${this.isBase64(payload.content)}`);
-        // console.log(`PAYLOAD: ${JSON.stringify(payload)}`);
-        // console.log(`URL: ${this.baseUrl}/repos/${owner}/${repo}/contents/${path}`);
-
         try {
             const response = await axios.put(`${this.baseUrl}/repos/${owner}/${repo}/contents/${path}`, payload, {
                 headers: {
@@ -96,7 +92,7 @@ class Repositories extends GitHubClient {
                 },
                 timeout: this.timeout
             });
-            sha = response.data.sha;
+
             return response.data;
         }
         catch (error: any) {
