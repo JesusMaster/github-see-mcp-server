@@ -20,3 +20,5 @@ dist/
 *.swp
 *.swo
 .DS_Store
+
+coverage/
