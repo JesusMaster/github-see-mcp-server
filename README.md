@@ -100,6 +100,29 @@ This command:
 - Sets all the environment variables with their default values
 - Names the container "github-see-mcp-server"
 
+## Connecting with Claude
+
+To connect to this MCP server with Claude, add the following configuration to your Claude session:
+
+```json
+{
+  "mcpServers": {
+    "GitHub": {
+      "command": "npx",
+      "args": [
+        "-y",
+        "mcp-remote@0.1.15",
+        "https://{Your domain}/sse",
+        "--transport",
+        "sse-only"
+      ]
+    }
+  }
+}
+```
+
+Replace `{Your domain}` with your actual domain where the server is running.
+
 ## API Endpoints
 
 - `/health` - Health check endpoint that returns server status and version information
