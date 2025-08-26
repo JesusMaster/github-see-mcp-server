@@ -39,6 +39,7 @@ jobs:
       - name: Run tests
         run: npm run test
 
+
       # -- Scan oficial SonarQube self-hosted --
       - name: SonarQube Scan
         uses: SonarSource/sonarqube-scan-action@v5
