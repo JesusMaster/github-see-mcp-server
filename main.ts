@@ -1,7 +1,5 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from 'zod';
 import { createSseServer } from './sse-server.js';
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"; // Commented out as it's unused after refactor
 
 import Issues from "#controllers/issues";
 import PullRequest  from "#controllers/pullRequest";
@@ -20,7 +18,7 @@ import path from 'path';
 dotenv.config();
 
 // Configure logging based on environment variable
-const LOG_LEVEL = process.env.LOG_LEVEL || 'info';
+const LOG_LEVEL = process.env.LOG_LEVEL ?? 'info';
 const logLevels = {
     debug: 0,
     info: 1,
@@ -61,8 +59,8 @@ if (!GITHUB_TOKEN) {
         // Check for token in common locations
         const possibleTokenPaths = [
             './.github_token',
-            path.join(process.env.HOME || '', '.github_token'),
-            path.join(process.env.HOME || '', '.config/github/token')
+            path.join(process.env.HOME ?? '', '.github_token'),
+            path.join(process.env.HOME ?? '', '.config/github/token')
         ];
         
         for (const tokenPath of possibleTokenPaths) {

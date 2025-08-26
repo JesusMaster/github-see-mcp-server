@@ -1,16 +1,16 @@
 # ---- Build Stage ----
-    FROM node:latest AS builder
+    FROM node:22.18 AS builder
 
     WORKDIR /app
     
     # Install pnpm globally
-    RUN npm install -g pnpm
+    RUN npm install -g pnpm --ignore-scripts
     
     # Copy package definition and lock file
     COPY package.json pnpm-lock.yaml ./
     
     # Install ALL dependencies (including devDependencies)
-    RUN pnpm install
+    RUN pnpm install --ignore-scripts
     
     # Copy the rest of the application source code
     COPY . ./
@@ -23,18 +23,19 @@
     # Note: We will reinstall prod deps cleanly in the final stage instead of copying node_modules
     
     # ---- Production Stage ----
-    FROM node:latest
+    FROM node:22.18
+
     
     WORKDIR /app
     
     # Install pnpm globally (needed again in this stage if using pnpm commands)
-    RUN npm install -g pnpm
+    RUN npm install -g pnpm --ignore-scripts
     
     # Copy package definition and lock file from the builder stage
     COPY --from=builder /app/package.json /app/pnpm-lock.yaml ./
     
     # Install ONLY production dependencies
-    RUN pnpm install --prod
+    RUN pnpm install --prod --ignore-scripts
     
     # Copy the built application code from the builder stage
     COPY --from=builder /app/dist ./dist

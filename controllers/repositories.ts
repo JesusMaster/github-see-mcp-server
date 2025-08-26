@@ -1,13 +1,13 @@
 import GitHubClient from '#controllers/github';
 import axios from 'axios';
-import { string } from 'zod';
+
 
 class Repositories extends GitHubClient {
     //function to Create or update a single file in a repository
 
 
     isBase64(encodedString: string) {
-        var regexBase64 = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
+        let regexBase64 = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
         return regexBase64.test(encodedString);   // return TRUE if its base64 string.
     }
 
