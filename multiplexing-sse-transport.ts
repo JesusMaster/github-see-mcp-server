@@ -24,11 +24,11 @@ export class MultiplexingSSEServerTransport implements Transport {
     private extractMessageDetails(message: JSONRPCMessage): { 
         messageType: string; 
         methodName?: string; 
-        messageId: string | number | null 
+        messageId: any
     } {
         let messageType: string = 'unknown';
         let methodName: string | undefined;
-        let messageId: string | number | null = null;
+        let messageId: any = null;
 
         if ('method' in message) {
             messageType = 'request/notification';
@@ -51,7 +51,7 @@ export class MultiplexingSSEServerTransport implements Transport {
         messageString: string, 
         messageType: string, 
         methodName?: string, 
-        messageId: string | number | null = null
+        messageId: any = null
     ): void {
         console.log(`MultiplexingSSEServerTransport (${this.sessionId}): Sending message. Type: ${messageType}, Method: ${methodName ?? 'N/A'}, ID: ${messageId ?? 'N/A'}. Clients: ${this.clients.size}`);
         
@@ -193,7 +193,7 @@ export class MultiplexingSSEServerTransport implements Transport {
             // Log message details
             let messageType = 'unknown';
             let methodName: string | undefined;
-            let messageId: string | number | null = null;
+            let messageId: any = null;
             
             if ('method' in parsedMessage) {
                 messageType = 'request/notification';

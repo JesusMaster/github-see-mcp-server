@@ -129,7 +129,7 @@ const isPortAvailable = async (port: number): Promise<boolean> => {
 
 // Configure server port
 const findAvailablePort = async (startPort: number, maxAttempts: number = 10): Promise<number> => {
-    const net = await import('net');
+
     let currentPort = startPort;
     
     for (let attempts = 0; attempts < maxAttempts; attempts++) {
