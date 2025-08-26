@@ -1,7 +1,5 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { z } from 'zod';
 import { createSseServer } from './sse-server.js';
-import { StdioServerTransport } from "@modelcontextprotocol/sdk/server/stdio.js"; // Commented out as it's unused after refactor
 
 import Issues from "#controllers/issues";
 import PullRequest  from "#controllers/pullRequest";
@@ -20,7 +18,7 @@ import path from 'path';
 dotenv.config();
 
 // Configure logging based on environment variable
-const LOG_LEVEL = process.env.LOG_LEVEL || 'info';
+const LOG_LEVEL = process.env.LOG_LEVEL ?? 'info';
 const logLevels = {
     debug: 0,
     info: 1,
@@ -61,8 +59,8 @@ if (!GITHUB_TOKEN) {
         // Check for token in common locations
         const possibleTokenPaths = [
             './.github_token',
-            path.join(process.env.HOME || '', '.github_token'),
-            path.join(process.env.HOME || '', '.config/github/token')
+            path.join(process.env.HOME ?? '', '.github_token'),
+            path.join(process.env.HOME ?? '', '.config/github/token')
         ];
         
         for (const tokenPath of possibleTokenPaths) {
@@ -107,46 +105,45 @@ registerIssueTools(server, ISSUES);
 registerPullRequestTools(server, PULL_REQUEST);
 registerRepositoriesTools(server, REPOSITORIES);
 
-// const transport = new StdioServerTransport(); // If you need Stdio transport, uncomment this
-// await server.connect(transport); // and this line.
+
+// Helper function to check if a port is available
+const isPortAvailable = async (port: number): Promise<boolean> => {
+    const net = await import('net');
+    
+    return new Promise((resolve) => {
+        const server = net.createServer();
+        
+        server.once('error', () => {
+            resolve(false); // Port is not available
+        });
+        
+        server.once('listening', () => {
+            server.close(() => {
+                resolve(true); // Port is available
+            });
+        });
+        
+        server.listen(port);
+    });
+};
 
 // Configure server port
 const findAvailablePort = async (startPort: number, maxAttempts: number = 10): Promise<number> => {
-    const net = await import('net');
+
+    let currentPort = startPort;
     
-    return new Promise((resolve, reject) => {
-        let currentPort = startPort;
-        let attempts = 0;
+    for (let attempts = 0; attempts < maxAttempts; attempts++) {
+        const available = await isPortAvailable(currentPort);
         
-        const tryPort = () => {
-            attempts++;
-            const server = net.createServer();
-            
-            server.once('error', (err: any) => {
-                if (err.code === 'EADDRINUSE') {
-                    console.log(`Port ${currentPort} is in use, trying next port...`);
-                    currentPort++;
-                    if (attempts >= maxAttempts) {
-                        reject(new Error(`Could not find an available port after ${maxAttempts} attempts`));
-                    } else {
-                        tryPort();
-                    }
-                } else {
-                    reject(err);
-                }
-            });
-            
-            server.once('listening', () => {
-                server.close(() => {
-                    resolve(currentPort);
-                });
-            });
-            
-            server.listen(currentPort);
-        };
+        if (available) {
+            return currentPort;
+        }
         
-        tryPort();
-    });
+        console.log(`Port ${currentPort} is in use, trying next port...`);
+        currentPort++;
+    }
+    
+    throw new Error(`Could not find an available port after ${maxAttempts} attempts`);
 };
 
 // Get the port from environment variable or use default

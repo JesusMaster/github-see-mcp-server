@@ -10,6 +10,8 @@
       "strict": true, // Enable all strict type-checking options
       "skipLibCheck": true, // Skip type checking of declaration files
       "resolveJsonModule": true, // Allow importing JSON files
+      "isolatedModules": true, // Fix warning about hybrid module kind
+      "allowJs": true, // Allow JavaScript files to be compiled
       "baseUrl": ".",
       "paths": {
             "#controllers/*": [
@@ -20,6 +22,6 @@
             ],
         }
     },
-    "include": ["*.ts", "controllers/*.ts", "tools/*.ts"], // Compile all TypeScript files
+    "include": ["*.ts", "controllers/*.ts", "tools/*.ts", "test/*.js"], // Compile all TypeScript files and test JavaScript files
     "exclude": ["node_modules", "dist"] // Specify directories to exclude
   }

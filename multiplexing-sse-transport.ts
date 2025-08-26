@@ -1,4 +1,3 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { Transport, TransportSendOptions } from "@modelcontextprotocol/sdk/shared/transport.js";
 import { JSONRPCMessage, RequestId } from "@modelcontextprotocol/sdk/types.js"; // Import RequestId
 import { AuthInfo } from "@modelcontextprotocol/sdk/server/auth/types.js"; // Import AuthInfo
@@ -7,8 +6,8 @@ import { Response } from 'express';
 
 export class MultiplexingSSEServerTransport implements Transport {
     public readonly sessionId: string;
-    private clients: Map<string, Response> = new Map(); // Map of clientSessionId -> Response
-    private requestClientMap: Map<RequestId, string> = new Map(); // Map of requestId -> clientSessionId
+    private readonly clients: Map<string, Response> = new Map(); // Map of clientSessionId -> Response
+    private readonly requestClientMap: Map<RequestId, string> = new Map(); // Map of requestId -> clientSessionId
     public onmessage?: (message: JSONRPCMessage, extra?: { authInfo?: AuthInfo; }) => void;
     public onclose?: () => void;
     public onerror?: (error: Error) => void;
@@ -21,68 +20,112 @@ export class MultiplexingSSEServerTransport implements Transport {
         console.log(`MultiplexingSSEServerTransport (${this.sessionId}): Started.`);
     }
 
+    // Extract message details for logging
+    private extractMessageDetails(message: JSONRPCMessage): { 
+        messageType: string; 
+        methodName?: string; 
+        messageId: any
+    } {
+        let messageType: string = 'unknown';
+        let methodName: string | undefined;
+        let messageId: any = null;
+
+        if ('method' in message) {
+            messageType = 'request/notification';
+            methodName = message.method;
+            if ('id' in message) {
+                messageId = message.id;
+            }
+        } else if ('result' in message || 'error' in message) {
+            messageType = 'response';
+            if ('id' in message) {
+                messageId = message.id;
+            }
+        }
+
+        return { messageType, methodName, messageId };
+    }
+
+    // Log message information
+    private logMessageInfo(
+        messageString: string, 
+        messageType: string, 
+        methodName?: string, 
+        messageId: any = null
+    ): void {
+        console.log(`MultiplexingSSEServerTransport (${this.sessionId}): Sending message. Type: ${messageType}, Method: ${methodName ?? 'N/A'}, ID: ${messageId ?? 'N/A'}. Clients: ${this.clients.size}`);
+        
+        if (methodName === 'mcp/toolListChanged') {
+            console.log(`MultiplexingSSEServerTransport (${this.sessionId}): Detected mcp/toolListChanged notification.`);
+        }
+        
+        console.log(`Message content (first 200 chars): ${messageString.substring(0, 200)}...`);
+    }
+
+    // Send message to a specific client
+    private sendToTargetClient(
+        messageString: string, 
+        targetClientSessionId: string, 
+        relatedRequestId: RequestId
+    ): boolean {
+        const res = this.clients.get(targetClientSessionId);
+        
+        if (!res || res.writableEnded) {
+            console.warn(`MultiplexingSSEServerTransport (${this.sessionId}): Target client ${targetClientSessionId} not found or writableEnded for request ${relatedRequestId}.`);
+            return false;
+        }
+        
+        try {
+            res.write(`data: ${messageString}\n\n`);
+            if (typeof (res as any).flush === 'function') {
+                (res as any).flush();
+            }
+            console.log(`MultiplexingSSEServerTransport (${this.sessionId}): Sent targeted response to client ${targetClientSessionId} for request ${relatedRequestId}`);
+            return true;
+        } catch (error: any) {
+            console.error(`Error sending targeted SSE message to client ${targetClientSessionId}:`, error);
+            this.removeClient(targetClientSessionId);
+            this.onerror?.(new Error(`Failed to send message to client ${targetClientSessionId}: ${error.message}`));
+            return false;
+        }
+    }
+
     async send(message: JSONRPCMessage, options?: TransportSendOptions): Promise<void> {
         try {
             const messageString = JSON.stringify(message);
-            let messageType: string;
-            let methodName: string | undefined;
-            let messageId: string | number | null = null;
+            const { messageType, methodName, messageId } = this.extractMessageDetails(message);
+            
+            this.logMessageInfo(messageString, messageType, methodName, messageId);
 
-            if ('method' in message) {
-                messageType = 'request/notification';
-                methodName = message.method;
-                if ('id' in message) {
-                    messageId = message.id;
-                }
-            } else if ('result' in message || 'error' in message) {
-                messageType = 'response';
-                if ('id' in message) {
-                    messageId = message.id;
-                }
-            } else {
-                messageType = 'unknown';
-            }
-
-            console.log(`MultiplexingSSEServerTransport (${this.sessionId}): Sending message. Type: ${messageType}, Method: ${methodName || 'N/A'}, ID: ${messageId || 'N/A'}. Clients: ${this.clients.size}`);
-            if (methodName === 'mcp/toolListChanged') {
-                console.log(`MultiplexingSSEServerTransport (${this.sessionId}): Detected mcp/toolListChanged notification.`);
-            }
-            console.log(`Message content (first 200 chars): ${messageString.substring(0, 200)}...`);
-
-            // Handle responses to specific requests
-            if (options?.relatedRequestId && ('result' in message || 'error' in message)) {
-                const targetClientSessionId = this.requestClientMap.get(options.relatedRequestId);
-                if (targetClientSessionId) {
-                    const res = this.clients.get(targetClientSessionId);
-                    if (res && !res.writableEnded) {
-                        try {
-                            res.write(`data: ${messageString}\n\n`);
-                            if (typeof (res as any).flush === 'function') {
-                                (res as any).flush();
-                            }
-                            console.log(`MultiplexingSSEServerTransport (${this.sessionId}): Sent targeted response to client ${targetClientSessionId} for request ${options.relatedRequestId}`);
-                        } catch (error: any) {
-                            console.error(`Error sending targeted SSE message to client ${targetClientSessionId}:`, error);
-                            this.removeClient(targetClientSessionId);
-                            this.onerror?.(new Error(`Failed to send message to client ${targetClientSessionId}: ${error.message}`));
-                        }
-                    } else {
-                        console.warn(`MultiplexingSSEServerTransport (${this.sessionId}): Target client ${targetClientSessionId} not found or writableEnded for request ${options.relatedRequestId}.`);
-                        // Don't remove the mapping yet, try broadcasting instead
-                        this.broadcastMessage(messageString);
-                    }
-                    // Only clean up the map after successful delivery or if we're sure the client is gone
-                    if (res && !res.writableEnded) {
-                        this.requestClientMap.delete(options.relatedRequestId);
-                    }
-                } else {
-                    console.warn(`MultiplexingSSEServerTransport (${this.sessionId}): No client found for relatedRequestId ${options.relatedRequestId}. Broadcasting instead.`);
-                    // Fallback to broadcast if target client not found
-                    this.broadcastMessage(messageString);
-                }
-            } else {
-                // For notifications or responses without relatedRequestId, broadcast to all clients
+            const isTargetedResponse = options?.relatedRequestId && ('result' in message || 'error' in message);
+            
+            if (!isTargetedResponse) {
                 this.broadcastMessage(messageString);
+                return;
+            }
+            
+            // Handle targeted response
+            const targetClientSessionId = this.requestClientMap.get(options.relatedRequestId as RequestId);
+            
+            if (!targetClientSessionId) {
+                console.warn(`MultiplexingSSEServerTransport (${this.sessionId}): No client found for relatedRequestId ${options.relatedRequestId}. Broadcasting instead.`);
+                this.broadcastMessage(messageString);
+                return;
+            }
+            
+            // We know relatedRequestId exists at this point
+            const sentSuccessfully = this.sendToTargetClient(
+                messageString, 
+                targetClientSessionId, 
+                options.relatedRequestId as RequestId
+            );
+            
+            if (!sentSuccessfully) {
+                // Fallback to broadcast if targeted send failed
+                this.broadcastMessage(messageString);
+            } else {
+                // Clean up the request mapping after successful delivery
+                this.requestClientMap.delete(options.relatedRequestId as RequestId);
             }
         } catch (error: any) {
             console.error(`MultiplexingSSEServerTransport (${this.sessionId}): Error in send method:`, error);
@@ -150,7 +193,7 @@ export class MultiplexingSSEServerTransport implements Transport {
             // Log message details
             let messageType = 'unknown';
             let methodName: string | undefined;
-            let messageId: string | number | null = null;
+            let messageId: any = null;
             
             if ('method' in parsedMessage) {
                 messageType = 'request/notification';
@@ -160,7 +203,7 @@ export class MultiplexingSSEServerTransport implements Transport {
                 }
             }
             
-            console.log(`MultiplexingSSEServerTransport (${this.sessionId}): Received ${messageType} message from client ${clientSessionId}. Method: ${methodName || 'N/A'}, ID: ${messageId || 'N/A'}`);
+            console.log(`MultiplexingSSEServerTransport (${this.sessionId}): Received ${messageType} message from client ${clientSessionId}. Method: ${methodName ?? 'N/A'}, ID: ${messageId ?? 'N/A'}`);
             
             // If it's a request, store the mapping
             if ('id' in parsedMessage && 'method' in parsedMessage) {
