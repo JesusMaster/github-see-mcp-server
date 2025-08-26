@@ -1,4 +1,3 @@
-import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { Transport, TransportSendOptions } from "@modelcontextprotocol/sdk/shared/transport.js";
 import { JSONRPCMessage, RequestId } from "@modelcontextprotocol/sdk/types.js"; // Import RequestId
 import { AuthInfo } from "@modelcontextprotocol/sdk/server/auth/types.js"; // Import AuthInfo
@@ -43,7 +42,7 @@ export class MultiplexingSSEServerTransport implements Transport {
                 messageType = 'unknown';
             }
 
-            console.log(`MultiplexingSSEServerTransport (${this.sessionId}): Sending message. Type: ${messageType}, Method: ${methodName || 'N/A'}, ID: ${messageId || 'N/A'}. Clients: ${this.clients.size}`);
+            console.log(`MultiplexingSSEServerTransport (${this.sessionId}): Sending message. Type: ${messageType}, Method: ${methodName ?? 'N/A'}, ID: ${messageId ?? 'N/A'}. Clients: ${this.clients.size}`);
             if (methodName === 'mcp/toolListChanged') {
                 console.log(`MultiplexingSSEServerTransport (${this.sessionId}): Detected mcp/toolListChanged notification.`);
             }
@@ -160,7 +159,7 @@ export class MultiplexingSSEServerTransport implements Transport {
                 }
             }
             
-            console.log(`MultiplexingSSEServerTransport (${this.sessionId}): Received ${messageType} message from client ${clientSessionId}. Method: ${methodName || 'N/A'}, ID: ${messageId || 'N/A'}`);
+            console.log(`MultiplexingSSEServerTransport (${this.sessionId}): Received ${messageType} message from client ${clientSessionId}. Method: ${methodName ?? 'N/A'}, ID: ${messageId ?? 'N/A'}`);
             
             // If it's a request, store the mapping
             if ('id' in parsedMessage && 'method' in parsedMessage) {

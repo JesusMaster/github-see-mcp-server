@@ -15,10 +15,10 @@ dotenv.config();
 
 // Get timeout from environment variable or use default
 const requestTimeoutMs = process.env.MCP_TIMEOUT ? parseInt(process.env.MCP_TIMEOUT, 10) : 180000;
-const corsAllowOrigin = process.env.CORS_ALLOW_ORIGIN || '*';
+const corsAllowOrigin = process.env.CORS_ALLOW_ORIGIN ?? '*';
 
 // Configure logging based on environment variable
-const LOG_LEVEL = process.env.LOG_LEVEL || 'info';
+const LOG_LEVEL = process.env.LOG_LEVEL ?? 'info';
 const logLevels = {
     debug: 0,
     info: 1,
