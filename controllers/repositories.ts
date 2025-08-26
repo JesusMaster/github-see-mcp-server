@@ -29,7 +29,7 @@ class Repositories extends GitHubClient {
         
         payload.content = payload.content.replace(/\n/g,'');
 
-        //this.isBase64(payload.content);
+
 
         if (!this.isBase64(payload.content)) {
             payload.content = Buffer.from(payload.content).toString('base64');
@@ -45,7 +45,7 @@ class Repositories extends GitHubClient {
                 },
                 timeout: this.timeout
             });
-            sha = response.data.sha;
+            
             return response.data;
         }
         catch (error: any) {
@@ -84,10 +84,6 @@ class Repositories extends GitHubClient {
             payload.content = payload.content.replace(/\n/g,'');
         }
 
-        // console.log(`is Base: ${this.isBase64(payload.content)}`);
-        // console.log(`PAYLOAD: ${JSON.stringify(payload)}`);
-        // console.log(`URL: ${this.baseUrl}/repos/${owner}/${repo}/contents/${path}`);
-
         try {
             const response = await axios.put(`${this.baseUrl}/repos/${owner}/${repo}/contents/${path}`, payload, {
                 headers: {
@@ -96,7 +92,7 @@ class Repositories extends GitHubClient {
                 },
                 timeout: this.timeout
             });
-            sha = response.data.sha;
+
             return response.data;
         }
         catch (error: any) {

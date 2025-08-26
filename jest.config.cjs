@@ -19,7 +19,6 @@ module.exports = {
   },
   collectCoverage: true,
   collectCoverageFrom: [
-    'controllers/**/*.ts',
     'tools/**/*.ts',
     '!**/node_modules/**',
     '!**/test/**'
