@@ -4,7 +4,6 @@ import axios from 'axios';
 
 class PullRequest extends GitHubClient {
 
-    //método para obtener una pull request
     async getPullRequest(owner: string, repo: string, pullNumber: number) {
 
 
@@ -18,7 +17,6 @@ class PullRequest extends GitHubClient {
         return response.data;
     };
 
-    // método para obtner un lista de pull requests
     async getListPullRequests(owner: string, repo: string,state?: string ,sort?: string,direction?: string ,perPage?: number,page?: number) {
 
         const payload :{
@@ -58,7 +56,6 @@ class PullRequest extends GitHubClient {
         return response.data;
     }
 
-    // método para crear un merge de pull request
     async mergePullRequest(owner: string, repo: string, pullNumber: number, commitMessage?: string, commit_title?: string, merge_method?: string) {
 
         const payload: {
@@ -88,7 +85,6 @@ class PullRequest extends GitHubClient {
         return response.data;
     }
 
-    // método para obtener los archivos de una pull request
     async getPullRequestFiles(owner: string, repo: string, pullNumber: number) {
         const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/pulls/${pullNumber}/files`, {
             headers: {
@@ -100,7 +96,6 @@ class PullRequest extends GitHubClient {
         return response.data;
     }
 
-    // método para obtener el status de una pull request
     async getPullRequestStatus(owner: string, repo: string, pullNumber: number) {
         const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/pulls/${pullNumber}/merge`, {
             headers: {
@@ -112,7 +107,6 @@ class PullRequest extends GitHubClient {
         return response.data;
     }
 
-    // método para actualizar un branch de un pull request
     async updatePullRequestBranch(owner: string, repo: string, pullNumber: number, expected_head_sha?: string) {
 
         const payload:{
@@ -132,7 +126,6 @@ class PullRequest extends GitHubClient {
         return response.data;
     }
 
-    // método para obtener los commentarios del pull request
     async getPullRequestComments(owner: string, repo: string, pullNumber: number) {
         const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/pulls/${pullNumber}/comments`, {
             headers: {
@@ -144,7 +137,6 @@ class PullRequest extends GitHubClient {
         return response.data;
     }
 
-    // método para obtener los reviews del pull request
     async getPullRequestReviews(owner: string, repo: string, pullNumber: number) {
         const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/pulls/${pullNumber}/reviews`, {
             headers: {
@@ -156,7 +148,6 @@ class PullRequest extends GitHubClient {
         return response.data;
     }
 
-    // método para crear una review del pull request
     async createPullRequestReview(owner: string, repo: string, pullNumber: number, body?: string , event?: string, commitId?: string, comments?: string[]) {
         
         const payload: {
@@ -189,7 +180,6 @@ class PullRequest extends GitHubClient {
         return response.data;
     }
 
-    // método para crear una pull request
     async createPullRequest(owner: string, repo: string, title: string, head: string, base: string, body?: string , draft?: boolean , maintainer_can_modify?: boolean) {
 
         const payload :{
@@ -225,10 +215,7 @@ class PullRequest extends GitHubClient {
         return response.data;
     }
 
-    // function to add a review comment to a pull request or reply to an existing comment
     async addPullRequestReviewComment(owner: string, repo: string, pullNumber: number, body: string, path: string, commit_id?: string, in_reply_to?: number, subject_type?: string , line?: number, side?: string, start_line?: number, start_side?: string) {
-        // Check if the required parameters are provided 
-
         const payload: {
             body: string,
             path: string,
@@ -275,7 +262,6 @@ class PullRequest extends GitHubClient {
         return response.data; 
     }
 
-    // function to update pull request
     async updatePullRequest(owner: string, repo: string, pullNumber: number, title?: string, body?: string , state?: string , base?: string , maintainer_can_modify?: boolean ) {
 
         const payload: {
