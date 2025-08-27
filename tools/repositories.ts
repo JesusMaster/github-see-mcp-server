@@ -1,7 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from 'zod';
-import Repositories from "#controllers/repositories"; // Adjusted path
-// Adjusted path
+import Repositories from "#controllers/repositories";
 
 export function registerRepositoriesTools(server: McpServer, repositoriesInstance: Repositories) {
 
@@ -21,6 +20,7 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
         },
         async (args) => {
             try {
+
                 let info = await repositoriesInstance.CreateFileContents(args.owner, args.repo, args.path, args.message, args.content, args.branch, args.sha);
                 return { 
                     content: [
@@ -50,6 +50,7 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
         },
         async (args) => {
             try {
+
                 let info = await repositoriesInstance.UpdateFileContents(args.owner, args.repo, args.path, args.message, args.content, args.sha, args.branch);
                 return { 
                     content: [
@@ -132,7 +133,6 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
             try {
                 let info = await repositoriesInstance.searchRepositories(args.query, args.page, args.perPage, args.sort, args.order);
                 
-                // Format the response as a properly typed content block
                 return { 
                     content: [
                         { 

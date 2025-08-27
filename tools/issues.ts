@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from 'zod';
-import Issues from "#controllers/issues"; // Adjusted path
+import Issues from "#controllers/issues";
 
 export function registerIssueTools(server: McpServer, issuesInstance: Issues) {
     server.tool(
@@ -79,7 +79,7 @@ export function registerIssueTools(server: McpServer, issuesInstance: Issues) {
         'create_issue',
         'Create a new issue in a GitHub repository',
         {
-            owner: z.string().describe('Repository owner (string, required)'), //required
+            owner: z.string().describe('Repository owner (string, required)'),
             repo: z.string().describe('Repository name (string, required)'),
             title: z.string().describe('Issue title (string, required)'),
             body: z.string().optional().describe('Issue body (string, optional)'),

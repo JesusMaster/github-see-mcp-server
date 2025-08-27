@@ -3,12 +3,9 @@ import axios from 'axios';
 
 
 class Repositories extends GitHubClient {
-    //function to Create or update a single file in a repository
-
-
     isBase64(encodedString: string) {
         let regexBase64 = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
-        return regexBase64.test(encodedString);   // return TRUE if its base64 string.
+        return regexBase64.test(encodedString);
     }
 
 
@@ -27,14 +24,8 @@ class Repositories extends GitHubClient {
         if (branch) payload.branch = branch;
         if (sha) payload.sha = sha;
         
-        payload.content = payload.content.replace(/\n/g,'');
-
-
-
         if (!this.isBase64(payload.content)) {
             payload.content = Buffer.from(payload.content).toString('base64');
-        }else{
-            payload.content = payload.content.replace(/\n/g,'');
         }
 
         try {
@@ -51,7 +42,7 @@ class Repositories extends GitHubClient {
         catch (error: any) {
             console.error(`Error creating or updating file contents: ${error.message}`);
             if (error.response && error.response.status !== 404) {
-                throw error; // If it's not a 404 error, rethrow it
+                throw error;
             }
             return error
         }
@@ -72,16 +63,9 @@ class Repositories extends GitHubClient {
         }
 
         if (branch) payload.branch = branch;
-        
-        
-        payload.content = payload.content.replace(/\n/g,'');
-        
-        // Check if content is already Base64 encoded
+
         if (!this.isBase64(payload.content)) {
-            // If not Base64, encode it
             payload.content = Buffer.from(payload.content).toString('base64');
-        }else{
-            payload.content = payload.content.replace(/\n/g,'');
         }
 
         try {
@@ -98,13 +82,12 @@ class Repositories extends GitHubClient {
         catch (error: any) {
             console.error(`Error creating or updating file contents: ${error.message}`);
             if (error.response && error.response.status !== 404) {
-                throw error; // If it's not a 404 error, rethrow it
+                throw error;
             }
             return error
         }
     }
 
-    // function to List branches in a GitHub repository
     async listBranches(owner: string, repo: string, page?: number, per_page?: number) {
         const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/branches`, {
             headers: {
@@ -116,8 +99,6 @@ class Repositories extends GitHubClient {
 
         return response.data;
     }
-
-    // function to Push multiple files in a single commit
 
     async pushMultipleFiles(owner: string, repo: string, branch: string, commitMessage: string, files: { path: string, content: string }[]) {
         const branchInfo = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/branches/${branch}`, {
@@ -173,7 +154,6 @@ class Repositories extends GitHubClient {
         return newCommit.data;
     }
 
-    // function to Create a new repository for the authenticated user
     async createRepository(name: string, description?: string, privateRepo?: boolean, autoInit?: boolean) {
         const payload: {
             name: string;
@@ -191,7 +171,7 @@ class Repositories extends GitHubClient {
             payload.private = privateRepo;
         }
         if (autoInit !== undefined) {
-            payload.auto_init = autoInit; // GitHub API uses auto_init
+            payload.auto_init = autoInit;
         }
 
         const response = await axios.post(`${this.baseUrl}/user/repos`, payload, {
@@ -205,7 +185,6 @@ class Repositories extends GitHubClient {
         return response.data;
     }
 
-    // create function to search repositories
     async searchRepositories(query: string, page?: number, per_page?: number, sort?: string, order?: string) {
 
         const payload: {
@@ -269,7 +248,7 @@ class Repositories extends GitHubClient {
     }
 
 
-    async getUserRepoInfo(repoName: string, userName: string) { // Consider swapping userName and repoName for conventional owner, repo order if preferred
+    async getUserRepoInfo(repoName: string, userName: string) {
         const response = await axios.get(`${this.baseUrl}/repos/${userName}/${repoName}`, {
             headers: {
                 Authorization: `Bearer ${this.token}`,
@@ -281,7 +260,6 @@ class Repositories extends GitHubClient {
     }
 
 
-    // function to get file contents from a repository
     async getFileContents(owner: string, repo: string, path: string, ref?: string) {
 
         const payload: {
@@ -299,7 +277,6 @@ class Repositories extends GitHubClient {
         });
 
         if (response.data && response.data.content) {
-            // Decode the base64 content
             const decodedContent = Buffer.from(response.data.content, 'base64').toString('utf-8');
             response.data.decodedContent = decodedContent;
         }
@@ -307,7 +284,6 @@ class Repositories extends GitHubClient {
         return response.data;
     }
 
-    //function to create a fork of a repository
     async createFork(owner: string, repo: string, organization?: string) {
 
         const payload: {
@@ -340,7 +316,6 @@ class Repositories extends GitHubClient {
         return response.data;
     }
 
-    //function to create a branch
     async createBranch(owner: string, repo: string, branchName: string, baseBranch: string) {
 
         const response = await axios.post(`${this.baseUrl}/repos/${owner}/${repo}/git/refs`, {
@@ -357,7 +332,6 @@ class Repositories extends GitHubClient {
         return response.data;
     }
 
-    // function to get list of commits
     async listCommits(owner: string, repo: string, sha?: string, path?: string, page?: number, perPage?: number) {
 
         const payload: {
@@ -391,7 +365,6 @@ class Repositories extends GitHubClient {
         return response.data;
     }
 
-    //function to get a single commit
     async getCommit(owner: string, repo: string, sha?: string, page?: number, perPage?: number) {
 
 
