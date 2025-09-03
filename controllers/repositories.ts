@@ -1,13 +1,11 @@
 import GitHubClient from '#controllers/github';
 import axios from 'axios';
 
-
 class Repositories extends GitHubClient {
     isBase64(encodedString: string) {
         let regexBase64 = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
         return regexBase64.test(encodedString);
     }
-
 
     async CreateFileContents(owner: string, repo: string, path: string, message: string, content: string, branch?: string, sha?: string) {
 
@@ -114,6 +112,7 @@ class Repositories extends GitHubClient {
 
         return allBranches;
     }
+
 
     async pushMultipleFiles(owner: string, repo: string, branch: string, commitMessage: string, files: { path: string, content: string }[]) {
         const branchInfo = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/branches/${branch}`, {
