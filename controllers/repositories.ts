@@ -89,15 +89,30 @@ class Repositories extends GitHubClient {
     }
 
     async listBranches(owner: string, repo: string, page?: number, per_page?: number) {
-        const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/branches`, {
-            headers: {
-                Authorization: `Bearer ${this.token}`,
-                Accept: 'application/vnd.github.v3+json',
-            },
-            timeout: this.timeout
-        });
+        let page_number = page || 1;
+        let per_page_number = per_page || 30;
+        let allBranches: any[] = [];
+        let branches;
 
-        return response.data;
+        do {
+            const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/branches`, {
+                params: {
+                    page: page_number,
+                    per_page: per_page_number,
+                },
+                headers: {
+                    Authorization: `Bearer ${this.token}`,
+                    Accept: 'application/vnd.github.v3+json',
+                },
+                timeout: this.timeout
+            });
+
+            branches = response.data;
+            allBranches = allBranches.concat(branches);
+            page_number++;
+        } while (branches.length === per_page_number);
+
+        return allBranches;
     }
 
     async pushMultipleFiles(owner: string, repo: string, branch: string, commitMessage: string, files: { path: string, content: string }[]) {
