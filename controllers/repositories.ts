@@ -1,13 +1,11 @@
 import GitHubClient from '#controllers/github';
 import axios from 'axios';
 
-
 class Repositories extends GitHubClient {
     isBase64(encodedString: string) {
         let regexBase64 = /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/;
         return regexBase64.test(encodedString);
     }
-
 
     async CreateFileContents(owner: string, repo: string, path: string, message: string, content: string, branch?: string, sha?: string) {
 
@@ -89,6 +87,7 @@ class Repositories extends GitHubClient {
     }
 
     async listBranches(owner: string, repo: string, page?: number, per_page?: number) {
+
         let page_number = page ?? 1;
         let per_page_number = per_page ?? 30;
         let allBranches: any[] = [];
@@ -111,6 +110,7 @@ class Repositories extends GitHubClient {
             allBranches = allBranches.concat(branches);
             page_number++;
         } while (branches.length === per_page_number);
+
 
         return allBranches;
     }
