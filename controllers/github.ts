@@ -8,7 +8,7 @@ class GitHubClient {
     constructor(token: string) {
         this.token = token;
         this.baseUrl = 'https://api.github.com';
-        this.timeout = 120000; // 120 seconds timeout for all GitHub API requests
+        this.timeout = 300000; // 300 seconds timeout for all GitHub API requests
     }
 
     async getUserInfo() {
