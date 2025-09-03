@@ -7,7 +7,7 @@ export async function paginate(url: string, config: AxiosRequestConfig, fetchAll
     }
 
     let page = 1;
-    const per_page = config.params?.per_page ?? 30;
+    const per_page = config.params?.per_page ?? 10;
     let allData: any[] = [];
     let data;
 
