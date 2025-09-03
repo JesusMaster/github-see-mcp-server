@@ -9,7 +9,8 @@
   ],
   "imports": {
     "#controllers/*": "./dist/controllers/*.js",
-    "#tools/*": "./dist/tools/*.js"
+    "#tools/*": "./dist/tools/*.js",
+    "#utils/*": "./dist/utils/*.js"
   },
   "scripts": {
     "build": "tsc",

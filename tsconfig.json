@@ -20,8 +20,11 @@
             "#tools/*": [
                 "tools/*"
             ],
+            "#utils/*": [
+                "utils/*"
+            ]
         }
     },
-    "include": ["*.ts", "controllers/*.ts", "tools/*.ts", "test/*.js"], // Compile all TypeScript files and test JavaScript files
+    "include": ["*.ts", "controllers/*.ts", "tools/*.ts", "utils/*.ts", "test/*.js"], // Compile all TypeScript files and test JavaScript files
     "exclude": ["node_modules", "dist"] // Specify directories to exclude
   }

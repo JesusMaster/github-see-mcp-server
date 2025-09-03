@@ -1,5 +1,6 @@
 import GitHubClient from '#controllers/github';
 import axios from 'axios';
+import { paginate } from '#utils/pagination';
 
 
 class Repositories extends GitHubClient {
@@ -88,31 +89,17 @@ class Repositories extends GitHubClient {
         }
     }
 
-    async listBranches(owner: string, repo: string, page?: number, per_page?: number) {
-        let page_number = page ?? 1;
-        let per_page_number = per_page ?? 30;
-        let allBranches: any[] = [];
-        let branches;
-
-        do {
-            const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/branches`, {
-                params: {
-                    page: page_number,
-                    per_page: per_page_number,
-                },
-                headers: {
-                    Authorization: `Bearer ${this.token}`,
-                    Accept: 'application/vnd.github.v3+json',
-                },
-                timeout: this.timeout
-            });
-
-            branches = response.data;
-            allBranches = allBranches.concat(branches);
-            page_number++;
-        } while (branches.length === per_page_number);
-
-        return allBranches;
+    async listBranches(owner: string, repo: string, page?: number, per_page?: number, fetchAll?: boolean) {
+        const url = `${this.baseUrl}/repos/${owner}/${repo}/branches`;
+        const config = {
+            params: { page, per_page },
+            headers: {
+                Authorization: `Bearer ${this.token}`,
+                Accept: 'application/vnd.github.v3+json',
+            },
+            timeout: this.timeout,
+        };
+        return paginate(url, config, fetchAll);
     }
 
     async pushMultipleFiles(owner: string, repo: string, branch: string, commitMessage: string, files: { path: string, content: string }[]) {
@@ -200,62 +187,31 @@ class Repositories extends GitHubClient {
         return response.data;
     }
 
-    async searchRepositories(query: string, page?: number, per_page?: number, sort?: string, order?: string) {
-        let page_number = page ?? 1;
-        let per_page_number = per_page ?? 30;
-        let allResults: any[] = [];
-        let results;
-
-        do {
-            const response = await axios.get(`${this.baseUrl}/search/repositories`, {
-                params: {
-                    q: query,
-                    page: page_number,
-                    per_page: per_page_number,
-                    sort: sort,
-                    order: order
-                },
-                headers: {
-                    Authorization: `Bearer ${this.token}`,
-                    Accept: 'application/vnd.github.v3+json',
-                },
-                timeout: this.timeout
-            });
-
-            results = response.data.items;
-            allResults = allResults.concat(results);
-            page_number++;
-        } while (results.length === per_page_number);
-
-        return { items: allResults };
+    async searchRepositories(query: string, page?: number, per_page?: number, sort?: string, order?: string, fetchAll?: boolean) {
+        const url = `${this.baseUrl}/search/repositories`;
+        const config = {
+            params: { q: query, page, per_page, sort, order },
+            headers: {
+                Authorization: `Bearer ${this.token}`,
+                Accept: 'application/vnd.github.v3+json',
+            },
+            timeout: this.timeout,
+        };
+        return paginate(url, config, fetchAll);
     }
 
 
-    async getUserRepos(userName: string, page?: number, perPage?: number) {
-        let page_number = page ?? 1;
-        let per_page_number = perPage ?? 30;
-        let allRepos: any[] = [];
-        let repos;
-
-        do {
-            const response = await axios.get(`${this.baseUrl}/users/${userName}/repos`, {
-                params: {
-                    page: page_number,
-                    per_page: per_page_number,
-                },
-                headers: {
-                    Authorization: `Bearer ${this.token}`,
-                    Accept: 'application/vnd.github.v3+json',
-                },
-                timeout: this.timeout
-            });
-
-            repos = response.data;
-            allRepos = allRepos.concat(repos);
-            page_number++;
-        } while (repos.length === per_page_number);
-
-        return allRepos;
+    async getUserRepos(userName: string, page?: number, perPage?: number, fetchAll?: boolean) {
+        const url = `${this.baseUrl}/users/${userName}/repos`;
+        const config = {
+            params: { page, per_page: perPage },
+            headers: {
+                Authorization: `Bearer ${this.token}`,
+                Accept: 'application/vnd.github.v3+json',
+            },
+            timeout: this.timeout,
+        };
+        return paginate(url, config, fetchAll);
     }
 
 
@@ -343,61 +299,30 @@ class Repositories extends GitHubClient {
         return response.data;
     }
 
-    async listCommits(owner: string, repo: string, sha?: string, path?: string, page?: number, perPage?: number) {
-        let page_number = page ?? 1;
-        let per_page_number = perPage ?? 30;
-        let allCommits: any[] = [];
-        let commits;
-
-        do {
-            const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/commits`, {
-                params: {
-                    sha: sha,
-                    path: path,
-                    page: page_number,
-                    per_page: per_page_number,
-                },
-                headers: {
-                    Authorization: `Bearer ${this.token}`,
-                    Accept: 'application/vnd.github.v3+json',
-                },
-                timeout: this.timeout
-            });
-
-            commits = response.data;
-            allCommits = allCommits.concat(commits);
-            page_number++;
-        } while (commits.length === per_page_number);
-
-        return allCommits;
+    async listCommits(owner: string, repo: string, sha?: string, path?: string, page?: number, perPage?: number, fetchAll?: boolean) {
+        const url = `${this.baseUrl}/repos/${owner}/${repo}/commits`;
+        const config = {
+            params: { sha, path, page, per_page: perPage },
+            headers: {
+                Authorization: `Bearer ${this.token}`,
+                Accept: 'application/vnd.github.v3+json',
+            },
+            timeout: this.timeout,
+        };
+        return paginate(url, config, fetchAll);
     }
 
-    async getCommit(owner: string, repo: string, sha?: string, page?: number, perPage?: number) {
-        let page_number = page ?? 1;
-        let per_page_number = perPage ?? 30;
-        let allCommits: any[] = [];
-        let commits;
-
-        do {
-            const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/commits`, {
-                params: {
-                    sha: sha,
-                    page: page_number,
-                    per_page: per_page_number,
-                },
-                headers: {
-                    Authorization: `Bearer ${this.token}`,
-                    Accept: 'application/vnd.github.v3+json',
-                },
-                timeout: this.timeout
-            });
-
-            commits = response.data;
-            allCommits = allCommits.concat(commits);
-            page_number++;
-        } while (commits.length === per_page_number);
-
-        return allCommits;
+    async getCommit(owner: string, repo: string, sha?: string, page?: number, perPage?: number, fetchAll?: boolean) {
+        const url = `${this.baseUrl}/repos/${owner}/${repo}/commits`;
+        const config = {
+            params: { sha, page, per_page: perPage },
+            headers: {
+                Authorization: `Bearer ${this.token}`,
+                Accept: 'application/vnd.github.v3+json',
+            },
+            timeout: this.timeout,
+        };
+        return paginate(url, config, fetchAll);
     }
 
     async getSpecificCommit(owner: string, repo: string, sha: string){
