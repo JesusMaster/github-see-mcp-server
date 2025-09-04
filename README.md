@@ -91,11 +91,13 @@ This will build the TypeScript code and start the server.
 
 ### Docker
 
-You can also run the server using Docker:
+You can also run the server using Docker.
+
+#### Using Dockerfile
 
 ```bash
 docker build -t github-see-mcp-server .
-docker run -d -p 3200:3200 -e MCP_TIMEOUT="180000" -e LOG_LEVEL="info" -e CORS_ALLOW_ORIGIN="*" -e GITHUB_TOKEN={YOUR_TOKEN_HERE} -e MCP_SSE_PORT="3200" --name github-see-mcp-server github-see-mcp-server
+docker run -d -p 3200:3200 -e MCP_TIMEOUT="180000" -e LOG_LEVEL="info" -e CORS_ALLOW_ORIGIN="*" -e GITHUB_TOKEN={YOUR_TOKEN_HERE} -e MCP_SSE_PORT="3200" -e USE_MULTIPLEXING_SSE="true" --name github-see-mcp-server github-see-mcp-server
 ```
 
 This command:
@@ -103,6 +105,20 @@ This command:
 - Maps port 3200 on the host to port 3200 in the container
 - Sets all the environment variables with their default values
 - Names the container "github-see-mcp-server"
+
+#### Using Docker Compose
+
+For a more streamlined approach, you can use Docker Compose. Make sure you have a `.env` file created as described in the "Installation" section.
+
+```bash
+docker-compose up -d
+```
+
+This command will build the image if it doesn't exist and start the container in the background. The configuration will be loaded from the `.env` file. To stop the service, run:
+
+```bash
+docker-compose down
+```
 
 ## Connecting with Claude
 
