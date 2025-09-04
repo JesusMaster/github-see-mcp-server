@@ -50,7 +50,9 @@
     "@types/express": "^5.0.1",
     "@types/jest": "^30.0.0",
     "@types/node": "^22.14.1",
+    "eventsource": "^4.0.0",
     "jest": "^30.0.5",
+    "node-fetch": "^3.3.2",
     "ts-jest": "^29.4.1",
     "typescript": "^5.9.2"
   }

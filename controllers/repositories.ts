@@ -30,10 +30,10 @@ class Repositories extends GitHubClient {
         try {
             const response = await axios.put(`${this.baseUrl}/repos/${owner}/${repo}/contents/${path}`, payload, {
                 headers: {
-                    Authorization: `Bearer ${this.token}`,
+                    Authorization: `token ${this.token}`,
                     Accept: 'application/vnd.github.v3+json',
                 },
-                timeout: this.timeout
+                timeout: 5000
             });
             
             return response.data;
@@ -70,10 +70,10 @@ class Repositories extends GitHubClient {
         try {
             const response = await axios.put(`${this.baseUrl}/repos/${owner}/${repo}/contents/${path}`, payload, {
                 headers: {
-                    Authorization: `Bearer ${this.token}`,
+                    Authorization: `token ${this.token}`,
                     Accept: 'application/vnd.github.v3+json',
                 },
-                timeout: this.timeout
+                timeout: 5000
             });
 
             return response.data;
@@ -92,10 +92,10 @@ class Repositories extends GitHubClient {
         const config = {
             params: { page, per_page },
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
-            timeout: this.timeout,
+            timeout: 5000,
         };
         let results = await paginate(url, config, fetchAll);
 
@@ -117,10 +117,10 @@ class Repositories extends GitHubClient {
     async pushMultipleFiles(owner: string, repo: string, branch: string, commitMessage: string, files: { path: string, content: string }[]) {
         const branchInfo = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/branches/${branch}`, {
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
-            timeout: this.timeout
+            timeout: 5000
         });
 
         const baseTreeSha = branchInfo.data.commit.commit.tree.sha;
@@ -135,10 +135,10 @@ class Repositories extends GitHubClient {
             })),
         }, {
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
-            timeout: this.timeout
+            timeout: 5000
         });
 
         const newTreeSha = tree.data.sha;
@@ -149,20 +149,20 @@ class Repositories extends GitHubClient {
             parents: [branchInfo.data.commit.sha],
         }, {
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
-            timeout: this.timeout
+            timeout: 5000
         });
 
         await axios.patch(`${this.baseUrl}/repos/${owner}/${repo}/git/refs/heads/${branch}`, {
             sha: newCommit.data.sha,
         }, {
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
-            timeout: this.timeout
+            timeout: 5000
         });
 
         return newCommit.data;
@@ -190,10 +190,10 @@ class Repositories extends GitHubClient {
 
         const response = await axios.post(`${this.baseUrl}/user/repos`, payload, {
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
-            timeout: this.timeout
+            timeout: 5000
         });
 
         return response.data;
@@ -204,10 +204,10 @@ class Repositories extends GitHubClient {
         const config = {
             params: { q: query, page, per_page, sort, order },
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
-            timeout: this.timeout,
+            timeout: 5000,
         };
         let results = await paginate(url, config, fetchAll);
 
@@ -232,10 +232,10 @@ class Repositories extends GitHubClient {
         const config = {
             params: { page, per_page: perPage },
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
-            timeout: this.timeout,
+            timeout: 5000,
         };
         let results = await paginate(url, config, fetchAll);
 
@@ -258,10 +258,10 @@ class Repositories extends GitHubClient {
     async getUserRepoInfo(repoName: string, userName: string) {
         const response = await axios.get(`${this.baseUrl}/repos/${userName}/${repoName}`, {
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
-            timeout: this.timeout
+            timeout: 5000
         });
         return response.data;
     }
@@ -277,10 +277,10 @@ class Repositories extends GitHubClient {
         const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/contents/${path}`, {
             params: payload,
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
-            timeout: this.timeout
+            timeout: 5000
         });
 
         if (response.data && response.data.content) {
@@ -302,10 +302,10 @@ class Repositories extends GitHubClient {
 
         const response = await axios.post(`${this.baseUrl}/repos/${owner}/${repo}/forks`, payload, {
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
-            timeout: this.timeout
+            timeout: 5000
         });
 
         return response.data;
@@ -315,10 +315,10 @@ class Repositories extends GitHubClient {
     async getBranchInfo(owner: string, repo: string, branch: string) {
         const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/git/ref/heads/${branch}`, {
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
-            timeout: this.timeout
+            timeout: 5000
         });
         return response.data;
     }
@@ -330,10 +330,10 @@ class Repositories extends GitHubClient {
             sha: baseBranch,
         }, {
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
-            timeout: this.timeout
+            timeout: 5000
         });
 
         return response.data;
@@ -344,10 +344,10 @@ class Repositories extends GitHubClient {
         const config = {
             params: { sha, path, page, per_page: perPage },
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
-            timeout: this.timeout,
+            timeout: 5000,
         };
         let results = await paginate(url, config, fetchAll);
 
@@ -371,10 +371,10 @@ class Repositories extends GitHubClient {
         const config = {
             params: { sha, page: page, per_page: perPage },
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
-            timeout: this.timeout,
+            timeout: 5000,
         };
         let results = await paginate(url, config, fetchAll);
 
@@ -397,10 +397,10 @@ class Repositories extends GitHubClient {
 
         const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/commits/${sha}`, {
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
-            timeout: this.timeout
+            timeout: 5000
         });
 
         return response.data;

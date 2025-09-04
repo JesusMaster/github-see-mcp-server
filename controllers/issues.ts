@@ -7,9 +7,10 @@ class Issues extends GitHubClient{
     async getIssues(owner: string, repo: string, issueNumber: number) {
         const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/issues/${issueNumber}`, {
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
+            timeout: 5000,
         });
         return response.data;
     }
@@ -17,9 +18,10 @@ class Issues extends GitHubClient{
     async getComments(owner: string, repo: string, issueNumber: number) {
         const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/issues/${issueNumber}/comments`, {
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
+            timeout: 5000,
         });
         return response.data;
     }
@@ -45,9 +47,10 @@ class Issues extends GitHubClient{
             payload,
             {
                 headers: {
-                    Authorization: `Bearer ${this.token}`,
+                    Authorization: `token ${this.token}`,
                     Accept: 'application/vnd.github.v3+json',
                 },
+                timeout: 5000,
             }
         );
         return response.data;
@@ -69,9 +72,10 @@ class Issues extends GitHubClient{
            payload,
             {
                 headers: {
-                    Authorization: `Bearer ${this.token}`,
+                    Authorization: `token ${this.token}`,
                     Accept: 'application/vnd.github.v3+json',
                 },
+                timeout: 5000,
             }
         );
         return response.data;
@@ -102,10 +106,11 @@ class Issues extends GitHubClient{
             `${this.baseUrl}/repos/${owner}/${repo}/issues`,
             {
                 headers: {
-                    Authorization: `Bearer ${this.token}`,
+                    Authorization: `token ${this.token}`,
                     Accept: 'application/vnd.github.v3+json',
                 },
                 params: payload,
+                timeout: 5000,
             }
         );
         
@@ -152,9 +157,10 @@ class Issues extends GitHubClient{
             payload,
             {
                 headers: {
-                    Authorization: `Bearer ${this.token}`,
+                    Authorization: `token ${this.token}`,
                     Accept: 'application/vnd.github.v3+json',
                 },
+                timeout: 5000,
             }
         );
         return response.data;
@@ -182,10 +188,11 @@ class Issues extends GitHubClient{
             `${this.baseUrl}/search/issues`, // Corrected endpoint from /issues to /search/issues
             {
                 headers: {
-                    Authorization: `Bearer ${this.token}`,
+                    Authorization: `token ${this.token}`,
                     Accept: 'application/vnd.github.v3+json',
                 },
                 params: payload,
+                timeout: 5000,
             }
         );
         

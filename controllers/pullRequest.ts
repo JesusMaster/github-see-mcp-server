@@ -12,6 +12,7 @@ class PullRequest extends GitHubClient {
                 Authorization: `Bearer ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
+            timeout: 5000,
         });
 
         return response.data;
@@ -43,10 +44,11 @@ class PullRequest extends GitHubClient {
 
         const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/pulls`, {
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
             params: payload,
+            timeout: 5000,
         });
 
         let results = response.data;
@@ -87,9 +89,10 @@ class PullRequest extends GitHubClient {
 
         const response = await axios.put(`${this.baseUrl}/repos/${owner}/${repo}/pulls/${pullNumber}/merge`, payload, {
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
+            timeout: 5000,
         });
 
         return response.data;
@@ -98,9 +101,10 @@ class PullRequest extends GitHubClient {
     async getPullRequestFiles(owner: string, repo: string, pullNumber: number) {
         const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/pulls/${pullNumber}/files`, {
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
+            timeout: 5000,
         });
 
         return response.data;
@@ -109,9 +113,10 @@ class PullRequest extends GitHubClient {
     async getPullRequestStatus(owner: string, repo: string, pullNumber: number) {
         const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/pulls/${pullNumber}/merge`, {
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
+            timeout: 5000,
         });
 
         return response.data;
@@ -128,10 +133,11 @@ class PullRequest extends GitHubClient {
 
         const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/pulls/${pullNumber}/update-branch`, {
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
-            params: payload
+            params: payload,
+            timeout: 5000,
         });
         return response.data;
     }
@@ -139,9 +145,10 @@ class PullRequest extends GitHubClient {
     async getPullRequestComments(owner: string, repo: string, pullNumber: number) {
         const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/pulls/${pullNumber}/comments`, {
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
+            timeout: 5000,
         });
 
         return response.data;
@@ -150,9 +157,10 @@ class PullRequest extends GitHubClient {
     async getPullRequestReviews(owner: string, repo: string, pullNumber: number) {
         const response = await axios.get(`${this.baseUrl}/repos/${owner}/${repo}/pulls/${pullNumber}/reviews`, {
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
+            timeout: 5000,
         });
 
         return response.data;
@@ -182,9 +190,10 @@ class PullRequest extends GitHubClient {
         
         const response = await axios.post(`${this.baseUrl}/repos/${owner}/${repo}/pulls/${pullNumber}/reviews`, payload, {
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
+            timeout: 5000,
         });
 
         return response.data;
@@ -217,9 +226,10 @@ class PullRequest extends GitHubClient {
 
         const response = await axios.post(`${this.baseUrl}/repos/${owner}/${repo}/pulls`, payload, {
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
+            timeout: 5000,
         });
 
         return response.data;
@@ -265,9 +275,10 @@ class PullRequest extends GitHubClient {
 
         const response = await axios.post(`${this.baseUrl}/repos/${owner}/${repo}/pulls/${pullNumber}/comments`, payload, {
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
+            timeout: 5000,
         });
         return response.data; 
     }
@@ -299,9 +310,10 @@ class PullRequest extends GitHubClient {
 
             const response = await axios.patch(`${this.baseUrl}/repos/${owner}/${repo}/pulls/${pullNumber}`, payload, {
             headers: {
-                Authorization: `Bearer ${this.token}`,
+                Authorization: `token ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
+            timeout: 5000,
         });
 
         return response.data;

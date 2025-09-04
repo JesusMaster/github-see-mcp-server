@@ -7,6 +7,7 @@ import {
     StreamableHTTPServerTransportOptions 
 } from "@modelcontextprotocol/sdk/server/streamableHttp.js";
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
+import { MultiplexingSSEServerTransport } from "./multiplexing-sse-transport.js";
 import { randomUUID } from 'crypto';
 import dotenv from 'dotenv';
 
@@ -52,23 +53,34 @@ const logger = {
 };
 
 const sseTransports: Record<string, { transport: SSEServerTransport, res: express.Response }> = {};
+let multiplexingTransport: MultiplexingSSEServerTransport | null = null;
+
+// Get multiplexing configuration from environment
+const USE_MULTIPLEXING = process.env.USE_MULTIPLEXING_SSE === 'true';
 
 export function closeAllSseConnections() {
-    logger.info(`Closing all active SSE connections (${Object.keys(sseTransports).length})...`);
-    for (const sessionId in sseTransports) {
-        const { res } = sseTransports[sessionId];
-        try {
-            if (!res.writableEnded) {
-                // Send a custom event to notify the client of the shutdown
-                res.write('event: server-shutdown\n');
-                res.write('data: {"message": "Server is shutting down. Please reconnect."}\n\n');
-                
-                // End the response stream
-                res.end();
-                logger.info(`Closed SSE connection for session: ${sessionId}`);
+    if (USE_MULTIPLEXING && multiplexingTransport) {
+        logger.info('Closing multiplexing SSE transport...');
+        multiplexingTransport.close().catch(error => {
+            logger.error('Error closing multiplexing transport:', error);
+        });
+    } else {
+        logger.info(`Closing all active SSE connections (${Object.keys(sseTransports).length})...`);
+        for (const sessionId in sseTransports) {
+            const { res } = sseTransports[sessionId];
+            try {
+                if (!res.writableEnded) {
+                    // Send a custom event to notify the client of the shutdown
+                    res.write('event: server-shutdown\n');
+                    res.write('data: {"message": "Server is shutting down. Please reconnect."}\n\n');
+                    
+                    // End the response stream
+                    res.end();
+                    logger.info(`Closed SSE connection for session: ${sessionId}`);
+                }
+            } catch (error) {
+                logger.error(`Error closing SSE connection for session ${sessionId}:`, error);
             }
-        } catch (error) {
-            logger.error(`Error closing SSE connection for session ${sessionId}:`, error);
         }
     }
 }
@@ -116,6 +128,20 @@ export function createSseServer(mcpServer: McpServer, port: number = 8080): http
         logger.error("Failed to connect McpServer to StreamableHTTPServerTransport:", error);
     });
 
+    // Initialize multiplexing transport if enabled
+    if (USE_MULTIPLEXING) {
+        logger.info('Initializing MultiplexingSSEServerTransport...');
+        multiplexingTransport = new MultiplexingSSEServerTransport();
+        
+        // Connect the McpServer to the multiplexing transport
+        mcpServer.connect(multiplexingTransport).then(() => {
+            logger.info('MultiplexingSSEServerTransport connected to McpServer');
+        }).catch(error => {
+            logger.error('Failed to connect McpServer to MultiplexingSSEServerTransport:', error);
+            multiplexingTransport = null;
+        });
+    }
+
     // Modern endpoint for Streamable HTTP
     app.all('/mcp', (req: express.Request, res: express.Response) => {
         logger.debug(`New Streamable HTTP request: ${req.method} ${req.url}`);
@@ -159,50 +185,78 @@ export function createSseServer(mcpServer: McpServer, port: number = 8080): http
     app.get('/sse', (req: express.Request, res: express.Response) => {
         logger.info('New SSE connection request');
 
-        // Set SSE headers
-        res.setHeader('Content-Type', 'text/event-stream');
-        res.setHeader('Cache-Control', 'no-cache');
-        res.setHeader('Connection', 'keep-alive');
-        res.setHeader('X-Accel-Buffering', 'no'); // Disable nginx buffering if behind nginx
-
-        const transport = new SSEServerTransport('/messages', res); 
-        
-        // Set a connection timeout
-        const connectionTimeout = setTimeout(() => {
-            if (!res.writableEnded) {
-                logger.error('SSE connection timeout');
-                res.status(408).send('Connection timeout');
-            }
-        }, sseConnectionTimeoutMs); // Use long timeout for SSE connections
-        
-        // For SSE, we connect the McpServer to each individual transport when established
-        mcpServer.connect(transport).then(() => {
-            clearTimeout(connectionTimeout);
-            sseTransports[transport.sessionId] = { transport, res };
-            logger.info(`SSE connection established: ${transport.sessionId}`);
-
+        if (USE_MULTIPLEXING && multiplexingTransport) {
+            // Use multiplexing transport
+            const clientSessionId = randomUUID();
+            logger.info(`Using MultiplexingSSEServerTransport for client: ${clientSessionId}`);
+            
+            // Add client to multiplexing transport
+            multiplexingTransport.addClient(clientSessionId, res);
+            
             // Set up a heartbeat to keep the connection alive
             const heartbeatInterval = setInterval(() => {
                 if (res.writableEnded) {
                     clearInterval(heartbeatInterval);
                     return;
                 }
-                logger.debug(`Sending heartbeat to session ${transport.sessionId}`);
+                logger.debug(`Sending heartbeat to multiplexed session ${clientSessionId}`);
                 res.write(': heartbeat\n\n');
             }, 10000); // Send a heartbeat every 10 seconds
-                        
+            
             req.on('close', () => {
-                clearInterval(heartbeatInterval); // Stop the heartbeat when the connection closes
-                logger.warn(`SSE connection closed for session: ${transport.sessionId}. Request aborted: ${req.aborted}`);
-                delete sseTransports[transport.sessionId];
+                clearInterval(heartbeatInterval);
+                logger.warn(`Multiplexed SSE connection closed for session: ${clientSessionId}. Request aborted: ${req.aborted}`);
+                if (multiplexingTransport) {
+                    multiplexingTransport.removeClient(clientSessionId);
+                }
             });
-        }).catch((error) => {
-            clearTimeout(connectionTimeout);
-            logger.error(`Error connecting MCP Server for SSE: ${error}`);
-            if (!res.writableEnded) {
-                res.status(500).send('MCP Server connection error for SSE');
-            }
-        });
+        } else {
+            // Use individual transport (legacy behavior)
+            // Set SSE headers
+            res.setHeader('Content-Type', 'text/event-stream');
+            res.setHeader('Cache-Control', 'no-cache');
+            res.setHeader('Connection', 'keep-alive');
+            res.setHeader('X-Accel-Buffering', 'no'); // Disable nginx buffering if behind nginx
+
+            const transport = new SSEServerTransport('/messages', res); 
+            
+            // Set a connection timeout
+            const connectionTimeout = setTimeout(() => {
+                if (!res.writableEnded) {
+                    logger.error('SSE connection timeout');
+                    res.status(408).send('Connection timeout');
+                }
+            }, sseConnectionTimeoutMs); // Use long timeout for SSE connections
+            
+            // For SSE, we connect the McpServer to each individual transport when established
+            mcpServer.connect(transport).then(() => {
+                clearTimeout(connectionTimeout);
+                sseTransports[transport.sessionId] = { transport, res };
+                logger.info(`SSE connection established: ${transport.sessionId}`);
+
+                // Set up a heartbeat to keep the connection alive
+                const heartbeatInterval = setInterval(() => {
+                    if (res.writableEnded) {
+                        clearInterval(heartbeatInterval);
+                        return;
+                    }
+                    logger.debug(`Sending heartbeat to session ${transport.sessionId}`);
+                    res.write(': heartbeat\n\n');
+                }, 10000); // Send a heartbeat every 10 seconds
+                            
+                req.on('close', () => {
+                    clearInterval(heartbeatInterval); // Stop the heartbeat when the connection closes
+                    logger.warn(`SSE connection closed for session: ${transport.sessionId}. Request aborted: ${req.aborted}`);
+                    delete sseTransports[transport.sessionId];
+                });
+            }).catch((error) => {
+                clearTimeout(connectionTimeout);
+                logger.error(`Error connecting MCP Server for SSE: ${error}`);
+                if (!res.writableEnded) {
+                    res.status(500).send('MCP Server connection error for SSE');
+                }
+            });
+        }
     });
 
     // Legacy message endpoint for older clients (send messages to the server via SSE)
@@ -218,57 +272,102 @@ export function createSseServer(mcpServer: McpServer, port: number = 8080): http
             return;
         }
 
-        const session = sseTransports[sessionId];
-        if (!session) {
-            logger.error(`POST /messages error: Session not found for ID ${sessionId}`);
-            res.status(404).json({
-                error: 'Session not found',
-                message: `No active session found with ID: ${sessionId}`
-            });
-            return;
-        }
-        
-        let bodyContent: string;
-        if (typeof req.body === 'string') {
-            bodyContent = req.body;
-        } else if (Buffer.isBuffer(req.body)) {
-            bodyContent = req.body.toString('utf-8');
-        } else if (typeof req.body === 'object' && req.body !== null) {
-            // express.json() already parsed the body if it was JSON.
-            // SSEServerTransport.handlePostMessage expects the body as a string.
-            bodyContent = JSON.stringify(req.body);
-        } else {
-            logger.warn(`POST /messages for session ${sessionId}: req.body is not a string, buffer, or parsable object. Type: ${typeof req.body}`);
-            bodyContent = ''; 
-        }
+        if (USE_MULTIPLEXING && multiplexingTransport) {
+            // Handle message through multiplexing transport
+            let bodyContent: string;
+            if (typeof req.body === 'string') {
+                bodyContent = req.body;
+            } else if (Buffer.isBuffer(req.body)) {
+                bodyContent = req.body.toString('utf-8');
+            } else if (typeof req.body === 'object' && req.body !== null) {
+                bodyContent = JSON.stringify(req.body);
+            } else {
+                logger.warn(`POST /messages for session ${sessionId}: req.body is not a string, buffer, or parsable object. Type: ${typeof req.body}`);
+                bodyContent = ''; 
+            }
 
-        logger.debug(`Processing message for session ${sessionId}, body length: ${bodyContent.length} bytes`);
-        
-        // Set a timeout for message processing
-        const messageTimeout = setTimeout(() => {
-            if (!res.writableEnded) {
-                logger.error(`Message processing timeout for session ${sessionId}`);
-                res.status(408).json({
-                    error: 'Request timeout',
-                    message: 'The message took too long to process'
+            logger.debug(`Processing multiplexed message for session ${sessionId}, body length: ${bodyContent.length} bytes`);
+            
+            // Set a timeout for message processing
+            const messageTimeout = setTimeout(() => {
+                if (!res.writableEnded) {
+                    logger.error(`Message processing timeout for session ${sessionId}`);
+                    res.status(408).json({
+                        error: 'Request timeout',
+                        message: 'The message took too long to process'
+                    });
+                }
+            }, requestTimeoutMs);
+            
+            multiplexingTransport.handleClientPostMessage(sessionId, bodyContent)
+                .then((result) => {
+                    clearTimeout(messageTimeout);
+                    res.status(202).json({ status: 'accepted', message: result || 'Message processed' });
+                })
+                .catch((error) => {
+                    clearTimeout(messageTimeout);
+                    logger.error(`Error in multiplexingTransport.handleClientPostMessage for session ${sessionId}:`, error);
+                    if (!res.writableEnded) {
+                        res.status(500).json({
+                            error: 'Internal server error',
+                            message: error instanceof Error ? error.message : 'Unknown error handling multiplexed SSE message'
+                        });
+                    }
                 });
-            }
-        }, requestTimeoutMs); // Use timeout from environment variable
-        
-        session.transport.handlePostMessage(req, res, bodyContent)
-            .then(() => {
-                clearTimeout(messageTimeout);
-            })
-            .catch((error) => {
-                clearTimeout(messageTimeout);
-            logger.error(`Error in transport.handlePostMessage for session ${sessionId}:`, error);
-            if (!res.writableEnded) {
-                res.status(500).json({
-                    error: 'Internal server error',
-                    message: error instanceof Error ? error.message : 'Unknown error handling SSE message'
+        } else {
+            // Handle message through individual transport (legacy behavior)
+            const session = sseTransports[sessionId];
+            if (!session) {
+                logger.error(`POST /messages error: Session not found for ID ${sessionId}`);
+                res.status(404).json({
+                    error: 'Session not found',
+                    message: `No active session found with ID: ${sessionId}`
                 });
+                return;
             }
-        });
+            
+            let bodyContent: string;
+            if (typeof req.body === 'string') {
+                bodyContent = req.body;
+            } else if (Buffer.isBuffer(req.body)) {
+                bodyContent = req.body.toString('utf-8');
+            } else if (typeof req.body === 'object' && req.body !== null) {
+                // express.json() already parsed the body if it was JSON.
+                // SSEServerTransport.handlePostMessage expects the body as a string.
+                bodyContent = JSON.stringify(req.body);
+            } else {
+                logger.warn(`POST /messages for session ${sessionId}: req.body is not a string, buffer, or parsable object. Type: ${typeof req.body}`);
+                bodyContent = ''; 
+            }
+
+            logger.debug(`Processing message for session ${sessionId}, body length: ${bodyContent.length} bytes`);
+            
+            // Set a timeout for message processing
+            const messageTimeout = setTimeout(() => {
+                if (!res.writableEnded) {
+                    logger.error(`Message processing timeout for session ${sessionId}`);
+                    res.status(408).json({
+                        error: 'Request timeout',
+                        message: 'The message took too long to process'
+                    });
+                }
+            }, requestTimeoutMs); // Use timeout from environment variable
+            
+            session.transport.handlePostMessage(req, res, bodyContent)
+                .then(() => {
+                    clearTimeout(messageTimeout);
+                })
+                .catch((error) => {
+                    clearTimeout(messageTimeout);
+                logger.error(`Error in transport.handlePostMessage for session ${sessionId}:`, error);
+                if (!res.writableEnded) {
+                    res.status(500).json({
+                        error: 'Internal server error',
+                        message: error instanceof Error ? error.message : 'Unknown error handling SSE message'
+                    });
+                }
+            });
+        }
     });
     
     // Middleware for handling not found routes (404)
