@@ -77,7 +77,7 @@ class Issues extends GitHubClient{
         return response.data;
     }
 
-    async listIssues(owner: string, repo: string, state?: string, labels?: string[] ,sort?: string, direction?: string, since?: string, page?: number, per_page?: number) {
+    async listIssues(owner: string, repo: string, state?: string, labels?: string[] ,sort?: string, direction?: string, since?: string, page?: number, per_page: number = 5, fields?: string[]) {
 
         const payload:{
             state?:string,
@@ -87,7 +87,9 @@ class Issues extends GitHubClient{
             since?: string,
             page?: number,
             per_page?: number,
-        } = {}
+        } = {
+            per_page: per_page
+        }
 
         if(state) payload.state = state;
         if(labels) payload.labels = labels;
@@ -95,7 +97,6 @@ class Issues extends GitHubClient{
         if(direction) payload.direction = direction;
         if(since) payload.since = since;
         if(page) payload.page = page;
-        if(per_page) payload.per_page = per_page;
 
         const response = await axios.get(
             `${this.baseUrl}/repos/${owner}/${repo}/issues`,
@@ -107,7 +108,22 @@ class Issues extends GitHubClient{
                 params: payload,
             }
         );
-        return response.data;
+        
+        let results = response.data;
+
+        if (fields && fields.length > 0) {
+            return results.map((item: any) => {
+                const filteredItem: { [key: string]: any } = {};
+                fields.forEach(field => {
+                    if (item.hasOwnProperty(field)) {
+                        filteredItem[field] = item[field];
+                    }
+                });
+                return filteredItem;
+            });
+        }
+
+        return results;
     }
 
     async updateIssue(owner: string, repo: string, issueNumber: number, title?: string , body?: string , assignees?: string[] ,milestone?: number ,state?: string , labels?: string[] ) {
@@ -144,7 +160,7 @@ class Issues extends GitHubClient{
         return response.data;
     }
 
-    async searchIssues(owner: string, repo: string, query: string, sort?: string, order?: string, page?: number, per_page?: number) {
+    async searchIssues(owner: string, repo: string, query: string, sort?: string, order?: string, page?: number, per_page: number = 5, fields?: string[]) {
 
         const payload:{
             q: string, 
@@ -153,17 +169,17 @@ class Issues extends GitHubClient{
             page?: number, 
             per_page?: number
         }={
-            q:query
+            q:query,
+            per_page: per_page
         }
 
         if(sort) payload.sort = sort;
         if(order) payload.order = order;
         if(page) payload.page = page;
-        if(per_page) payload.per_page = per_page;
 
 
         const response = await axios.get(
-            `${this.baseUrl}/repos/${owner}/${repo}/issues`,
+            `${this.baseUrl}/search/issues`, // Corrected endpoint from /issues to /search/issues
             {
                 headers: {
                     Authorization: `Bearer ${this.token}`,
@@ -172,7 +188,22 @@ class Issues extends GitHubClient{
                 params: payload,
             }
         );
-        return response.data;
+        
+        let results = response.data;
+
+        if (fields && fields.length > 0 && results.items) {
+            results.items = results.items.map((item: any) => {
+                const filteredItem: { [key: string]: any } = {};
+                fields.forEach(field => {
+                    if (item.hasOwnProperty(field)) {
+                        filteredItem[field] = item[field];
+                    }
+                });
+                return filteredItem;
+            });
+        }
+
+        return results;
     }
 
 

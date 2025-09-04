@@ -14,7 +14,8 @@ import dotenv from 'dotenv';
 dotenv.config();
 
 // Get timeout from environment variable or use default
-const requestTimeoutMs = process.env.MCP_TIMEOUT ? parseInt(process.env.MCP_TIMEOUT, 10) : 180000;
+const requestTimeoutMs = process.env.MCP_TIMEOUT ? parseInt(process.env.MCP_TIMEOUT, 10) : 180000; // 3 minutes for regular requests
+const sseConnectionTimeoutMs = process.env.SSE_TIMEOUT ? parseInt(process.env.SSE_TIMEOUT, 10) : 1800000; // 30 minutes for SSE connections
 const corsAllowOrigin = process.env.CORS_ALLOW_ORIGIN ?? '*';
 
 // Configure logging based on environment variable
@@ -50,7 +51,27 @@ const logger = {
     }
 };
 
-const sseTransports: Record<string, SSEServerTransport> = {};
+const sseTransports: Record<string, { transport: SSEServerTransport, res: express.Response }> = {};
+
+export function closeAllSseConnections() {
+    logger.info(`Closing all active SSE connections (${Object.keys(sseTransports).length})...`);
+    for (const sessionId in sseTransports) {
+        const { res } = sseTransports[sessionId];
+        try {
+            if (!res.writableEnded) {
+                // Send a custom event to notify the client of the shutdown
+                res.write('event: server-shutdown\n');
+                res.write('data: {"message": "Server is shutting down. Please reconnect."}\n\n');
+                
+                // End the response stream
+                res.end();
+                logger.info(`Closed SSE connection for session: ${sessionId}`);
+            }
+        } catch (error) {
+            logger.error(`Error closing SSE connection for session ${sessionId}:`, error);
+        }
+    }
+}
 
 export function createSseServer(mcpServer: McpServer, port: number = 8080): http.Server {
     const app = express();
@@ -66,7 +87,7 @@ export function createSseServer(mcpServer: McpServer, port: number = 8080): http
     logger.info(`CORS configured with origin: ${corsAllowOrigin}`);
 
     // Parse JSON requests with increased limit
-    app.use(express.json({ limit: '100mb' }));
+    app.use(express.json({ limit: '300mb' }));
     
     // Add basic health check endpoint
     app.get('/health', (req: express.Request, res: express.Response) => {
@@ -152,16 +173,27 @@ export function createSseServer(mcpServer: McpServer, port: number = 8080): http
                 logger.error('SSE connection timeout');
                 res.status(408).send('Connection timeout');
             }
-        }, requestTimeoutMs); // Use timeout from environment variable
+        }, sseConnectionTimeoutMs); // Use long timeout for SSE connections
         
         // For SSE, we connect the McpServer to each individual transport when established
         mcpServer.connect(transport).then(() => {
             clearTimeout(connectionTimeout);
-            sseTransports[transport.sessionId] = transport;
+            sseTransports[transport.sessionId] = { transport, res };
             logger.info(`SSE connection established: ${transport.sessionId}`);
+
+            // Set up a heartbeat to keep the connection alive
+            const heartbeatInterval = setInterval(() => {
+                if (res.writableEnded) {
+                    clearInterval(heartbeatInterval);
+                    return;
+                }
+                logger.debug(`Sending heartbeat to session ${transport.sessionId}`);
+                res.write(': heartbeat\n\n');
+            }, 10000); // Send a heartbeat every 10 seconds
                         
             req.on('close', () => {
-                logger.info(`SSE connection closed: ${transport.sessionId}`);
+                clearInterval(heartbeatInterval); // Stop the heartbeat when the connection closes
+                logger.warn(`SSE connection closed for session: ${transport.sessionId}. Request aborted: ${req.aborted}`);
                 delete sseTransports[transport.sessionId];
             });
         }).catch((error) => {
@@ -186,8 +218,8 @@ export function createSseServer(mcpServer: McpServer, port: number = 8080): http
             return;
         }
 
-        const transport = sseTransports[sessionId];
-        if (!transport) {
+        const session = sseTransports[sessionId];
+        if (!session) {
             logger.error(`POST /messages error: Session not found for ID ${sessionId}`);
             res.status(404).json({
                 error: 'Session not found',
@@ -223,7 +255,7 @@ export function createSseServer(mcpServer: McpServer, port: number = 8080): http
             }
         }, requestTimeoutMs); // Use timeout from environment variable
         
-        transport.handlePostMessage(req, res, bodyContent)
+        session.transport.handlePostMessage(req, res, bodyContent)
             .then(() => {
                 clearTimeout(messageTimeout);
             })
@@ -250,14 +282,14 @@ export function createSseServer(mcpServer: McpServer, port: number = 8080): http
 
     const httpServer = http.createServer(app);
 
-    // Set a longer timeout for the HTTP server to prevent timeouts
-    httpServer.timeout = requestTimeoutMs * 2; // Double the request timeout
+    // Set a longer timeout for the HTTP server to prevent timeouts for long-lived SSE connections
+    httpServer.timeout = sseConnectionTimeoutMs;
     
     // Set keep-alive timeout
-    httpServer.keepAliveTimeout = requestTimeoutMs; // Match the request timeout
+    httpServer.keepAliveTimeout = sseConnectionTimeoutMs;
     
     // Set headers timeout to match the keep-alive timeout
-    httpServer.headersTimeout = requestTimeoutMs; // Match the request timeout
+    httpServer.headersTimeout = sseConnectionTimeoutMs;
     
     logger.info(`HTTP server timeouts configured: timeout=${httpServer.timeout}ms, keepAliveTimeout=${httpServer.keepAliveTimeout}ms, headersTimeout=${httpServer.headersTimeout}ms`);
 

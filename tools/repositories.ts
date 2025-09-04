@@ -75,10 +75,11 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
             page: z.number().optional().describe('Page number (number, optional)'),
             per_page: z.number().optional().describe('Number of items per page (number, optional)'),
             fetchAll: z.boolean().optional().describe('Fetch all pages (boolean, optional)'),
+            fields: z.array(z.string()).optional().describe('Fields to return (string[], optional)'),
         },
         async (args) => {
             try {
-                let info = await repositoriesInstance.listBranches(args.owner, args.repo, args.page, args.per_page, args.fetchAll);
+                let info = await repositoriesInstance.listBranches(args.owner, args.repo, args.page, args.per_page, args.fetchAll, args.fields);
                 return { 
                     content: [
                         { 
@@ -130,10 +131,11 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
             page: z.number().optional().describe('Page number (number, optional)'),
             perPage: z.number().optional().describe('Results per page (number, optional)'),
             fetchAll: z.boolean().optional().describe('Fetch all pages (boolean, optional)'),
+            fields: z.array(z.string()).optional().describe('Fields to return (string[], optional)'),
         }, 
         async(args)=>{
             try {
-                let info = await repositoriesInstance.searchRepositories(args.query, args.page, args.perPage, args.sort, args.order, args.fetchAll);
+                let info = await repositoriesInstance.searchRepositories(args.query, args.page, args.perPage, args.sort, args.order, args.fetchAll, args.fields);
                 
                 return { 
                     content: [
@@ -209,10 +211,11 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
             page: z.number().optional().describe('Page number (number, optional)'),
             perPage: z.number().optional().describe('Results per page (number, optional)'),
             fetchAll: z.boolean().optional().describe('Fetch all pages (boolean, optional)'),
+            fields: z.array(z.string()).optional().describe('Fields to return (string[], optional)'),
         },async(args)=>{
 
             try {
-                let info = await repositoriesInstance.getUserRepos(args.userName,args.page,args.perPage, args.fetchAll);
+                let info = await repositoriesInstance.getUserRepos(args.userName,args.page,args.perPage, args.fetchAll, args.fields);
                 return { 
                     content: [
                         { 
@@ -345,11 +348,12 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
             page: z.number().optional().describe('Page number (number, optional)'),
             perPage: z.number().optional().describe('Results per page (number, optional)'),
             fetchAll: z.boolean().optional().describe('Fetch all pages (boolean, optional)'),
+            fields: z.array(z.string()).optional().describe('Fields to return (string[], optional)'),
 
         },
         async(args)=>{
             try {
-                let info = await repositoriesInstance.listCommits(args.owner, args.repo, args.sha, args.path, args.page, args.perPage, args.fetchAll);
+                let info = await repositoriesInstance.listCommits(args.owner, args.repo, args.sha, args.path, args.page, args.perPage, args.fetchAll, args.fields);
                 return { 
                     content: [
                         { 
@@ -375,10 +379,11 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
             page: z.number().optional().describe('Page number (number, optional)'),
             perPage: z.number().optional().describe('Results per page (number, optional)'),
             fetchAll: z.boolean().optional().describe('Fetch all pages (boolean, optional)'),
+            fields: z.array(z.string()).optional().describe('Fields to return (string[], optional)'),
         },
         async(args)=>{
             try {
-                let info = await repositoriesInstance.getCommit(args.owner, args.repo, args.sha,args.page,args.perPage, args.fetchAll);
+                let info = await repositoriesInstance.getCommit(args.owner, args.repo, args.sha,args.page,args.perPage, args.fetchAll, args.fields);
                 return { 
                     content: [
                         { 

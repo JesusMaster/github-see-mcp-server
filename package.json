@@ -41,6 +41,7 @@
     "cors": "^2.8.5",
     "dotenv": "^16.5.0",
     "express": "^5.1.0",
+    "http-terminator": "^3.2.0",
     "raw-body": "^3.0.0",
     "zod": "^3.24.4"
   },

@@ -87,7 +87,7 @@ class Repositories extends GitHubClient {
         }
     }
 
-    async listBranches(owner: string, repo: string, page?: number, per_page?: number, fetchAll?: boolean) {
+    async listBranches(owner: string, repo: string, page?: number, per_page: number = 5, fetchAll?: boolean, fields?: string[]) {
         const url = `${this.baseUrl}/repos/${owner}/${repo}/branches`;
         const config = {
             params: { page, per_page },
@@ -97,7 +97,21 @@ class Repositories extends GitHubClient {
             },
             timeout: this.timeout,
         };
-        return paginate(url, config, fetchAll);
+        let results = await paginate(url, config, fetchAll);
+
+        if (fields && fields.length > 0) {
+            return results.map((item: any) => {
+                const filteredItem: { [key: string]: any } = {};
+                fields.forEach(field => {
+                    if (item.hasOwnProperty(field)) {
+                        filteredItem[field] = item[field];
+                    }
+                });
+                return filteredItem;
+            });
+        }
+
+        return results;
     }
 
     async pushMultipleFiles(owner: string, repo: string, branch: string, commitMessage: string, files: { path: string, content: string }[]) {
@@ -185,7 +199,7 @@ class Repositories extends GitHubClient {
         return response.data;
     }
 
-    async searchRepositories(query: string, page?: number, per_page?: number, sort?: string, order?: string, fetchAll?: boolean) {
+    async searchRepositories(query: string, page?: number, per_page: number = 5, sort?: string, order?: string, fetchAll?: boolean, fields?: string[]) {
         const url = `${this.baseUrl}/search/repositories`;
         const config = {
             params: { q: query, page, per_page, sort, order },
@@ -195,11 +209,25 @@ class Repositories extends GitHubClient {
             },
             timeout: this.timeout,
         };
-        return paginate(url, config, fetchAll);
+        let results = await paginate(url, config, fetchAll);
+
+        if (fields && fields.length > 0 && results.items) {
+            results.items = results.items.map((item: any) => {
+                const filteredItem: { [key: string]: any } = {};
+                fields.forEach(field => {
+                    if (item.hasOwnProperty(field)) {
+                        filteredItem[field] = item[field];
+                    }
+                });
+                return filteredItem;
+            });
+        }
+
+        return results;
     }
 
 
-    async getUserRepos(userName: string, page?: number, perPage?: number, fetchAll?: boolean) {
+    async getUserRepos(userName: string, page?: number, perPage: number = 5, fetchAll?: boolean, fields?: string[]) {
         const url = `${this.baseUrl}/users/${userName}/repos`;
         const config = {
             params: { page, per_page: perPage },
@@ -209,7 +237,21 @@ class Repositories extends GitHubClient {
             },
             timeout: this.timeout,
         };
-        return paginate(url, config, fetchAll);
+        let results = await paginate(url, config, fetchAll);
+
+        if (fields && fields.length > 0) {
+            return results.map((item: any) => {
+                const filteredItem: { [key: string]: any } = {};
+                fields.forEach(field => {
+                    if (item.hasOwnProperty(field)) {
+                        filteredItem[field] = item[field];
+                    }
+                });
+                return filteredItem;
+            });
+        }
+
+        return results;
     }
 
 
@@ -297,7 +339,7 @@ class Repositories extends GitHubClient {
         return response.data;
     }
 
-    async listCommits(owner: string, repo: string, sha?: string, path?: string, page?: number, perPage?: number, fetchAll?: boolean) {
+    async listCommits(owner: string, repo: string, sha?: string, path?: string, page?: number, perPage: number = 5, fetchAll?: boolean, fields?: string[]) {
         const url = `${this.baseUrl}/repos/${owner}/${repo}/commits`;
         const config = {
             params: { sha, path, page, per_page: perPage },
@@ -307,20 +349,48 @@ class Repositories extends GitHubClient {
             },
             timeout: this.timeout,
         };
-        return paginate(url, config, fetchAll);
+        let results = await paginate(url, config, fetchAll);
+
+        if (fields && fields.length > 0) {
+            return results.map((item: any) => {
+                const filteredItem: { [key: string]: any } = {};
+                fields.forEach(field => {
+                    if (item.hasOwnProperty(field)) {
+                        filteredItem[field] = item[field];
+                    }
+                });
+                return filteredItem;
+            });
+        }
+
+        return results;
     }
 
-    async getCommit(owner: string, repo: string, sha?: string, page?: number, perPage?: number, fetchAll?: boolean) {
+    async getCommit(owner: string, repo: string, sha?: string, page: number=1, perPage: number = 5, fetchAll?: boolean, fields?: string[]) {
         const url = `${this.baseUrl}/repos/${owner}/${repo}/commits`;
         const config = {
-            params: { sha, page, per_page: perPage },
+            params: { sha, page: page, per_page: perPage },
             headers: {
                 Authorization: `Bearer ${this.token}`,
                 Accept: 'application/vnd.github.v3+json',
             },
             timeout: this.timeout,
         };
-        return paginate(url, config, fetchAll);
+        let results = await paginate(url, config, fetchAll);
+
+        if (fields && fields.length > 0) {
+            return results.map((item: any) => {
+                const filteredItem: { [key: string]: any } = {};
+                fields.forEach(field => {
+                    if (item.hasOwnProperty(field)) {
+                        filteredItem[field] = item[field];
+                    }
+                });
+                return filteredItem;
+            });
+        }
+
+        return results;
     }
 
     async getSpecificCommit(owner: string, repo: string, sha: string){

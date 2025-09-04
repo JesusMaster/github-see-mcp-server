@@ -105,8 +105,9 @@ describe("registerRepositoriesTools", () => {
     const toolCall = (mockServer.tool as jest.Mock).mock.calls.find(call => call[0] === 'list_branches');
     expect(toolCall).toBeDefined();
     const toolFunction = toolCall![3];
-    const result = await (toolFunction as Function)({ owner: 'o', repo: 'r' });
-    expect(mockRepositoriesInstance.listBranches).toHaveBeenCalled();
+    const args = { owner: 'o', repo: 'r' };
+    const result = await (toolFunction as Function)(args);
+    expect(mockRepositoriesInstance.listBranches).toHaveBeenCalledWith(args.owner, args.repo, undefined, undefined, undefined, undefined);
     expect(result.content[0].text).toBe(JSON.stringify(branches, null, 2));
   });
 
@@ -131,8 +132,9 @@ describe("registerRepositoriesTools", () => {
     const toolCall = (mockServer.tool as jest.Mock).mock.calls.find(call => call[0] === 'search_repositories');
     expect(toolCall).toBeDefined();
     const toolFunction = toolCall![3];
-    const result = await (toolFunction as Function)({ query: 'q' });
-    expect(mockRepositoriesInstance.searchRepositories).toHaveBeenCalled();
+    const args = { query: 'q' };
+    const result = await (toolFunction as Function)(args);
+    expect(mockRepositoriesInstance.searchRepositories).toHaveBeenCalledWith(args.query, undefined, undefined, undefined, undefined, undefined, undefined);
     expect(result.content[0].text).toBe(JSON.stringify(repos, null, 2));
   });
 
@@ -170,8 +172,9 @@ describe("registerRepositoriesTools", () => {
     const toolCall = (mockServer.tool as jest.Mock).mock.calls.find(call => call[0] === 'get_user_repositories');
     expect(toolCall).toBeDefined();
     const toolFunction = toolCall![3];
-    const result = await (toolFunction as Function)({ userName: 'u' });
-    expect(mockRepositoriesInstance.getUserRepos).toHaveBeenCalled();
+    const args = { userName: 'u' };
+    const result = await (toolFunction as Function)(args);
+    expect(mockRepositoriesInstance.getUserRepos).toHaveBeenCalledWith(args.userName, undefined, undefined, undefined, undefined);
     expect(result.content[0].text).toBe(JSON.stringify(repos, null, 2));
   });
 
@@ -235,8 +238,9 @@ describe("registerRepositoriesTools", () => {
     const toolCall = (mockServer.tool as jest.Mock).mock.calls.find(call => call[0] === 'list_commits');
     expect(toolCall).toBeDefined();
     const toolFunction = toolCall![3];
-    const result = await (toolFunction as Function)({ owner: 'o', repo: 'r' });
-    expect(mockRepositoriesInstance.listCommits).toHaveBeenCalled();
+    const args = { owner: 'o', repo: 'r' };
+    const result = await (toolFunction as Function)(args);
+    expect(mockRepositoriesInstance.listCommits).toHaveBeenCalledWith(args.owner, args.repo, undefined, undefined, undefined, undefined, undefined, undefined);
     expect(result.content[0].text).toBe(JSON.stringify(commits, null, 2));
   });
 
@@ -248,8 +252,9 @@ describe("registerRepositoriesTools", () => {
     const toolCall = (mockServer.tool as jest.Mock).mock.calls.find(call => call[0] === 'get_commit');
     expect(toolCall).toBeDefined();
     const toolFunction = toolCall![3];
-    const result = await (toolFunction as Function)({ owner: 'o', repo: 'r' });
-    expect(mockRepositoriesInstance.getCommit).toHaveBeenCalled();
+    const args = { owner: 'o', repo: 'r' };
+    const result = await (toolFunction as Function)(args);
+    expect(mockRepositoriesInstance.getCommit).toHaveBeenCalledWith(args.owner, args.repo, undefined, undefined, undefined, undefined, undefined);
     expect(result.content[0].text).toBe(JSON.stringify(commit, null, 2));
   });
 

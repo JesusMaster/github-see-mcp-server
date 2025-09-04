@@ -17,7 +17,7 @@ class PullRequest extends GitHubClient {
         return response.data;
     };
 
-    async getListPullRequests(owner: string, repo: string,state?: string ,sort?: string,direction?: string ,perPage?: number,page?: number) {
+    async getListPullRequests(owner: string, repo: string,state?: string ,sort?: string,direction?: string ,perPage: number = 5,page: number=1, fields?: string[]) {
 
         const payload :{
             state?: string,
@@ -26,20 +26,16 @@ class PullRequest extends GitHubClient {
             per_page?: number,
             page?: number
         } = {
-            state: state ?? "all"
+            state: state ?? "open",
+            per_page: perPage,
+            page: page
         };
 
-        if (state !== undefined) {
-            payload.state = state;
-        }
         if (sort !== undefined) {
             payload.sort = sort;
         }
         if (direction !== undefined) {
             payload.direction = direction;
-        }
-        if (perPage !== undefined) {
-            payload.per_page = perPage;
         }
         if (page !== undefined) {
             payload.page = page;
@@ -53,7 +49,21 @@ class PullRequest extends GitHubClient {
             params: payload,
         });
 
-        return response.data;
+        let results = response.data;
+
+        if (fields && fields.length > 0) {
+            return results.map((item: any) => {
+                const filteredItem: { [key: string]: any } = {};
+                fields.forEach(field => {
+                    if (item.hasOwnProperty(field)) {
+                        filteredItem[field] = item[field];
+                    }
+                });
+                return filteredItem;
+            });
+        }
+
+        return results;
     }
 
     async mergePullRequest(owner: string, repo: string, pullNumber: number, commitMessage?: string, commit_title?: string, merge_method?: string) {
