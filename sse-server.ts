@@ -302,7 +302,7 @@ export function createSseServer(mcpServer: McpServer, port: number = 8080): http
             multiplexingTransport.handleClientPostMessage(sessionId, bodyContent)
                 .then((result) => {
                     clearTimeout(messageTimeout);
-                    res.status(202).json({ status: 'accepted', message: result || 'Message processed' });
+                    res.status(202).json({ status: 'accepted', message: result ?? 'Message processed' });
                 })
                 .catch((error) => {
                     clearTimeout(messageTimeout);

@@ -8,12 +8,33 @@ export class MultiplexingSSEServerTransport implements Transport {
     public readonly sessionId: string;
     private readonly clients: Map<string, Response> = new Map(); // Map of clientSessionId -> Response
     private readonly requestClientMap: Map<RequestId, string> = new Map(); // Map of requestId -> clientSessionId
+    private heartbeatInterval: NodeJS.Timeout | undefined;
     public onmessage?: (message: JSONRPCMessage, extra?: { authInfo?: AuthInfo; }) => void;
     public onclose?: () => void;
     public onerror?: (error: Error) => void;
 
     constructor() {
         this.sessionId = randomUUID(); // Unique ID for this multiplexing transport
+        this.heartbeatInterval = setInterval(() => this.heartbeat(), 20000); // Send heartbeat every 20 seconds
+    }
+
+    private heartbeat(): void {
+        const heartbeatMessage = `:heartbeat\n\n`;
+        this.clients.forEach((res, clientSessionId) => {
+            if (!res.writableEnded) {
+                try {
+                    res.write(heartbeatMessage);
+                    if (typeof (res as any).flush === 'function') {
+                        (res as any).flush();
+                    }
+                } catch (error) {
+                    console.error(`MultiplexingSSEServerTransport (${this.sessionId}): Error sending heartbeat to client ${clientSessionId}, removing client.`, error);
+                    this.removeClient(clientSessionId);
+                }
+            } else {
+                this.removeClient(clientSessionId);
+            }
+        });
     }
 
     async start(): Promise<void> {
@@ -173,6 +194,9 @@ export class MultiplexingSSEServerTransport implements Transport {
         });
         this.clients.clear();
         this.requestClientMap.clear(); // Clear request map on close
+        if (this.heartbeatInterval) {
+            clearInterval(this.heartbeatInterval);
+        }
         this.onclose?.();
     }
 
