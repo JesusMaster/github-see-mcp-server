@@ -29,6 +29,7 @@ export class MultiplexingSSEServerTransport implements Transport {
                     }
                 } catch (error) {
                     this.removeClient(clientSessionId);
+                    console.log(`Exception while doing something: ${error}`);
                 }
             } else {
                 this.removeClient(clientSessionId);
@@ -37,7 +38,7 @@ export class MultiplexingSSEServerTransport implements Transport {
     }
 
     async start(): Promise<void> {
-
+        // ping clients, esta vacio porque se imprimian los logs de inicio de sesion
     }
 
     // Extract message details for logging
@@ -195,19 +196,6 @@ export class MultiplexingSSEServerTransport implements Transport {
         
         try {
             const parsedMessage: JSONRPCMessage = JSON.parse(bodyContent);
-            
-            // Log message details
-            let messageType = 'unknown';
-            let methodName: string | undefined;
-            let messageId: any = null;
-            
-            if ('method' in parsedMessage) {
-                messageType = 'request/notification';
-                methodName = parsedMessage.method;
-                if ('id' in parsedMessage) {
-                    messageId = parsedMessage.id;
-                }
-            }
             
             // If it's a request, store the mapping
             if ('id' in parsedMessage && 'method' in parsedMessage) {
