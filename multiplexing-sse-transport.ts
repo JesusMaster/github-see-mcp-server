@@ -28,7 +28,6 @@ export class MultiplexingSSEServerTransport implements Transport {
                         (res as any).flush();
                     }
                 } catch (error) {
-                    console.error(`MultiplexingSSEServerTransport (${this.sessionId}): Error sending heartbeat to client ${clientSessionId}, removing client.`, error);
                     this.removeClient(clientSessionId);
                 }
             } else {
@@ -38,7 +37,7 @@ export class MultiplexingSSEServerTransport implements Transport {
     }
 
     async start(): Promise<void> {
-        console.log(`MultiplexingSSEServerTransport (${this.sessionId}): Started.`);
+
     }
 
     // Extract message details for logging
@@ -74,13 +73,9 @@ export class MultiplexingSSEServerTransport implements Transport {
         methodName?: string, 
         messageId: any = null
     ): void {
-        console.log(`MultiplexingSSEServerTransport (${this.sessionId}): Sending message. Type: ${messageType}, Method: ${methodName ?? 'N/A'}, ID: ${messageId ?? 'N/A'}. Clients: ${this.clients.size}`);
-        
         if (methodName === 'mcp/toolListChanged') {
             console.log(`MultiplexingSSEServerTransport (${this.sessionId}): Detected mcp/toolListChanged notification.`);
         }
-        
-        console.log(`Message content (first 200 chars): ${messageString.substring(0, 200)}...`);
     }
 
     // Send message to a specific client
@@ -92,7 +87,6 @@ export class MultiplexingSSEServerTransport implements Transport {
         const res = this.clients.get(targetClientSessionId);
         
         if (!res || res.writableEnded) {
-            console.warn(`MultiplexingSSEServerTransport (${this.sessionId}): Target client ${targetClientSessionId} not found or writableEnded for request ${relatedRequestId}.`);
             return false;
         }
         
@@ -101,10 +95,8 @@ export class MultiplexingSSEServerTransport implements Transport {
             if (typeof (res as any).flush === 'function') {
                 (res as any).flush();
             }
-            console.log(`MultiplexingSSEServerTransport (${this.sessionId}): Sent targeted response to client ${targetClientSessionId} for request ${relatedRequestId}`);
             return true;
         } catch (error: any) {
-            console.error(`Error sending targeted SSE message to client ${targetClientSessionId}:`, error);
             this.removeClient(targetClientSessionId);
             this.onerror?.(new Error(`Failed to send message to client ${targetClientSessionId}: ${error.message}`));
             return false;
@@ -129,7 +121,6 @@ export class MultiplexingSSEServerTransport implements Transport {
             const targetClientSessionId = this.requestClientMap.get(options.relatedRequestId as RequestId);
             
             if (!targetClientSessionId) {
-                console.warn(`MultiplexingSSEServerTransport (${this.sessionId}): No client found for relatedRequestId ${options.relatedRequestId}. Broadcasting instead.`);
                 this.broadcastMessage(messageString);
                 return;
             }
@@ -149,7 +140,6 @@ export class MultiplexingSSEServerTransport implements Transport {
                 this.requestClientMap.delete(options.relatedRequestId as RequestId);
             }
         } catch (error: any) {
-            console.error(`MultiplexingSSEServerTransport (${this.sessionId}): Error in send method:`, error);
             this.onerror?.(error);
         }
     }
@@ -159,7 +149,6 @@ export class MultiplexingSSEServerTransport implements Transport {
         const clientCount = this.clients.size;
         
         if (clientCount === 0) {
-            console.warn(`MultiplexingSSEServerTransport (${this.sessionId}): No clients connected to broadcast message to.`);
             return;
         }
         
@@ -172,21 +161,17 @@ export class MultiplexingSSEServerTransport implements Transport {
                     }
                     successfulBroadcasts++;
                 } catch (error: any) {
-                    console.error(`Error broadcasting SSE message to client ${clientSessionId}:`, error);
                     this.removeClient(clientSessionId);
                     this.onerror?.(new Error(`Failed to broadcast to client ${clientSessionId}: ${error.message}`));
                 }
             } else {
-                console.log(`MultiplexingSSEServerTransport (${this.sessionId}): Removing client ${clientSessionId} with ended response.`);
                 this.removeClient(clientSessionId);
             }
         });
-        
-        console.log(`MultiplexingSSEServerTransport (${this.sessionId}): Broadcast message to ${successfulBroadcasts}/${clientCount} clients.`);
+
     }
 
     async close(): Promise<void> {
-        console.log(`MultiplexingSSEServerTransport (${this.sessionId}): Closing all client connections.`);
         this.clients.forEach((res, clientSessionId) => {
             if (!res.writableEnded) {
                 res.end();
@@ -203,11 +188,8 @@ export class MultiplexingSSEServerTransport implements Transport {
     // This method is called by the Express POST /messages route
     // It takes a client's sessionId and the message body, then forwards it to the McpServer via onmessage
     async handleClientPostMessage(clientSessionId: string, bodyContent: string): Promise<string | void> {
-        console.log(`MultiplexingSSEServerTransport (${this.sessionId}): Client ${clientSessionId} posted message. Length: ${bodyContent.length} bytes`);
-        console.log(`Message content (first 200 chars): ${bodyContent.substring(0, 200)}...`);
-        
+       
         if (!this.onmessage) {
-            console.warn(`MultiplexingSSEServerTransport (${this.sessionId}): No onmessage handler registered to process client message from ${clientSessionId}.`);
             return;
         }
         
@@ -227,12 +209,9 @@ export class MultiplexingSSEServerTransport implements Transport {
                 }
             }
             
-            console.log(`MultiplexingSSEServerTransport (${this.sessionId}): Received ${messageType} message from client ${clientSessionId}. Method: ${methodName ?? 'N/A'}, ID: ${messageId ?? 'N/A'}`);
-            
             // If it's a request, store the mapping
             if ('id' in parsedMessage && 'method' in parsedMessage) {
                 this.requestClientMap.set(parsedMessage.id, clientSessionId);
-                console.log(`MultiplexingSSEServerTransport (${this.sessionId}): Mapped request ${parsedMessage.id} to client ${clientSessionId}`);
             }
             
             // Forward the message to the MCP server
@@ -241,7 +220,6 @@ export class MultiplexingSSEServerTransport implements Transport {
             return "Message processed successfully";
         } catch (error: any) {
             const errorMessage = `Error processing client message from ${clientSessionId}: ${error.message}`;
-            console.error(errorMessage);
             this.onerror?.(new Error(errorMessage));
             throw error; // Let the caller handle the error response
         }
@@ -259,7 +237,6 @@ export class MultiplexingSSEServerTransport implements Transport {
         if (typeof res.flushHeaders === 'function') {
             res.flushHeaders();
         }
-
         // Send the initial endpoint message in the format expected by SSE clients
         res.write(`event: endpoint\n`);
         res.write(`data: /messages?sessionId=${clientSessionId}\n\n`);
@@ -268,12 +245,9 @@ export class MultiplexingSSEServerTransport implements Transport {
         if (typeof (res as any).flush === 'function') {
             (res as any).flush();
         }
-        console.log(`MultiplexingSSEServerTransport (${this.sessionId}): Client ${clientSessionId} added. Total clients: ${this.clients.size}`);
     }
-
     // Method to remove a disconnected SSE client
     removeClient(clientSessionId: string) {
         this.clients.delete(clientSessionId);
-        console.log(`MultiplexingSSEServerTransport (${this.sessionId}): Client ${clientSessionId} removed. Total clients: ${this.clients.size}`);
     }
 }
