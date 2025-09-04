@@ -1,5 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
-import { createSseServer } from './sse-server.js';
+import { createSseServer, closeAllSseConnections } from './sse-server.js';
+import { createHttpTerminator } from 'http-terminator';
 
 import Issues from "#controllers/issues";
 import PullRequest  from "#controllers/pullRequest";
@@ -171,41 +172,40 @@ process.on('unhandledRejection', (reason, promise) => {
         const ssePort = await findAvailablePort(defaultPort);
         logger.info(`Starting MCP SSE GitHub server on port ${ssePort}...`);
         const httpServer = createSseServer(server, ssePort);
+        const httpTerminator = createHttpTerminator({ server: httpServer });
         logger.info(`MCP SSE GitHub server started successfully on port ${ssePort}`);
         
         // Graceful shutdown handlers
-        const setupShutdown = (httpServer: any) => {
-            // Graceful shutdown
-            process.on('SIGINT', async () => {
-                logger.info('Received SIGINT signal. Shutting down gracefully...');
-                httpServer.close(() => {
-                    logger.info('HTTP server closed successfully');
-                    process.exit(0);
-                });
-                
-                // Set a timeout to force exit if graceful shutdown takes too long
-                setTimeout(() => {
-                    logger.error('Forced shutdown after timeout');
-                    process.exit(1);
-                }, 5000);
-            });
+        const setupShutdown = () => {
+            let isShuttingDown = false;
+            const shutdown = async (signal: string) => {
+                if (isShuttingDown) return;
+                isShuttingDown = true;
 
-            process.on('SIGTERM', async () => {
-                logger.info('Received SIGTERM signal. Shutting down gracefully...');
-                httpServer.close(() => {
-                    logger.info('HTTP server closed successfully');
-                    process.exit(0);
-                });
+                logger.info(`Received ${signal} signal. Starting graceful shutdown...`);
                 
-                // Set a timeout to force exit if graceful shutdown takes too long
-                setTimeout(() => {
-                    logger.error('Forced shutdown after timeout');
+                // 1. Notify all SSE clients and close their connections
+                closeAllSseConnections();
+
+                // 2. Give a brief moment for SSE connections to close before stopping the server
+                await new Promise(resolve => setTimeout(resolve, 500));
+
+                try {
+                    logger.info('Terminating HTTP server...');
+                    await httpTerminator.terminate();
+                    logger.info('HTTP server terminated successfully. Exiting.');
+                    process.exit(0);
+                } catch (error) {
+                    logger.error('Error during HTTP server termination:', error);
                     process.exit(1);
-                }, 5000);
-            });
+                }
+            };
+
+            process.on('SIGINT', () => shutdown('SIGINT'));
+            process.on('SIGTERM', () => shutdown('SIGTERM'));
         };
         
-        setupShutdown(httpServer);
+        setupShutdown();
     } catch (error) {
         logger.error('Failed to start server:', error);
         process.exit(1);

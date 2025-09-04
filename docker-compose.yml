@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  mcp-github:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: mcp-github-server
+    ports:
+      - "3200:3200"
+    env_file:
+      - .env
+    environment:
+      # Override specific values if needed
+      MCP_SSE_PORT: 3200
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3200/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Restart policy
+    restart: unless-stopped
+    
+    # Resource limits (optional)
+    deploy:
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '0.5'
+          memory: 256M

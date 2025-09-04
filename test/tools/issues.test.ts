@@ -258,7 +258,7 @@ describe("registerIssueTools", () => {
     const toolFunction = toolCall![3];
     const result = await (toolFunction as Function)(args);
 
-    expect(mockIssuesInstance.searchIssues).toHaveBeenCalledWith(args.owner, args.repo, args.q, undefined, undefined, undefined, undefined);
+    expect(mockIssuesInstance.searchIssues).toHaveBeenCalledWith(args.owner, args.repo, args.q, undefined, undefined, undefined, undefined, undefined);
     expect(result.content[0].text).toBe(JSON.stringify(searchResults, null, 2));
   });
 });

@@ -236,17 +236,9 @@ export class MultiplexingSSEServerTransport implements Transport {
             res.flushHeaders();
         }
 
-        // Send an initial structured message to confirm connection and provide session info
-        const initialMessage = {
-            jsonrpc: "2.0",
-            id: randomUUID(), // Add a unique ID to the initial message
-            method: "connection/initialized",
-            params: {
-                sessionId: clientSessionId,
-                postMessagePath: "/messages" // This is the path for clients to send messages back
-            }
-        };
-        res.write(`data: ${JSON.stringify(initialMessage)}\n\n`);
+        // Send the initial endpoint message in the format expected by SSE clients
+        res.write(`event: endpoint\n`);
+        res.write(`data: /messages?sessionId=${clientSessionId}\n\n`);
         
         // Flush to ensure initial message is sent
         if (typeof (res as any).flush === 'function') {

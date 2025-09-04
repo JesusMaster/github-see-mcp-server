@@ -89,8 +89,9 @@ describe("registerPullRequestTools", () => {
     const toolCall = (mockServer.tool as jest.Mock).mock.calls.find(call => call[0] === 'list_pull_requests');
     expect(toolCall).toBeDefined();
     const toolFunction = toolCall![3];
-    const result = await (toolFunction as Function)({ owner: 'o', repo: 'r' });
-    expect(mockPullRequestInstance.getListPullRequests).toHaveBeenCalled();
+    const args = { owner: 'o', repo: 'r' };
+    const result = await (toolFunction as Function)(args);
+    expect(mockPullRequestInstance.getListPullRequests).toHaveBeenCalledWith(args.owner, args.repo, undefined, undefined, undefined, undefined, undefined, undefined);
     expect(result.content[0].text).toBe(JSON.stringify(prList, null, 2));
   });
 

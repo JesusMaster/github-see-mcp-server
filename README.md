@@ -7,7 +7,7 @@ A Model Context Protocol (MCP) server that provides GitHub API integration throu
 - GitHub API integration through MCP tools
 - Support for issues, pull requests, repositories, and more
 - Server-Sent Events (SSE) transport for real-time communication
-- Multiplexing SSE transport for handling multiple client connections
+- **Multiplexing SSE transport** for efficient handling of multiple client connections
 - Modern Streamable HTTP and legacy SSE transport support
 - Automatic port finding if the specified port is in use
 - Graceful shutdown handling for clean server termination
@@ -38,7 +38,6 @@ A Model Context Protocol (MCP) server that provides GitHub API integration throu
 3. Create a `.env` file in the root directory with the following content:
    ```
    # GitHub MCP SSE Server Configuration
-
    # GitHub API Token (required for API access)
    # Generate a token at https://github.com/settings/tokens
    GITHUB_TOKEN=your_github_token_here
@@ -54,6 +53,11 @@ A Model Context Protocol (MCP) server that provides GitHub API integration throu
 
    # CORS Configuration
    CORS_ALLOW_ORIGIN=*
+
+   # Multiplexing SSE Transport Configuration
+   # Set to 'true' to enable multiplexing SSE transport (handles multiple clients with a single transport)
+   # Set to 'false' to use individual SSE transport for each client (legacy behavior)
+   USE_MULTIPLEXING_SSE=false
    ```
 
 4. Build the project:
@@ -133,6 +137,25 @@ Replace `{Your domain}` with your actual domain where the server is running.
 The server supports both modern and legacy communication methods:
 1. **Modern Streamable HTTP** (`/mcp`): Recommended for new implementations, providing efficient bidirectional communication
 2. **Legacy SSE** (`/sse` and `/messages`): For backward compatibility with older clients
+   - **Individual SSE Transport**: Default mode where each client gets its own transport instance
+   - **Multiplexing SSE Transport**: Optional mode where multiple clients share a single transport instance for better resource efficiency
+
+### Multiplexing SSE Transport
+
+The multiplexing SSE transport is an advanced feature that allows the server to handle multiple client connections through a single transport instance. This provides several benefits:
+
+- **Resource Efficiency**: Reduces memory usage and connection overhead when handling multiple clients
+- **Simplified Message Broadcasting**: Makes it easier to send messages to all connected clients
+- **Better Connection Management**: Centralized handling of client connections and disconnections
+- **Improved Scalability**: Better performance when dealing with many concurrent connections
+
+To enable multiplexing SSE transport, set `USE_MULTIPLEXING_SSE=true` in your `.env` file.
+
+When multiplexing is enabled:
+- All SSE clients connect through a shared transport instance
+- Each client receives a unique session ID for message routing
+- The server can efficiently broadcast messages to all clients or send targeted messages to specific clients
+- Connection state is managed centrally for all clients
 
 ## Available GitHub Tools
 
@@ -201,6 +224,7 @@ If you're experiencing timeout errors:
 2. Check if the GitHub API is responding slowly
 3. Verify that the client is not sending too many requests
 
+
 ### Logging and Debugging
 
 The server supports different logging levels that can be set in the `.env` file:
@@ -217,6 +241,17 @@ LOG_LEVEL=debug
 ```
 
 This will provide more detailed information about requests, responses, and internal operations.
+
+### Multiplexing SSE Transport Issues
+
+If you're experiencing issues with the multiplexing SSE transport:
+
+1. **Check the configuration**: Ensure `USE_MULTIPLEXING_SSE` is set correctly in the `.env` file
+2. **Enable debug logging**: Set `LOG_LEVEL=debug` to see detailed multiplexing operations
+3. **Monitor client connections**: The logs will show when clients connect/disconnect from the multiplexing transport
+4. **Verify message routing**: Debug logs will show how messages are routed between clients and the server
+5. **Fall back to individual transport**: If issues persist, set `USE_MULTIPLEXING_SSE=false` to use the legacy behavior
+
 
 ## License
 

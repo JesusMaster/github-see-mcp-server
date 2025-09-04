@@ -178,7 +178,7 @@ export function registerIssueTools(server: McpServer, issuesInstance: Issues) {
         },
         async (args) => {
             try {
-                let info = await issuesInstance.updateIssue(args.owner, args.repo, args.issueNumber, args.title, args.body,args.assignees, args.milestone,args.state, args.labels);
+                let info = await issuesInstance.updateIssue(args.owner, args.repo, args.issueNumber, args.title, args.body, args.assignees, args.milestone, args.state, args.labels);
                 return { 
                     content: [
                         { 
@@ -204,10 +204,11 @@ export function registerIssueTools(server: McpServer, issuesInstance: Issues) {
             order: z.enum(['asc', 'desc']).optional().describe("Sort order ('asc', 'desc') (string, optional)"),
             page: z.number().optional().describe('Page number (number, optional)'),
             per_page: z.number().optional().describe('Results per page (number, optional)'),
+            fields: z.array(z.string()).optional().describe('Fields to return (string[], optional)'),
         },
         async (args) => {
             try {
-                let info = await issuesInstance.searchIssues(args.owner, args.repo,args.q, args.sort, args.order, args.page, args.per_page);
+                let info = await issuesInstance.searchIssues(args.owner, args.repo, args.q, args.sort, args.order, args.page, args.per_page, args.fields);
                 return { 
                     content: [
                         { 

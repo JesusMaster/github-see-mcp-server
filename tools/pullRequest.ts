@@ -41,10 +41,11 @@ export function registerPullRequestTools(server: McpServer, pullRequestInstance:
             direction: z.enum(['asc', 'desc']).optional().describe('Sort direction (asc or desc)'),
             perPage: z.number().optional().describe('Number of results per page'),
             page: z.number().optional().describe('Page number to retrieve'),
+            fields: z.array(z.string()).optional().describe('Fields to return (string[], optional)'),
         },
         async (args) => {
             try {
-                let info = await pullRequestInstance.getListPullRequests(args.owner, args.repo, args.state, args.sort, args.direction, args.perPage, args.page);
+                let info = await pullRequestInstance.getListPullRequests(args.owner, args.repo, args.state, args.sort, args.direction, args.perPage, args.page, args.fields);
                 return { 
                     content: [
                         { 
