@@ -224,7 +224,6 @@ export class MultiplexingSSEServerTransport implements Transport {
             throw error; // Let the caller handle the error response
         }
     }
-
     // Method to add a new SSE client connection
     addClient(clientSessionId: string, res: Response) {
         this.clients.set(clientSessionId, res);
