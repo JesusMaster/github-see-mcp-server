@@ -8,7 +8,7 @@ export class MultiplexingSSEServerTransport implements Transport {
     public readonly sessionId: string;
     private readonly clients: Map<string, Response> = new Map(); // Map of clientSessionId -> Response
     private readonly requestClientMap: Map<RequestId, string> = new Map(); // Map of requestId -> clientSessionId
-    private heartbeatInterval: NodeJS.Timeout | undefined;
+    private readonly heartbeatInterval: NodeJS.Timeout | undefined;
     public onmessage?: (message: JSONRPCMessage, extra?: { authInfo?: AuthInfo; }) => void;
     public onclose?: () => void;
     public onerror?: (error: Error) => void;
