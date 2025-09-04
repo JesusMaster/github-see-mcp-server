@@ -81,6 +81,7 @@ class Issues extends GitHubClient{
         return response.data;
     }
 
+
     async listIssues(owner: string, repo: string, state?: string, labels?: string[] ,sort?: string, direction?: string, since?: string, page?: number, per_page: number = 5, fields?: string[]) {
 
         const payload:{
@@ -165,6 +166,7 @@ class Issues extends GitHubClient{
         );
         return response.data;
     }
+
 
     async searchIssues(owner: string, repo: string, query: string, sort?: string, order?: string, page?: number, per_page: number = 5, fields?: string[]) {
 

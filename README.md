@@ -38,7 +38,6 @@ A Model Context Protocol (MCP) server that provides GitHub API integration throu
 3. Create a `.env` file in the root directory with the following content:
    ```
    # GitHub MCP SSE Server Configuration
-
    # GitHub API Token (required for API access)
    # Generate a token at https://github.com/settings/tokens
    GITHUB_TOKEN=your_github_token_here
@@ -225,6 +224,7 @@ If you're experiencing timeout errors:
 2. Check if the GitHub API is responding slowly
 3. Verify that the client is not sending too many requests
 
+
 ### Logging and Debugging
 
 The server supports different logging levels that can be set in the `.env` file:
@@ -251,6 +251,7 @@ If you're experiencing issues with the multiplexing SSE transport:
 3. **Monitor client connections**: The logs will show when clients connect/disconnect from the multiplexing transport
 4. **Verify message routing**: Debug logs will show how messages are routed between clients and the server
 5. **Fall back to individual transport**: If issues persist, set `USE_MULTIPLEXING_SSE=false` to use the legacy behavior
+
 
 ## License
 
