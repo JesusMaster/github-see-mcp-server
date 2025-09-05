@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from 'zod';
-import Issues from "#controllers/issues";
+import Issues from "#features/issues/issues.service";
 
 export function registerIssueTools(server: McpServer, issuesInstance: Issues) {
     server.tool(

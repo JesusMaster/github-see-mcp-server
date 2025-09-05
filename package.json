@@ -8,9 +8,11 @@
     "dist"
   ],
   "imports": {
-    "#controllers/*": "./dist/controllers/*.js",
-    "#tools/*": "./dist/tools/*.js",
-    "#utils/*": "./dist/utils/*.js"
+    "#features/*": "./dist/features/*.js",
+    "#services/*": "./dist/services/*.js",
+    "#core/*": "./dist/core/*.js",
+    "#utils/*": "./dist/utils/*.js",
+    "#config/*": "./dist/config/*.js"
   },
   "scripts": {
     "build": "tsc",

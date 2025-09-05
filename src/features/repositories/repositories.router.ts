@@ -1,6 +1,6 @@
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
 import { z } from 'zod';
-import Repositories from "#controllers/repositories";
+import Repositories from "#features/repositories/repositories.service";
 
 export function registerRepositoriesTools(server: McpServer, repositoriesInstance: Repositories) {
 

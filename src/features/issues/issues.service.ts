@@ -1,5 +1,5 @@
 
-import  GitHubClient  from '#controllers/github';
+import  GitHubClient  from '#services/github';
 import axios from 'axios';
 
 class Issues extends GitHubClient{
