@@ -171,7 +171,7 @@ export function createServer(mcpServer: McpServer, port: number): http.Server {
                             
                 req.on('close', () => {
                     clearInterval(heartbeatInterval);
-                    logger.warn(`SSE connection closed for session: ${transport.sessionId}. Request aborted: ${req.aborted}`);
+                    logger.warn(`SSE connection closed for session: ${transport.sessionId}.`);
                     delete sseTransports[transport.sessionId];
                 });
             }).catch((error) => {
