@@ -1,30 +1,42 @@
 {
     "compilerOptions": {
-      "target": "ES2022", // Use a modern ECMAScript target
-      "module": "NodeNext", // Use Node.js's native ESM support
-      "moduleResolution": "NodeNext", // Align module resolution with Node.js ESM
-      "rootDir": "./", // Specify the root directory of input files
-      "outDir": "./dist", // Redirect output structure to the directory
-      "esModuleInterop": true, // Enables compatibility with CommonJS modules
-      "forceConsistentCasingInFileNames": true, // Disallow inconsistently-cased references to the same file.
-      "strict": true, // Enable all strict type-checking options
-      "skipLibCheck": true, // Skip type checking of declaration files
-      "resolveJsonModule": true, // Allow importing JSON files
-      "isolatedModules": true, // Fix warning about hybrid module kind
-      "allowJs": true, // Allow JavaScript files to be compiled
-      "baseUrl": ".",
+      "target": "ES2022",
+      "module": "NodeNext",
+      "moduleResolution": "NodeNext",
+      "rootDir": "./src",
+      "outDir": "./dist",
+      "esModuleInterop": true,
+      "forceConsistentCasingInFileNames": true,
+      "strict": true,
+      "skipLibCheck": true,
+      "resolveJsonModule": true,
+      "isolatedModules": true,
+      "allowJs": true,
+      "baseUrl": "./src",
       "paths": {
-            "#controllers/*": [
-                "controllers/*"
-            ],
-            "#tools/*": [
-                "tools/*"
-            ],
-            "#utils/*": [
-                "utils/*"
-            ]
-        }
+        "#features/*": [
+          "features/*"
+        ],
+        "#services/*": [
+          "services/*"
+        ],
+        "#core/*": [
+          "core/*"
+        ],
+        "#utils/*": [
+          "utils/*"
+        ],
+        "#config/*": [
+          "config/*"
+        ]
+      }
     },
-    "include": ["*.ts", "controllers/*.ts", "tools/*.ts", "utils/*.ts", "test/*.js"], // Compile all TypeScript files and test JavaScript files
-    "exclude": ["node_modules", "dist"] // Specify directories to exclude
+    "include": [
+      "src/**/*.ts"
+    ],
+    "exclude": [
+      "node_modules",
+      "dist",
+      "test"
+    ]
   }
