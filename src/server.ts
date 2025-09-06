@@ -1,4 +1,3 @@
-import express from "express";
 import http from 'http';
 import cors from 'cors';
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -14,6 +13,93 @@ import { z } from 'zod';
 // Importar configuración y logger centralizados
 import { config } from '#config/index';
 import { logger } from '#core/logger';
+import rateLimit from 'express-rate-limit';
+import express, { Request, Response, NextFunction } from 'express';
+import { authenticate } from './middleware/auth.js';
+
+const generalLimiter = rateLimit({
+    windowMs: config.rateLimitWindowMs,
+    max: config.rateLimitMaxRequests,
+    message: {
+        error: 'Too many requests from this IP',
+        retryAfter: `${config.rateLimitWindowMs / 60000} minutes`
+    },
+    standardHeaders: true,
+    legacyHeaders: false,
+    handler: (req, res) => {
+        logger.warn(`Rate limit exceeded for IP: ${req.ip} on ${req.method} ${req.url}`);
+        res.status(429).json({
+            error: 'Rate limit exceeded',
+            retryAfter: Math.ceil((req.rateLimit?.resetTime?.getTime() ?? Date.now()) / 1000)
+        });
+    }
+});
+
+const sseLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minuto
+    max: config.rateLimitSseMax,
+    message: 'Too many SSE connections from this IP'
+});
+
+const messageLimiter = rateLimit({
+    windowMs: 60 * 1000, // 1 minuto
+    max: config.rateLimitMessagesMax,
+    message: 'Too many messages from this IP', // This will be overridden by handler
+    handler: (req, res) => {
+        logger.warn(`Message Rate limit exceeded for IP: ${req.ip}`);
+        res.status(429).json({
+            error: 'Rate limit exceeded',
+            message: 'Too many messages from this IP'
+        });
+    }
+});
+
+const createUserLimiter = () => rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hora
+    max: (req: Request) => {
+        return req.user?.rateLimits?.requestsPerHour ?? config.defaultUserRateLimit;
+    },
+    message: 'User rate limit exceeded'
+});
+
+const CRITICAL_TOOLS = [
+    'create_repository',
+    'merge_pull_request',
+    'push_files',
+    'create_fork'
+];
+
+const isCriticalOperation = (toolName: string): boolean => {
+    return CRITICAL_TOOLS.includes(toolName);
+};
+
+const criticalOperationsLimiter = rateLimit({
+    windowMs: 60 * 60 * 1000, // 1 hora
+    max: 10, // Solo 10 operaciones críticas por hora
+    message: 'Critical operation rate limit exceeded', // This will be overridden by handler
+    handler: (req, res) => {
+        logger.warn(`Critical operation rate limit exceeded for IP: ${req.ip}`);
+        res.status(429).json({
+            error: 'Rate limit exceeded',
+            message: 'Critical operation rate limit exceeded'
+        });
+    }
+});
+
+const rateLimitMonitor = (req: Request, res: Response, next: NextFunction) => {
+    const remaining = req.rateLimit?.remaining ?? 0;
+    const total = req.rateLimit?.limit ?? 0;
+
+    if (remaining > 0 && remaining < total * 0.1) {
+        logger.warn(`Rate limit warning for ${req.ip} on ${req.method} ${req.url}: ${remaining}/${total} remaining`);
+    }
+
+    if (remaining === 0) {
+        logger.error(`Rate limit exceeded for ${req.ip} on ${req.method} ${req.url}`);
+    }
+
+    next();
+};
 
 const sseTransports: Record<string, { transport: SSEServerTransport, res: express.Response }> = {};
 let multiplexingTransport: MultiplexingSSEServerTransport | null = null;
@@ -61,6 +147,10 @@ export function createServer(mcpServer: McpServer, port: number): http.Server {
         }
     }
 }));
+
+    // Aplicar rate limiting general a todas las rutas
+    app.use(generalLimiter);
+    app.use(rateLimitMonitor); // Aplicar el monitor después del limiter
     
     app.get('/health', (req: express.Request, res: express.Response) => {
         res.status(200).json({
@@ -94,38 +184,69 @@ export function createServer(mcpServer: McpServer, port: number): http.Server {
         });
     }
 
-    app.all('/mcp', (req: express.Request, res: express.Response) => {
+    app.all('/mcp', authenticate, createUserLimiter(), (req: express.Request, res: express.Response, next: express.NextFunction) => {
         logger.debug(`New Streamable HTTP request: ${req.method} ${req.url}`);
         if (req.method === 'OPTIONS') {
             res.status(200).end();
             return;
         }
-        
-        const requestTimeout = setTimeout(() => {
-            if (!res.writableEnded) {
-                logger.error(`Request timeout for ${req.url}`);
-                res.status(408).json({
-                    error: 'Request timeout',
-                    message: 'The request took too long to process'
-                });
-            }
-        }, config.mcpTimeout);
-        
-        mcpStreamableTransport.handleRequest(req, res, req.body)
-            .then(() => clearTimeout(requestTimeout))
-            .catch((error) => {
-                clearTimeout(requestTimeout);
-                logger.error(`Error handling Streamable HTTP request for ${req.url}:`, error);
+
+        // Check for critical operations
+        const toolName = req.body?.toolName; // Assuming toolName is in the request body
+        if (toolName && isCriticalOperation(toolName)) {
+            criticalOperationsLimiter(req, res, () => {
+                // Continue with the original /mcp logic after criticalOperationsLimiter
+                const requestTimeout = setTimeout(() => {
+                    if (!res.writableEnded) {
+                        logger.error(`Request timeout for ${req.url}`);
+                        res.status(408).json({
+                            error: 'Request timeout',
+                            message: 'The request took too long to process'
+                        });
+                    }
+                }, config.mcpTimeout);
+                
+                mcpStreamableTransport.handleRequest(req, res, req.body)
+                    .then(() => clearTimeout(requestTimeout))
+                    .catch((error) => {
+                        clearTimeout(requestTimeout);
+                        logger.error(`Error handling Streamable HTTP request for ${req.url}:`, error);
+                        if (!res.writableEnded) {
+                            res.status(500).json({
+                                error: 'Error processing Streamable HTTP request',
+                                message: error instanceof Error ? error.message : 'Unknown error'
+                            });
+                        }
+                    });
+            });
+        } else {
+            // Original /mcp logic if not a critical operation
+            const requestTimeout = setTimeout(() => {
                 if (!res.writableEnded) {
-                    res.status(500).json({
-                        error: 'Error processing Streamable HTTP request',
-                        message: error instanceof Error ? error.message : 'Unknown error'
+                    logger.error(`Request timeout for ${req.url}`);
+                    res.status(408).json({
+                        error: 'Request timeout',
+                        message: 'The request took too long to process'
                     });
                 }
-            });
+            }, config.mcpTimeout);
+            
+            mcpStreamableTransport.handleRequest(req, res, req.body)
+                .then(() => clearTimeout(requestTimeout))
+                .catch((error) => {
+                    clearTimeout(requestTimeout);
+                    logger.error(`Error handling Streamable HTTP request for ${req.url}:`, error);
+                    if (!res.writableEnded) {
+                        res.status(500).json({
+                            error: 'Error processing Streamable HTTP request',
+                            message: error instanceof Error ? error.message : 'Unknown error'
+                        });
+                    }
+                });
+        }
     });
 
-    app.get('/sse', (req: express.Request, res: express.Response) => {
+    app.get('/sse', sseLimiter, (req: express.Request, res: express.Response) => {
         logger.info('New SSE connection request');
         if (config.useMultiplexing && multiplexingTransport) {
             const clientSessionId = randomUUID();
@@ -192,7 +313,7 @@ export function createServer(mcpServer: McpServer, port: number): http.Server {
         }
     });
 
-    app.post('/messages', (req: express.Request, res: express.Response) => {
+    app.post('/messages', authenticate, messageLimiter, (req: express.Request, res: express.Response) => {
         try {
             const sessionIdSchema = z.string().uuid();
             const sessionId = sessionIdSchema.parse(req.query.sessionId);
@@ -232,9 +353,9 @@ export function createServer(mcpServer: McpServer, port: number): http.Server {
                         res.status(500).json({ error: 'Internal server error' });
                     }
                 });
-        } catch (error) {
+        } catch (error:any) {
             logger.error('Invalid sessionId format');
-            res.status(400).json({ error: 'Invalid session ID format' });
+            res.status(400).json({ error: `Invalid session ID format, ${error.message}` });
         }
     });
     

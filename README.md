@@ -15,6 +15,16 @@ A Model Context Protocol (MCP) server that provides GitHub API integration throu
 - Configurable timeouts, CORS settings, and logging levels
 - Robust error handling and detailed logging
 
+## Authentication
+
+This server uses API key authentication to protect its endpoints. All requests to `/mcp` and `/messages` must include an `Authorization` header with a valid bearer token.
+
+Example: `Authorization: Bearer your-secret-api-key`
+
+To set up authentication, add the following variable to your `.env` file:
+
+`API_KEY=your-secret-api-key`
+
 ## Project Structure
 
 The project follows a modular, feature-based architecture. All source code is located in the `src` directory.
@@ -66,6 +76,9 @@ The project follows a modular, feature-based architecture. All source code is lo
     # Generate a token at https://github.com/settings/tokens
     GITHUB_TOKEN=your_github_token_here
 
+    # Authentication
+    API_KEY=your-secret-api-key
+
     # Server Port Configuration
     MCP_SSE_PORT=3200
 
@@ -82,6 +95,13 @@ The project follows a modular, feature-based architecture. All source code is lo
     # Set to 'true' to enable multiplexing SSE transport (handles multiple clients with a single transport)
     # Set to 'false' to use individual SSE transport for each client (legacy behavior)
     USE_MULTIPLEXING_SSE=false
+
+    # Rate Limiting Configuration
+    RATE_LIMIT_WINDOW_MS=900000 # Time window for rate limiting in milliseconds (e.g., 900000 for 15 minutes)
+    RATE_LIMIT_MAX_REQUESTS=100 # Maximum number of requests allowed per window per IP
+    RATE_LIMIT_SSE_MAX=5 # Maximum number of SSE connections allowed per minute per IP
+    RATE_LIMIT_MESSAGES_MAX=30 # Maximum number of messages allowed per minute per IP
+    DEFAULT_USER_RATE_LIMIT=1000 # Default number of requests allowed per hour for a user
     ```
 
 4.  Build the project:
@@ -121,7 +141,27 @@ You can also run the server using Docker.
 
 ```bash
 docker build -t github-see-mcp-server .
-docker run -d -p 3200:3200 -e MCP_TIMEOUT="180000" -e LOG_LEVEL="info" -e CORS_ALLOW_ORIGIN="*" -e GITHUB_TOKEN={YOUR_TOKEN_HERE} -e MCP_SSE_PORT="3200" -e USE_MULTIPLEXING_SSE="true" --name github-see-mcp-server github-see-mcp-server
+docker run -d -p 8080:8080 \
+  -e USE_MULTIPLEXING_SSE="true" \
+  -e MCP_TIMEOUT="1800000" \
+  -e SSE_TIMEOUT="1800000" \
+  -e LOG_LEVEL="info" \
+  -e CORS_ALLOW_ORIGIN="*" \
+  -e GITHUB_TOKEN="{YOUR GITHUB TOKEN}" \
+  -e MCP_SSE_PORT="8080" \
+  -e RATE_LIMIT_WINDOW_MS="900000" \
+  -e RATE_LIMIT_MAX_REQUESTS="100" \
+  -e RATE_LIMIT_SSE_MAX="5" \
+  -e RATE_LIMIT_MESSAGES_MAX="30" \
+  -e DEFAULT_USER_RATE_LIMIT="1000" \
+  -e HSTS_MAX_AGE="31536000" \
+  -e CSP_REPORT_ONLY="true" \
+  -e CSP_REPORT_URI="https://apprecio.cl/csp-report" \
+  -e NODE_ENV="production" \
+  -e DISABLE_HSTS="false" \
+  -e API_KEY="{YOUR AUTHORIZATION TOKEN}" \
+  --name github-see-mcp-server \
+  github-see-mcp-server
 ```
 
 This command:
@@ -152,12 +192,14 @@ To connect to this MCP server with Claude, add the following configuration to yo
 ```json
 {
   "mcpServers": {
-    "GitHub": {
+    "GitHubApprecio": {
       "command": "npx",
       "args": [
         "-y",
         "mcp-remote@0.1.15",
         "https://{Your domain}/sse",
+        "--header",
+        "Authorization: Bearer {YOUR AUTHORIZATION TOKEN}",
         "--transport",
         "sse-only"
       ]
@@ -250,6 +292,18 @@ The server provides the following GitHub API tools:
 ### User
 
 -   `get_me` - Get details of the authenticated user
+
+### Rate Limiting
+
+This server implements a robust rate limiting strategy to ensure fair usage and protect against abuse. The rate limiting is configured in `src/server.ts` and includes several layers of protection:
+
+-   **General Limiter**: A global rate limit is applied to all incoming requests to prevent excessive traffic from a single IP address.
+-   **SSE Limiter**: A specific rate limit for Server-Sent Events (SSE) connections to manage real-time communication resources.
+-   **Message Limiter**: A rate limit on the number of messages that can be sent to the server to prevent spam and overload.
+-   **User-Specific Limiter**: A dynamic rate limit that can be customized for individual users, providing more flexible and granular control.
+-   **Critical Operations Limiter**: A stricter rate limit for critical operations such as creating repositories or merging pull requests to prevent accidental or malicious use of sensitive features.
+
+The rate limiting is implemented using the `express-rate-limit` library, which provides a flexible and easy-to-configure solution for Express-based applications. The configuration is managed through environment variables, allowing for easy adjustments without modifying the code.
 
 ## Troubleshooting
 
