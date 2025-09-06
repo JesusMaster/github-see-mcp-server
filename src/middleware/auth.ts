@@ -2,6 +2,7 @@ import { Request, Response, NextFunction } from 'express';
 import { config } from '#config/index';
 import { logger } from '#core/logger';
 
+
 export const authenticate = (req: Request, res: Response, next: NextFunction): void => {
     const authHeader = req.headers['authorization'];
     
