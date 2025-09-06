@@ -24,4 +24,5 @@ dist/
 coverage/
 comandos.txt
 debug/
+.gemini/
 
