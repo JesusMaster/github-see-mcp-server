@@ -23,4 +23,16 @@ export const config = {
     sseTimeout: process.env.SSE_TIMEOUT ? parseInt(process.env.SSE_TIMEOUT, 10) : 1800000,
     corsAllowOrigin: process.env.CORS_ALLOW_ORIGIN ?? '',
     useMultiplexing: process.env.USE_MULTIPLEXING_SSE === 'true',
+    // Rate Limiting Configuration
+    rateLimitWindowMs: process.env.RATE_LIMIT_WINDOW_MS ? parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) : 15 * 60 * 1000, // 15 minutes
+    rateLimitMaxRequests: process.env.RATE_LIMIT_MAX_REQUESTS ? parseInt(process.env.RATE_LIMIT_MAX_REQUESTS, 10) : 100, // 100 requests
+    rateLimitSseMax: process.env.RATE_LIMIT_SSE_MAX ? parseInt(process.env.RATE_LIMIT_SSE_MAX, 10) : 5, // 5 SSE connections per minute
+    rateLimitMessagesMax: process.env.RATE_LIMIT_MESSAGES_MAX ? parseInt(process.env.RATE_LIMIT_MESSAGES_MAX, 10) : 30, // 30 messages per minute
+    defaultUserRateLimit: process.env.DEFAULT_USER_RATE_LIMIT ? parseInt(process.env.DEFAULT_USER_RATE_LIMIT, 10) : 1000, // 1000 requests per hour per user
+    // Security Headers Configuration
+    hstsMaxAge: process.env.HSTS_MAX_AGE ? parseInt(process.env.HSTS_MAX_AGE, 10) : 31536000,
+    cspReportOnly: process.env.CSP_REPORT_ONLY === 'true',
+    cspReportUri: process.env.CSP_REPORT_URI,
+    nodeEnv: process.env.NODE_ENV ?? 'development',
+    disableHsts: process.env.DISABLE_HSTS === 'true',
 };

@@ -59,30 +59,11 @@ The project follows a modular, feature-based architecture. All source code is lo
     pnpm install
     ```
 
-3.  Create a `.env` file in the root directory with the following content:
+3.  Create a `.env` file by copying the example file:
+    ```bash
+    cp .env.example .env
     ```
-    # GitHub MCP SSE Server Configuration
-    # GitHub API Token (required for API access)
-    # Generate a token at https://github.com/settings/tokens
-    GITHUB_TOKEN=your_github_token_here
-
-    # Server Port Configuration
-    MCP_SSE_PORT=3200
-
-    # Timeout Configuration (in milliseconds)
-    MCP_TIMEOUT=180000
-
-    # Log Level (debug, info, warn, error)
-    LOG_LEVEL=info
-
-    # CORS Configuration
-    CORS_ALLOW_ORIGIN=*
-
-    # Multiplexing SSE Transport Configuration
-    # Set to 'true' to enable multiplexing SSE transport (handles multiple clients with a single transport)
-    # Set to 'false' to use individual SSE transport for each client (legacy behavior)
-    USE_MULTIPLEXING_SSE=false
-    ```
+    Then, edit the `.env` file to add your GitHub token and customize the other settings as needed.
 
 4.  Build the project:
     ```bash
@@ -250,6 +231,20 @@ The server provides the following GitHub API tools:
 ### User
 
 -   `get_me` - Get details of the authenticated user
+
+## Security
+
+This server implements several security best practices to protect against common web vulnerabilities. The security measures are configured in `src/server.ts` and include:
+
+-   **Helmet**: A collection of 12 middleware functions that set various HTTP headers to secure the application. This includes protection against XSS, clickjacking, and other common attacks.
+-   **Content Security Policy (CSP)**: A policy that helps prevent XSS attacks by specifying which sources of content are allowed to be loaded on a page.
+-   **HTTP Strict Transport Security (HSTS)**: A policy that forces browsers to use HTTPS for all connections to the server.
+-   **X-Frame-Options**: A header that prevents the application from being embedded in iframes, which helps prevent clickjacking attacks.
+-   **X-Content-Type-Options**: A header that prevents browsers from MIME-sniffing a response away from the declared content-type.
+-   **Referrer-Policy**: A header that controls how much referrer information (sent via the Referer header) should be included with requests.
+-   **Permissions-Policy**: A header that allows you to control which features and APIs can be used in the browser.
+
+The security headers can be configured using environment variables. For more information, see the `.env.example` file.
 
 ## Troubleshooting
 
