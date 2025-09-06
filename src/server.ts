@@ -14,7 +14,7 @@ import { z } from 'zod';
 import { config } from '#config/index';
 import { logger } from '#core/logger';
 import helmet from 'helmet';
-import { rateLimit } from 'express-rate-limit';
+import rateLimit from 'express-rate-limit';
 import express, { Request, Response, NextFunction } from 'express';
 
 declare global {
