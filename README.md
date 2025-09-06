@@ -192,7 +192,7 @@ To connect to this MCP server with Claude, add the following configuration to yo
 ```json
 {
   "mcpServers": {
-    "GitHubApprecio": {
+    "GitHub": {
       "command": "npx",
       "args": [
         "-y",
