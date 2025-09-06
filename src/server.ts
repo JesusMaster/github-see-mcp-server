@@ -232,9 +232,9 @@ export function createServer(mcpServer: McpServer, port: number): http.Server {
                         res.status(500).json({ error: 'Internal server error' });
                     }
                 });
-        } catch (error) {
+        } catch (error:any) {
             logger.error('Invalid sessionId format');
-            res.status(400).json({ error: 'Invalid session ID format' });
+            res.status(400).json({ error: `Invalid session ID format, ${error.message}` });
         }
     });
     
