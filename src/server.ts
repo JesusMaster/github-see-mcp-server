@@ -15,7 +15,7 @@ import { z } from 'zod';
 import { config } from '#config/index';
 import { logger } from '#core/logger';
 import helmet from 'helmet';
-import rateLimit from 'express-rate-limit';
+import { rateLimit } from 'express-rate-limit';
 import { Request, Response, NextFunction } from 'express';
 
 declare global {
@@ -40,7 +40,7 @@ const generalLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
-    handler: (req, res) => {
+    handler: (req: express.Request, res: express.Response) => {
         logger.warn(`Rate limit exceeded for IP: ${req.ip} on ${req.method} ${req.url}`);
         res.status(429).json({
             error: 'Rate limit exceeded',
@@ -59,7 +59,7 @@ const messageLimiter = rateLimit({
     windowMs: 60 * 1000, // 1 minuto
     max: config.rateLimitMessagesMax,
     message: 'Too many messages from this IP', // This will be overridden by handler
-    handler: (req, res) => {
+    handler: (req: express.Request, res: express.Response) => {
         logger.warn(`Message Rate limit exceeded for IP: ${req.ip}`);
         res.status(429).json({
             error: 'Rate limit exceeded',
@@ -92,7 +92,7 @@ const criticalOperationsLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hora
     max: 10, // Solo 10 operaciones críticas por hora
     message: 'Critical operation rate limit exceeded', // This will be overridden by handler
-    handler: (req, res) => {
+    handler: (req: express.Request, res: express.Response) => {
         logger.warn(`Critical operation rate limit exceeded for IP: ${req.ip}`);
         res.status(429).json({
             error: 'Rate limit exceeded',
