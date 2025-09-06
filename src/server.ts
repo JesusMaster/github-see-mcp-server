@@ -17,19 +17,6 @@ import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import express, { Request, Response, NextFunction } from 'express';
 
-declare global {
-    namespace Express {
-        interface Request {
-            rateLimit?: {
-                limit: number;
-                current: number;
-                remaining: number;
-                resetTime?: Date;
-            };
-        }
-    }
-}
-
 const generalLimiter = rateLimit({
     windowMs: config.rateLimitWindowMs,
     max: config.rateLimitMaxRequests,
