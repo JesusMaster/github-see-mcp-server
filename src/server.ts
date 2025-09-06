@@ -15,6 +15,7 @@ import { config } from '#config/index';
 import { logger } from '#core/logger';
 import rateLimit from 'express-rate-limit';
 import express, { Request, Response, NextFunction } from 'express';
+import { authenticate } from './middleware/auth.js';
 
 const generalLimiter = rateLimit({
     windowMs: config.rateLimitWindowMs,
@@ -183,7 +184,7 @@ export function createServer(mcpServer: McpServer, port: number): http.Server {
         });
     }
 
-    app.all('/mcp', createUserLimiter(), (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    app.all('/mcp', authenticate, createUserLimiter(), (req: express.Request, res: express.Response, next: express.NextFunction) => {
         logger.debug(`New Streamable HTTP request: ${req.method} ${req.url}`);
         if (req.method === 'OPTIONS') {
             res.status(200).end();
@@ -312,7 +313,7 @@ export function createServer(mcpServer: McpServer, port: number): http.Server {
         }
     });
 
-    app.post('/messages', messageLimiter, (req: express.Request, res: express.Response) => {
+    app.post('/messages', authenticate, messageLimiter, (req: express.Request, res: express.Response) => {
         try {
             const sessionIdSchema = z.string().uuid();
             const sessionId = sessionIdSchema.parse(req.query.sessionId);
