@@ -23,6 +23,7 @@ export const config = {
     sseTimeout: process.env.SSE_TIMEOUT ? parseInt(process.env.SSE_TIMEOUT, 10) : 1800000,
     corsAllowOrigin: process.env.CORS_ALLOW_ORIGIN ?? '',
     useMultiplexing: process.env.USE_MULTIPLEXING_SSE === 'true',
+    apiKey: process.env.API_KEY ?? '',
     // Rate Limiting Configuration
     rateLimitWindowMs: process.env.RATE_LIMIT_WINDOW_MS ? parseInt(process.env.RATE_LIMIT_WINDOW_MS, 10) : 15 * 60 * 1000, // 15 minutes
     rateLimitMaxRequests: process.env.RATE_LIMIT_MAX_REQUESTS ? parseInt(process.env.RATE_LIMIT_MAX_REQUESTS, 10) : 100, // 100 requests

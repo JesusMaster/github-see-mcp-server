@@ -15,6 +15,16 @@ A Model Context Protocol (MCP) server that provides GitHub API integration throu
 - Configurable timeouts, CORS settings, and logging levels
 - Robust error handling and detailed logging
 
+## Authentication
+
+This server uses API key authentication to protect its endpoints. All requests to `/mcp` and `/messages` must include an `Authorization` header with a valid bearer token.
+
+Example: `Authorization: Bearer your-secret-api-key`
+
+To set up authentication, add the following variable to your `.env` file:
+
+`API_KEY=your-secret-api-key`
+
 ## Project Structure
 
 The project follows a modular, feature-based architecture. All source code is located in the `src` directory.
@@ -65,6 +75,9 @@ The project follows a modular, feature-based architecture. All source code is lo
     # GitHub API Token (required for API access)
     # Generate a token at https://github.com/settings/tokens
     GITHUB_TOKEN=your_github_token_here
+
+    # Authentication
+    API_KEY=your-secret-api-key
 
     # Server Port Configuration
     MCP_SSE_PORT=3200
