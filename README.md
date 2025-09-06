@@ -63,7 +63,8 @@ The project follows a modular, feature-based architecture. All source code is lo
     ```bash
     cp .env.example .env
     ```
-    Then, edit the `.env` file to add your GitHub token and customize the other settings as needed.
+    The
+    n, edit the `.env` file to add your GitHub token and customize the other settings as needed.
 
 4.  Build the project:
     ```bash
@@ -245,6 +246,17 @@ This server implements several security best practices to protect against common
 -   **Permissions-Policy**: A header that allows you to control which features and APIs can be used in the browser.
 
 The security headers can be configured using environment variables. For more information, see the `.env.example` file.
+### Rate Limiting
+
+This server implements a robust rate limiting strategy to ensure fair usage and protect against abuse. The rate limiting is configured in `src/server.ts` and includes several layers of protection:
+
+-   **General Limiter**: A global rate limit is applied to all incoming requests to prevent excessive traffic from a single IP address.
+-   **SSE Limiter**: A specific rate limit for Server-Sent Events (SSE) connections to manage real-time communication resources.
+-   **Message Limiter**: A rate limit on the number of messages that can be sent to the server to prevent spam and overload.
+-   **User-Specific Limiter**: A dynamic rate limit that can be customized for individual users, providing more flexible and granular control.
+-   **Critical Operations Limiter**: A stricter rate limit for critical operations such as creating repositories or merging pull requests to prevent accidental or malicious use of sensitive features.
+
+The rate limiting is implemented using the `express-rate-limit` library, which provides a flexible and easy-to-configure solution for Express-based applications. The configuration is managed through environment variables, allowing for easy adjustments without modifying the code.
 
 ## Troubleshooting
 

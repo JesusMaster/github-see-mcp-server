@@ -1,4 +1,3 @@
-import express from "express";
 import http from 'http';
 import cors from 'cors';
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -16,7 +15,7 @@ import { config } from '#config/index';
 import { logger } from '#core/logger';
 import helmet from 'helmet';
 import { rateLimit } from 'express-rate-limit';
-import { Request, Response, NextFunction } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 
 declare global {
     namespace Express {
