@@ -82,6 +82,13 @@ The project follows a modular, feature-based architecture. All source code is lo
     # Set to 'true' to enable multiplexing SSE transport (handles multiple clients with a single transport)
     # Set to 'false' to use individual SSE transport for each client (legacy behavior)
     USE_MULTIPLEXING_SSE=false
+
+    # Rate Limiting Configuration
+    RATE_LIMIT_WINDOW_MS=900000 # Time window for rate limiting in milliseconds (e.g., 900000 for 15 minutes)
+    RATE_LIMIT_MAX_REQUESTS=100 # Maximum number of requests allowed per window per IP
+    RATE_LIMIT_SSE_MAX=5 # Maximum number of SSE connections allowed per minute per IP
+    RATE_LIMIT_MESSAGES_MAX=30 # Maximum number of messages allowed per minute per IP
+    DEFAULT_USER_RATE_LIMIT=1000 # Default number of requests allowed per hour for a user
     ```
 
 4.  Build the project:
@@ -250,6 +257,18 @@ The server provides the following GitHub API tools:
 ### User
 
 -   `get_me` - Get details of the authenticated user
+
+### Rate Limiting
+
+This server implements a robust rate limiting strategy to ensure fair usage and protect against abuse. The rate limiting is configured in `src/server.ts` and includes several layers of protection:
+
+-   **General Limiter**: A global rate limit is applied to all incoming requests to prevent excessive traffic from a single IP address.
+-   **SSE Limiter**: A specific rate limit for Server-Sent Events (SSE) connections to manage real-time communication resources.
+-   **Message Limiter**: A rate limit on the number of messages that can be sent to the server to prevent spam and overload.
+-   **User-Specific Limiter**: A dynamic rate limit that can be customized for individual users, providing more flexible and granular control.
+-   **Critical Operations Limiter**: A stricter rate limit for critical operations such as creating repositories or merging pull requests to prevent accidental or malicious use of sensitive features.
+
+The rate limiting is implemented using the `express-rate-limit` library, which provides a flexible and easy-to-configure solution for Express-based applications. The configuration is managed through environment variables, allowing for easy adjustments without modifying the code.
 
 ## Troubleshooting
 
