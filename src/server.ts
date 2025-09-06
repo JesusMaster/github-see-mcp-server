@@ -135,7 +135,7 @@ export function createServer(mcpServer: McpServer, port: number): http.Server {
             
             req.on('close', () => {
                 clearInterval(heartbeatInterval);
-                logger.warn(`Multiplexed SSE connection closed for session: ${clientSessionId}. Request aborted: ${req.aborted}`);
+                logger.warn(`Multiplexed SSE connection closed for session: ${clientSessionId}.`);
                 if (multiplexingTransport) {
                     multiplexingTransport.removeClient(clientSessionId);
                 }
