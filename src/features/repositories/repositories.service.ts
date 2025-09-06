@@ -3,7 +3,7 @@ import { paginate } from '#utils/pagination';
 
 // --- Interfaces para Opciones de Métodos ---
 
-export interface FileContentsOptions { owner: string; repo: string; path: string; message: string; content: string; branch?: string; sha?: string; }
+export interface CreateFileContentsOptions { owner: string; repo: string; path: string; message: string; content: string; branch?: string; }
 export interface UpdateFileContentsOptions { owner: string; repo: string; path: string; message: string; content: string; sha: string; branch?: string; }
 export interface ListBranchesOptions { owner: string; repo: string; page?: number; per_page?: number; fetchAll?: boolean; fields?: string[]; }
 export interface PushMultipleFilesOptions { owner: string; repo: string; branch: string; commitMessage: string; files: { path: string; content: string }[]; }
@@ -24,20 +24,20 @@ class Repositories extends GitHubClient {
         return /^([0-9a-zA-Z+/]{4})*(([0-9a-zA-Z+/]{2}==)|([0-9a-zA-Z+/]{3}=))?$/.test(encodedString);
     }
 
-    async CreateFileContents(options: FileContentsOptions) {
-        const { owner, repo, path, ...payload } = options;
+    private _upsertFile(options: CreateFileContentsOptions | UpdateFileContentsOptions) {
+        const { owner, repo, path, ...payload } = options as any;
         if (!this.isBase64(payload.content)) {
             payload.content = Buffer.from(payload.content).toString('base64');
         }
         return this.put(`repos/${owner}/${repo}/contents/${path}`, payload);
     }
 
-    async UpdateFileContents(options: UpdateFileContentsOptions) {
-        const { owner, repo, path, ...payload } = options;
-        if (!this.isBase64(payload.content)) {
-            payload.content = Buffer.from(payload.content).toString('base64');
-        }
-        return this.put(`repos/${owner}/${repo}/contents/${path}`, payload);
+    async createFileContents(options: CreateFileContentsOptions) {
+        return this._upsertFile(options);
+    }
+
+    async updateFileContents(options: UpdateFileContentsOptions) {
+        return this._upsertFile(options);
     }
 
     async listBranches(options: ListBranchesOptions) {

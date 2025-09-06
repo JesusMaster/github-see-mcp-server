@@ -18,7 +18,7 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
         },
         async (args) => {
             try {
-                let info = await repositoriesInstance.CreateFileContents(args);
+                let info = await repositoriesInstance.createFileContents(args);
                 return { content: [{ type: 'text', text: JSON.stringify(info, null, 2) }] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
@@ -40,7 +40,7 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
         },
         async (args) => {
             try {
-                let info = await repositoriesInstance.UpdateFileContents(args);
+                let info = await repositoriesInstance.updateFileContents(args);
                 return { content: [{ type: 'text', text: JSON.stringify(info, null, 2) }] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
