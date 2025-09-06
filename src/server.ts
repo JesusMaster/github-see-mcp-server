@@ -86,8 +86,8 @@ const criticalOperationsLimiter = rateLimit({
 });
 
 const rateLimitMonitor = (req: Request, res: Response, next: NextFunction) => {
-    const remaining = req.rateLimit?.remaining || 0;
-    const total = req.rateLimit?.limit || 0;
+    const remaining = req.rateLimit?.remaining ?? 0;
+    const total = req.rateLimit?.limit ?? 0;
 
     if (remaining > 0 && remaining < total * 0.1) {
         logger.warn(`Rate limit warning for ${req.ip} on ${req.method} ${req.url}: ${remaining}/${total} remaining`);
