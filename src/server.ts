@@ -56,7 +56,6 @@ const messageLimiter = rateLimit({
 const createUserLimiter = () => rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hora
     max: (req: Request) => {
-        // @ts-ignore
         return req.user?.rateLimits?.requestsPerHour ?? config.defaultUserRateLimit;
     },
     message: 'User rate limit exceeded'
@@ -87,8 +86,8 @@ const criticalOperationsLimiter = rateLimit({
 });
 
 const rateLimitMonitor = (req: Request, res: Response, next: NextFunction) => {
-    const remaining = req.rateLimit?.remaining || 0;
-    const total = req.rateLimit?.limit || 0;
+    const remaining = req.rateLimit?.remaining ?? 0;
+    const total = req.rateLimit?.limit ?? 0;
 
     if (remaining > 0 && remaining < total * 0.1) {
         logger.warn(`Rate limit warning for ${req.ip} on ${req.method} ${req.url}: ${remaining}/${total} remaining`);
