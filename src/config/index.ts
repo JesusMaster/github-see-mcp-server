@@ -9,7 +9,7 @@ dotenv.config();
 function findAndLoadToken(): string | undefined {
     let token = process.env.GITHUB_TOKEN;
     if (token) {
-        logger.info('GitHub token loaded from environment variable.');
+        logger.info('GitHub token loaded successfully.');
         return token;
     }
 
@@ -23,7 +23,7 @@ function findAndLoadToken(): string | undefined {
         for (const tokenPath of possibleTokenPaths) {
             if (fs.existsSync(tokenPath)) {
                 token = fs.readFileSync(tokenPath, 'utf8').trim();
-                logger.info(`GitHub token loaded from ${tokenPath}`);
+                logger.info('GitHub token loaded successfully.');
                 return token;
             }
         }
