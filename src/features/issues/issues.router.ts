@@ -4,20 +4,6 @@ import Issues from "#features/issues/issues.service";
 
 export function registerIssueTools(server: McpServer, issuesInstance: Issues) {
     server.tool(
-        'get_me',
-        'Get details of the authenticated user',
-        {},
-        async () => {
-            try {
-                let info = await issuesInstance.getUserInfo();
-                return { content: [{ type: 'text', text: JSON.stringify(info, null, 2) }] };
-            } catch (error: any) {
-                return { content: [{ type: 'text', text: `Error: ${error.message}` }], isError: true };
-            }
-        }
-    );
-    
-    server.tool(
         'get_issue',
         'Gets the contents of an issue within a repository',
         {
