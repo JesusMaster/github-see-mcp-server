@@ -13,7 +13,6 @@ import { z } from 'zod';
 // Importar configuración y logger centralizados
 import { config } from '#config/index';
 import { logger } from '#core/logger';
-import helmet from 'helmet';
 import rateLimit from 'express-rate-limit';
 import express, { Request, Response, NextFunction } from 'express';
 
@@ -26,11 +25,11 @@ const generalLimiter = rateLimit({
     },
     standardHeaders: true,
     legacyHeaders: false,
-    handler: (req: express.Request, res: express.Response) => {
+    handler: (req, res) => {
         logger.warn(`Rate limit exceeded for IP: ${req.ip} on ${req.method} ${req.url}`);
         res.status(429).json({
             error: 'Rate limit exceeded',
-            retryAfter: Math.ceil((req.rateLimit?.resetTime?.getTime() || Date.now()) / 1000)
+            retryAfter: Math.ceil((req.rateLimit?.resetTime?.getTime() ?? Date.now()) / 1000)
         });
     }
 });
@@ -45,7 +44,7 @@ const messageLimiter = rateLimit({
     windowMs: 60 * 1000, // 1 minuto
     max: config.rateLimitMessagesMax,
     message: 'Too many messages from this IP', // This will be overridden by handler
-    handler: (req: express.Request, res: express.Response) => {
+    handler: (req, res) => {
         logger.warn(`Message Rate limit exceeded for IP: ${req.ip}`);
         res.status(429).json({
             error: 'Rate limit exceeded',
@@ -57,8 +56,7 @@ const messageLimiter = rateLimit({
 const createUserLimiter = () => rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hora
     max: (req: Request) => {
-        // @ts-ignore
-        return req.user?.rateLimits?.requestsPerHour || config.defaultUserRateLimit;
+        return req.user?.rateLimits?.requestsPerHour ?? config.defaultUserRateLimit;
     },
     message: 'User rate limit exceeded'
 });
@@ -78,7 +76,7 @@ const criticalOperationsLimiter = rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hora
     max: 10, // Solo 10 operaciones críticas por hora
     message: 'Critical operation rate limit exceeded', // This will be overridden by handler
-    handler: (req: express.Request, res: express.Response) => {
+    handler: (req, res) => {
         logger.warn(`Critical operation rate limit exceeded for IP: ${req.ip}`);
         res.status(429).json({
             error: 'Rate limit exceeded',
@@ -132,57 +130,6 @@ export function closeAllSseConnections() {
 export function createServer(mcpServer: McpServer, port: number): http.Server {
     const app = express();
 
-    app.use(helmet({
-        contentSecurityPolicy: {
-            directives: {
-                defaultSrc: ["'self'"],
-                styleSrc: ["'self'", "'unsafe-inline'"],
-                scriptSrc: ["'self'"],
-                imgSrc: ["'self'", "data:", "https:"],
-                connectSrc: ["'self'"],
-                fontSrc: ["'self'"],
-                objectSrc: ["'none'"],
-                mediaSrc: ["'self'"],
-                frameSrc: ["'none'"],
-                frameAncestors: ["'none'"],
-                baseUri: ["'self'"],
-                formAction: ["'self'"],
-                reportUri: config.cspReportUri || '',
-            },
-            reportOnly: config.cspReportOnly,
-        },
-        crossOriginEmbedderPolicy: false, // Para SSE compatibility
-        hsts: config.disableHsts ? false : {
-            maxAge: config.hstsMaxAge, // 1 año
-            includeSubDomains: true,
-            preload: true
-        }
-    }));
-
-    app.use((req, res, next) => {
-        // Prevenir que la respuesta sea embebida en iframes
-        res.setHeader('X-Frame-Options', 'DENY');
-        
-        // Prevenir MIME type sniffing
-        res.setHeader('X-Content-Type-Options', 'nosniff');
-        
-        // Control de referrer
-        res.setHeader('Referrer-Policy', 'strict-origin-when-cross-origin');
-        
-        // Política de permisos
-        res.setHeader('Permissions-Policy', 
-            'camera=(), microphone=(), geolocation=(), payment=()');
-        
-        // Headers para SSE
-        if (req.path === '/sse') {
-            res.setHeader('Cache-Control', 'no-cache, no-store, must-revalidate');
-            res.setHeader('Pragma', 'no-cache');
-            res.setHeader('Expires', '0');
-        }
-        
-        next();
-    });
-
     app.use(cors({
         origin: config.corsAllowOrigin,
         methods: ['GET', 'POST', 'OPTIONS'],
@@ -205,9 +152,6 @@ export function createServer(mcpServer: McpServer, port: number): http.Server {
     app.use(rateLimitMonitor); // Aplicar el monitor después del limiter
     
     app.get('/health', (req: express.Request, res: express.Response) => {
-        res.setHeader('Cache-Control', 'no-cache, max-age=0');
-        res.setHeader('X-Robots-Tag', 'noindex, nofollow');
-        
         res.status(200).json({
             status: 'ok', 
             timestamp: new Date().toISOString(),
@@ -418,28 +362,6 @@ export function createServer(mcpServer: McpServer, port: number): http.Server {
         logger.debug(`Unhandled request: ${req.method} ${req.url}`);
         res.status(404).json({ error: 'Not found' });
     });
-
-    if (process.env.NODE_ENV === 'development') {
-        app.use((req: Request, res: Response, next: NextFunction) => {
-            res.on('finish', () => {
-                const requiredHeaders = [
-                    'x-frame-options',
-                    'x-content-type-options',
-                    'referrer-policy',
-                    'content-security-policy'
-                ];
-                
-                const missingHeaders = requiredHeaders.filter(header => 
-                    !res.getHeader(header)
-                );
-                
-                if (missingHeaders.length > 0) {
-                    logger.warn(`Missing security headers: ${missingHeaders.join(', ')}`);
-                }
-            });
-            next();
-        });
-    }
 
     const httpServer = http.createServer(app);
     httpServer.timeout = config.sseTimeout;
