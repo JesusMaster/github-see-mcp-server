@@ -9,6 +9,7 @@ import {
 import { SSEServerTransport } from "@modelcontextprotocol/sdk/server/sse.js";
 import { MultiplexingSSEServerTransport } from "./multiplexing-sse-transport.js";
 import { randomUUID } from 'crypto';
+import { z } from 'zod';
 
 // Importar configuración y logger centralizados
 import { config } from '#config/index';
@@ -52,7 +53,14 @@ export function createServer(mcpServer: McpServer, port: number): http.Server {
     }));
     logger.info(`CORS configured with origin: ${config.corsAllowOrigin}`);
 
-    app.use(express.json({ limit: '300mb' }));
+    app.use(express.json({
+    limit: '1mb', // Reducir de 300mb actual
+    verify: (req, res, buf) => {
+        if (buf.length > 1048576) { // 1MB
+            throw new Error('Payload too large');
+        }
+    }
+}));
     
     app.get('/health', (req: express.Request, res: express.Response) => {
         res.status(200).json({
@@ -185,48 +193,49 @@ export function createServer(mcpServer: McpServer, port: number): http.Server {
     });
 
     app.post('/messages', (req: express.Request, res: express.Response) => {
-        const sessionId = req.query.sessionId as string;
-        if (!sessionId) {
-            logger.error('POST /messages error: Missing sessionId parameter');
-            res.status(400).json({ error: 'Missing sessionId parameter' });
-            return;
-        }
+        try {
+            const sessionIdSchema = z.string().uuid();
+            const sessionId = sessionIdSchema.parse(req.query.sessionId);
 
-        const bodyContent = (typeof req.body === 'object' && req.body !== null) 
-            ? JSON.stringify(req.body) 
-            : (req.body?.toString() ?? '');
+            const bodyContent = (typeof req.body === 'object' && req.body !== null) 
+                ? JSON.stringify(req.body) 
+                : (req.body?.toString() ?? '');
 
-        const messageTimeout = setTimeout(() => {
-            if (!res.writableEnded) {
-                logger.error(`Message processing timeout for session ${sessionId}`);
-                res.status(408).json({ error: 'Request timeout' });
-            }
-        }, config.mcpTimeout);
-
-        const transport = (config.useMultiplexing && multiplexingTransport) 
-            ? multiplexingTransport 
-            : sseTransports[sessionId]?.transport;
-
-        if (!transport) {
-            logger.error(`POST /messages error: Session not found for ID ${sessionId}`);
-            res.status(404).json({ error: 'Session not found' });
-            clearTimeout(messageTimeout);
-            return;
-        }
-
-        const handlePromise = config.useMultiplexing && multiplexingTransport
-            ? multiplexingTransport.handleClientPostMessage(sessionId, bodyContent)
-            : (transport as SSEServerTransport).handlePostMessage(req, res, bodyContent);
-
-        handlePromise
-            .then(() => clearTimeout(messageTimeout))
-            .catch((error) => {
-                clearTimeout(messageTimeout);
-                logger.error(`Error handling message for session ${sessionId}:`, error);
+            const messageTimeout = setTimeout(() => {
                 if (!res.writableEnded) {
-                    res.status(500).json({ error: 'Internal server error' });
+                    logger.error(`Message processing timeout for session ${sessionId}`);
+                    res.status(408).json({ error: 'Request timeout' });
                 }
-            });
+            }, config.mcpTimeout);
+
+            const transport = (config.useMultiplexing && multiplexingTransport) 
+                ? multiplexingTransport 
+                : sseTransports[sessionId]?.transport;
+
+            if (!transport) {
+                logger.error(`POST /messages error: Session not found for ID ${sessionId}`);
+                res.status(404).json({ error: 'Session not found' });
+                clearTimeout(messageTimeout);
+                return;
+            }
+
+            const handlePromise = config.useMultiplexing && multiplexingTransport
+                ? multiplexingTransport.handleClientPostMessage(sessionId, bodyContent)
+                : (transport as SSEServerTransport).handlePostMessage(req, res, bodyContent);
+
+            handlePromise
+                .then(() => clearTimeout(messageTimeout))
+                .catch((error) => {
+                    clearTimeout(messageTimeout);
+                    logger.error(`Error handling message for session ${sessionId}:`, error);
+                    if (!res.writableEnded) {
+                        res.status(500).json({ error: 'Internal server error' });
+                    }
+                });
+        } catch (error) {
+            logger.error('Invalid sessionId format');
+            res.status(400).json({ error: 'Invalid session ID format' });
+        }
     });
     
     app.use((req: express.Request, res: express.Response) => {

@@ -1,4 +1,5 @@
 import GitHubClient from '#services/api';
+import { sanitize } from '../../utils/sanitize.js';
 
 // --- Interfaces para Opciones de Métodos ---
 
@@ -24,12 +25,14 @@ class Issues extends GitHubClient {
 
     async createIssue(options: CreateIssueOptions) {
         const { owner, repo, ...payload } = options;
+        if (payload.title) payload.title = sanitize(payload.title);
+        if (payload.body) payload.body = sanitize(payload.body);
         return this.post(`repos/${owner}/${repo}/issues`, payload);
     }
 
     async addComment(options: AddCommentOptions) {
         const { owner, repo, issueNumber, comment } = options;
-        const payload = { body: comment };
+        const payload = { body: sanitize(comment) };
         return this.post(`repos/${owner}/${repo}/issues/${issueNumber}/comments`, payload);
     }
 
@@ -53,12 +56,14 @@ class Issues extends GitHubClient {
 
     async updateIssue(options: UpdateIssueOptions) {
         const { owner, repo, issueNumber, ...payload } = options;
+        if (payload.title) payload.title = sanitize(payload.title);
+        if (payload.body) payload.body = sanitize(payload.body);
         return this.patch(`repos/${owner}/${repo}/issues/${issueNumber}`, payload);
     }
 
     async searchIssues(options: SearchIssuesOptions) {
         const { owner, repo, fields, q, ...params } = options;
-        const payload = { q, per_page: 5, ...params };
+        const payload = { q: sanitize(q), per_page: 5, ...params };
         const results: any = await this.get('search/issues', payload);
         
         if (fields?.length && results.items) {

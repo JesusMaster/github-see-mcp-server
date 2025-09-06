@@ -1,4 +1,5 @@
 import GitHubClient from '#services/api';
+import { sanitize } from '../../utils/sanitize.js';
 
 // --- Interfaces para Opciones de Métodos ---
 
@@ -41,6 +42,8 @@ class PullRequest extends GitHubClient {
 
     async mergePullRequest(options: MergePullRequestOptions) {
         const { owner, repo, pullNumber, ...payload } = options;
+        if (payload.commit_title) payload.commit_title = sanitize(payload.commit_title);
+        if (payload.commitMessage) payload.commitMessage = sanitize(payload.commitMessage);
         return this.put(`repos/${owner}/${repo}/pulls/${pullNumber}/merge`, payload);
     }
 
@@ -72,22 +75,28 @@ class PullRequest extends GitHubClient {
     async createPullRequestReview(options: CreatePullRequestReviewOptions) {
         const { owner, repo, pullNumber, commitId, ...rest } = options;
         const payload: any = { ...rest };
+        if (payload.body) payload.body = sanitize(payload.body);
         if (commitId) payload.commit_id = commitId;
         return this.post(`repos/${owner}/${repo}/pulls/${pullNumber}/reviews`, payload);
     }
 
     async createPullRequest(options: CreatePullRequestOptions) {
         const { owner, repo, ...payload } = options;
+        if (payload.title) payload.title = sanitize(payload.title);
+        if (payload.body) payload.body = sanitize(payload.body);
         return this.post(`repos/${owner}/${repo}/pulls`, payload);
     }
 
     async addPullRequestReviewComment(options: AddPullRequestReviewCommentOptions) {
         const { owner, repo, pullNumber, ...payload } = options;
+        if (payload.body) payload.body = sanitize(payload.body);
         return this.post(`repos/${owner}/${repo}/pulls/${pullNumber}/comments`, payload);
     }
 
     async updatePullRequest(options: UpdatePullRequestOptions) {
         const { owner, repo, pullNumber, ...payload } = options;
+        if (payload.title) payload.title = sanitize(payload.title);
+        if (payload.body) payload.body = sanitize(payload.body);
         return this.patch(`repos/${owner}/${repo}/pulls/${pullNumber}`, payload);
     }
 }

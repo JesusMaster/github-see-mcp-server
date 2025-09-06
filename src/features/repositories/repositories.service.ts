@@ -1,5 +1,6 @@
 import GitHubClient from '#services/api';
 import { paginate } from '#utils/pagination';
+import { sanitize } from '../../utils/sanitize.js';
 
 // --- Interfaces para Opciones de Métodos ---
 
@@ -26,10 +27,11 @@ class Repositories extends GitHubClient {
 
     private _upsertFile(options: CreateFileContentsOptions | UpdateFileContentsOptions) {
         const { owner, repo, path, ...payload } = options as any;
-        if (!this.isBase64(payload.content)) {
-            payload.content = Buffer.from(payload.content).toString('base64');
+        if (payload.message) payload.message = sanitize(payload.message);
+        if (payload.content && !this.isBase64(payload.content)) {
+            payload.content = Buffer.from(sanitize(payload.content)).toString('base64');
         }
-        return this.put(`repos/${owner}/${repo}/contents/${path}`, payload);
+        return this.put(`repos/${owner}/${repo}/contents/${sanitize(path)}`, payload);
     }
 
     async createFileContents(options: CreateFileContentsOptions) {
@@ -58,34 +60,34 @@ class Repositories extends GitHubClient {
 
     async pushMultipleFiles(options: PushMultipleFilesOptions) {
         const { owner, repo, branch, commitMessage, files } = options;
-        const branchInfo = await this.get(`repos/${owner}/${repo}/branches/${branch}`);
+        const branchInfo = await this.get(`repos/${owner}/${repo}/branches/${sanitize(branch)}`);
         const baseTreeSha = (branchInfo as any).commit.commit.tree.sha;
 
         const tree = await this.post(`repos/${owner}/${repo}/git/trees`, {
             base_tree: baseTreeSha,
-            tree: files.map((file: { path: string; content: string }) => ({ path: file.path, mode: '100644', type: 'blob', content: file.content })),
+            tree: files.map((file: { path: string; content: string }) => ({ path: sanitize(file.path), mode: '100644', type: 'blob', content: sanitize(file.content) })),
         });
 
         const newCommit = await this.post(`repos/${owner}/${repo}/git/commits`, {
-            message: commitMessage,
+            message: sanitize(commitMessage),
             tree: (tree as any).sha,
             parents: [(branchInfo as any).commit.sha],
         });
 
-        await this.patch(`repos/${owner}/${repo}/git/refs/heads/${branch}`, { sha: (newCommit as any).sha });
+        await this.patch(`repos/${owner}/${repo}/git/refs/heads/${sanitize(branch)}`, { sha: (newCommit as any).sha });
         return newCommit;
     }
 
     async createRepository(options: CreateRepositoryOptions) {
         const { name, description, privateRepo, autoInit } = options;
-        const payload = { name, description, private: privateRepo, auto_init: autoInit };
+        const payload = { name: sanitize(name), description: description ? sanitize(description) : undefined, private: privateRepo, auto_init: autoInit };
         return this.post('user/repos', payload);
     }
 
     async searchRepositories(options: SearchRepositoriesOptions) {
         const { fields, fetchAll, query, ...params } = options;
         const url = `${this.baseUrl}/search/repositories`;
-        const config = { params: { q: query, per_page: 5, ...params }, headers: { Authorization: `token ${this.token}`, Accept: 'application/vnd.github.v3+json' }, timeout: 5000 };
+        const config = { params: { q: sanitize(query), per_page: 5, ...params }, headers: { Authorization: `token ${this.token}`, Accept: 'application/vnd.github.v3+json' }, timeout: 5000 };
         let results: any = await paginate(url, config, fetchAll);
 
         if (fields?.length && results.items) {
@@ -121,7 +123,7 @@ class Repositories extends GitHubClient {
 
     async getFileContents(options: GetFileContentsOptions) {
         const { owner, repo, path, ...params } = options;
-        const response: any = await this.get(`repos/${owner}/${repo}/contents/${path}`, params);
+        const response: any = await this.get(`repos/${owner}/${repo}/contents/${sanitize(path)}`, params);
         if (response?.content) {
             response.decodedContent = Buffer.from(response.content, 'base64').toString('utf-8');
         }
@@ -135,16 +137,17 @@ class Repositories extends GitHubClient {
 
     async getBranchInfo(options: GetBranchInfoOptions) {
         const { owner, repo, branch } = options;
-        return this.get(`repos/${owner}/${repo}/git/ref/heads/${branch}`);
+        return this.get(`repos/${owner}/${repo}/git/ref/heads/${sanitize(branch)}`);
     }
 
     async createBranch(options: CreateBranchOptions) {
         const { owner, repo, branchName, baseBranch } = options;
-        return this.post(`repos/${owner}/${repo}/git/refs`, { ref: `refs/heads/${branchName}`, sha: baseBranch });
+        return this.post(`repos/${owner}/${repo}/git/refs`, { ref: `refs/heads/${sanitize(branchName)}`, sha: sanitize(baseBranch) });
     }
 
     async listCommits(options: ListCommitsOptions) {
         const { owner, repo, fields, fetchAll, ...params } = options;
+        if (params.path) params.path = sanitize(params.path);
         const url = `${this.baseUrl}/repos/${owner}/${repo}/commits`;
         const config = { params: { per_page: 5, ...params }, headers: { Authorization: `token ${this.token}`, Accept: 'application/vnd.github.v3+json' }, timeout: 5000 };
         let results = await paginate(url, config, fetchAll);
@@ -161,6 +164,7 @@ class Repositories extends GitHubClient {
 
     async getCommit(options: GetCommitOptions) {
         const { owner, repo, fields, fetchAll, ...params } = options;
+        if (params.sha) params.sha = sanitize(params.sha);
         const url = `${this.baseUrl}/repos/${owner}/${repo}/commits`;
         const config = { params: { page: 1, per_page: 5, ...params }, headers: { Authorization: `token ${this.token}`, Accept: 'application/vnd.github.v3+json' }, timeout: 5000 };
         let results = await paginate(url, config, fetchAll);
@@ -177,7 +181,7 @@ class Repositories extends GitHubClient {
 
     async getSpecificCommit(options: GetSpecificCommitOptions) {
         const { owner, repo, sha } = options;
-        return this.get(`repos/${owner}/${repo}/commits/${sha}`);
+        return this.get(`repos/${owner}/${repo}/commits/${sanitize(sha)}`);
     }
 }
 
