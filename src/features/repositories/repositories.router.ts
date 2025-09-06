@@ -4,8 +4,6 @@ import Repositories from "#features/repositories/repositories.service";
 
 export function registerRepositoriesTools(server: McpServer, repositoriesInstance: Repositories) {
 
-
-
     server.tool(
         'create_file',
         'Create a single file in a repository',
@@ -20,16 +18,8 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
         },
         async (args) => {
             try {
-
-                let info = await repositoriesInstance.CreateFileContents(args.owner, args.repo, args.path, args.message, args.content, args.branch, args.sha);
-                return { 
-                    content: [
-                        { 
-                            type: 'text', 
-                            text: JSON.stringify(info, null, 2) 
-                        }
-                    ] 
-                };
+                let info = await repositoriesInstance.CreateFileContents(args);
+                return { content: [{ type: 'text', text: JSON.stringify(info, null, 2) }] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -50,16 +40,8 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
         },
         async (args) => {
             try {
-
-                let info = await repositoriesInstance.UpdateFileContents(args.owner, args.repo, args.path, args.message, args.content, args.sha, args.branch);
-                return { 
-                    content: [
-                        { 
-                            type: 'text', 
-                            text: JSON.stringify(info, null, 2) 
-                        }
-                    ] 
-                };
+                let info = await repositoriesInstance.UpdateFileContents(args);
+                return { content: [{ type: 'text', text: JSON.stringify(info, null, 2) }] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -79,15 +61,8 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
         },
         async (args) => {
             try {
-                let info = await repositoriesInstance.listBranches(args.owner, args.repo, args.page, args.per_page, args.fetchAll, args.fields);
-                return { 
-                    content: [
-                        { 
-                            type: 'text', 
-                            text: JSON.stringify(info, null, 2) 
-                        }
-                    ] 
-                };
+                let info = await repositoriesInstance.listBranches(args);
+                return { content: [{ type: 'text', text: JSON.stringify(info, null, 2) }] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -101,20 +76,13 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
             owner: z.string().describe('Repository owner (string, required)'),
             repo: z.string().describe('Repository name (string, required)'),
             branch: z.string().describe('Branch name (string, optional)'),
-            message: z.string().describe('Commit message (string, required)'),
-            files: z.any().describe('Array of comment objects (array, optional)'),
+            commitMessage: z.string().describe('Commit message (string, required)'),
+            files: z.array(z.object({ path: z.string(), content: z.string() })).describe('Array of file objects to push'),
         },
         async(args)=>{
             try {
-                let info = await repositoriesInstance.pushMultipleFiles(args.owner, args.repo, args.branch,args.message, args.files);
-                return { 
-                    content: [
-                        { 
-                            type: 'text', 
-                            text: JSON.stringify(info, null, 2) 
-                        }
-                    ] 
-                };
+                let info = await repositoriesInstance.pushMultipleFiles(args);
+                return { content: [{ type: 'text', text: JSON.stringify(info, null, 2) }] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -135,16 +103,8 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
         }, 
         async(args)=>{
             try {
-                let info = await repositoriesInstance.searchRepositories(args.query, args.page, args.perPage, args.sort, args.order, args.fetchAll, args.fields);
-                
-                return { 
-                    content: [
-                        { 
-                            type: 'text', 
-                            text: JSON.stringify(info, null, 2) 
-                        }
-                    ] 
-                };
+                let info = await repositoriesInstance.searchRepositories(args);
+                return { content: [{ type: 'text', text: JSON.stringify(info, null, 2) }] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -160,21 +120,12 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
             private: z.boolean().describe('Whether the repository is private (boolean, optional)'),
             autoInit: z.boolean().describe('Auto-initialize with README (boolean, optional)'),
         },async(args)=>{
-
             try {
-                let info = await repositoriesInstance.createRepository(args.name,args.description,args.private,args.autoInit);
-                return { 
-                    content: [
-                        { 
-                            type: 'text', 
-                            text: JSON.stringify(info, null, 2) 
-                        }
-                    ] 
-                };
+                let info = await repositoriesInstance.createRepository(args);
+                return { content: [{ type: 'text', text: JSON.stringify(info, null, 2) }] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
-
         }
     );
 
@@ -185,21 +136,14 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
             owner: z.string().describe('Repository owner (string, required)'),
             repo: z.string().describe('Repository name (string, required)'),
         },async(args)=>{
-
             try {
-                let info = await repositoriesInstance.getUserRepoInfo(args.repo,args.owner);
-                return { 
-                    content: [
-                        { 
-                            type: 'text', 
-                            text: JSON.stringify(info, null, 2) 
-                        }
-                    ] 
-                };
+                // NOTE: The service expects { repoName, userName }, but the tool defines { owner, repo }.
+                // Mapping them here.
+                let info = await repositoriesInstance.getUserRepoInfo({ userName: args.owner, repoName: args.repo });
+                return { content: [{ type: 'text', text: JSON.stringify(info, null, 2) }] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
-
         }
     );
     
@@ -213,21 +157,12 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
             fetchAll: z.boolean().optional().describe('Fetch all pages (boolean, optional)'),
             fields: z.array(z.string()).optional().describe('Fields to return (string[], optional)'),
         },async(args)=>{
-
             try {
-                let info = await repositoriesInstance.getUserRepos(args.userName,args.page,args.perPage, args.fetchAll, args.fields);
-                return { 
-                    content: [
-                        { 
-                            type: 'text', 
-                            text: JSON.stringify(info, null, 2) 
-                        }
-                    ] 
-                };
+                let info = await repositoriesInstance.getUserRepos(args);
+                return { content: [{ type: 'text', text: JSON.stringify(info, null, 2) }] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
-
         }
     );
 
@@ -242,15 +177,8 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
         },
         async(args)=>{
             try {
-                let info = await repositoriesInstance.getFileContents(args.owner, args.repo, args.path, args.ref);
-                return { 
-                    content: [
-                        { 
-                            type: 'text', 
-                            text: JSON.stringify(info, null, 2) 
-                        }
-                    ] 
-                };
+                let info = await repositoriesInstance.getFileContents(args);
+                return { content: [{ type: 'text', text: JSON.stringify(info, null, 2) }] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -267,15 +195,8 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
         },
         async(args)=>{
             try {
-                let info = await repositoriesInstance.createFork(args.owner, args.repo, args.organization);
-                return { 
-                    content: [
-                        { 
-                            type: 'text', 
-                            text: JSON.stringify(info, null, 2) 
-                        }
-                    ] 
-                };
+                let info = await repositoriesInstance.createFork(args);
+                return { content: [{ type: 'text', text: JSON.stringify(info, null, 2) }] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
@@ -290,23 +211,16 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
             repo: z.string().describe('Repository name (string, required)'),
             branch: z.string().describe('Branch name (string, required)'),
             sha: z.string().describe('SHA of the commit to base the new branch on (string, required)'),
-        },    
+        },
          async(args)=>{
-
             try {
-                let info = await repositoriesInstance.createBranch(args.owner, args.repo, args.branch, args.sha);
-                return { 
-                    content: [
-                        { 
-                            type: 'text', 
-                            text: JSON.stringify(info, null, 2) 
-                        }
-                    ] 
-                };
+                // NOTE: The service expects { branchName, baseBranch }, but the tool defines { branch, sha }.
+                // Mapping them here.
+                let info = await repositoriesInstance.createBranch({owner: args.owner, repo: args.repo, branchName: args.branch, baseBranch: args.sha});
+                return { content: [{ type: 'text', text: JSON.stringify(info, null, 2) }] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
-
         }
     );
 
@@ -318,21 +232,12 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
             repo: z.string().describe('Repository name (string, required)'),
             branch: z.string().describe('Branch name (string, required)'),
         },async(args)=>{
-
             try {
-                let info = await repositoriesInstance.getBranchInfo(args.owner, args.repo, args.branch);
-                return { 
-                    content: [
-                        { 
-                            type: 'text', 
-                            text: JSON.stringify(info, null, 2) 
-                        }
-                    ] 
-                };
+                let info = await repositoriesInstance.getBranchInfo(args);
+                return { content: [{ type: 'text', text: JSON.stringify(info, null, 2) }] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
-
         }
     );
 
@@ -340,7 +245,6 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
         'list_commits',
         'Get a list of commits of a branch in a repository',
         {
-
             owner: z.string().describe('Repository owner (string, required)'),
             repo: z.string().describe('Repository name (string, required)'),
             sha: z.string().optional().describe('Branch name, tag, or commit SHA (string, optional)'),
@@ -349,24 +253,15 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
             perPage: z.number().optional().describe('Results per page (number, optional)'),
             fetchAll: z.boolean().optional().describe('Fetch all pages (boolean, optional)'),
             fields: z.array(z.string()).optional().describe('Fields to return (string[], optional)'),
-
         },
         async(args)=>{
             try {
-                let info = await repositoriesInstance.listCommits(args.owner, args.repo, args.sha, args.path, args.page, args.perPage, args.fetchAll, args.fields);
-                return { 
-                    content: [
-                        { 
-                            type: 'text', 
-                            text: JSON.stringify(info, null, 2) 
-                        }
-                    ] 
-                };
+                let info = await repositoriesInstance.listCommits(args);
+                return { content: [{ type: 'text', text: JSON.stringify(info, null, 2) }] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
         }
-
     )
 
     server.tool(
@@ -383,21 +278,13 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
         },
         async(args)=>{
             try {
-                let info = await repositoriesInstance.getCommit(args.owner, args.repo, args.sha,args.page,args.perPage, args.fetchAll, args.fields);
-                return { 
-                    content: [
-                        { 
-                            type: 'text', 
-                            text: JSON.stringify(info, null, 2) 
-                        }
-                    ] 
-                };
+                let info = await repositoriesInstance.getCommit(args);
+                return { content: [{ type: 'text', text: JSON.stringify(info, null, 2) }] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
         }
     )
-
 
     server.tool(
         'get_specific_commit',
@@ -409,19 +296,11 @@ export function registerRepositoriesTools(server: McpServer, repositoriesInstanc
         },
         async(args)=>{
             try {
-                let info = await repositoriesInstance.getSpecificCommit(args.owner, args.repo, args.sha);
-                return { 
-                    content: [
-                        { 
-                            type: 'text', 
-                            text: JSON.stringify(info, null, 2) 
-                        }
-                    ] 
-                };
+                let info = await repositoriesInstance.getSpecificCommit(args);
+                return { content: [{ type: 'text', text: JSON.stringify(info, null, 2) }] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
         }
     )
-
 }
