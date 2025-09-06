@@ -1,4 +1,3 @@
-import express from "express";
 import http from 'http';
 import cors from 'cors';
 import { McpServer } from "@modelcontextprotocol/sdk/server/mcp.js";
@@ -15,7 +14,7 @@ import { z } from 'zod';
 import { config } from '#config/index';
 import { logger } from '#core/logger';
 import rateLimit from 'express-rate-limit';
-import { Request, Response, NextFunction } from 'express';
+import express, { Request, Response, NextFunction } from 'express';
 
 const generalLimiter = rateLimit({
     windowMs: config.rateLimitWindowMs,
@@ -30,7 +29,7 @@ const generalLimiter = rateLimit({
         logger.warn(`Rate limit exceeded for IP: ${req.ip} on ${req.method} ${req.url}`);
         res.status(429).json({
             error: 'Rate limit exceeded',
-            retryAfter: Math.ceil((req.rateLimit?.resetTime?.getTime() || Date.now()) / 1000)
+            retryAfter: Math.ceil((req.rateLimit?.resetTime?.getTime() ?? Date.now()) / 1000)
         });
     }
 });
@@ -58,7 +57,7 @@ const createUserLimiter = () => rateLimit({
     windowMs: 60 * 60 * 1000, // 1 hora
     max: (req: Request) => {
         // @ts-ignore
-        return req.user?.rateLimits?.requestsPerHour || config.defaultUserRateLimit;
+        return req.user?.rateLimits?.requestsPerHour ?? config.defaultUserRateLimit;
     },
     message: 'User rate limit exceeded'
 });
