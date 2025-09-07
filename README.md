@@ -141,7 +141,27 @@ You can also run the server using Docker.
 
 ```bash
 docker build -t github-see-mcp-server .
-docker run -d -p 3200:3200 -e MCP_TIMEOUT="180000" -e LOG_LEVEL="info" -e CORS_ALLOW_ORIGIN="*" -e GITHUB_TOKEN={YOUR_TOKEN_HERE} -e MCP_SSE_PORT="3200" -e USE_MULTIPLEXING_SSE="true" --name github-see-mcp-server github-see-mcp-server
+docker run -d -p 8080:8080 \
+  -e USE_MULTIPLEXING_SSE="true" \
+  -e MCP_TIMEOUT="1800000" \
+  -e SSE_TIMEOUT="1800000" \
+  -e LOG_LEVEL="info" \
+  -e CORS_ALLOW_ORIGIN="*" \
+  -e GITHUB_TOKEN="{YOUR GITHUB TOKEN}" \
+  -e MCP_SSE_PORT="8080" \
+  -e RATE_LIMIT_WINDOW_MS="900000" \
+  -e RATE_LIMIT_MAX_REQUESTS="100" \
+  -e RATE_LIMIT_SSE_MAX="5" \
+  -e RATE_LIMIT_MESSAGES_MAX="30" \
+  -e DEFAULT_USER_RATE_LIMIT="1000" \
+  -e HSTS_MAX_AGE="31536000" \
+  -e CSP_REPORT_ONLY="true" \
+  -e CSP_REPORT_URI="https://apprecio.cl/csp-report" \
+  -e NODE_ENV="production" \
+  -e DISABLE_HSTS="false" \
+  -e API_KEY="{YOUR AUTHORIZATION TOKEN}" \
+  --name github-see-mcp-server \
+  github-see-mcp-server
 ```
 
 This command:
@@ -178,6 +198,8 @@ To connect to this MCP server with Claude, add the following configuration to yo
         "-y",
         "mcp-remote@0.1.15",
         "https://{Your domain}/sse",
+        "--header",
+        "Authorization: Bearer {YOUR AUTHORIZATION TOKEN}",
         "--transport",
         "sse-only"
       ]
