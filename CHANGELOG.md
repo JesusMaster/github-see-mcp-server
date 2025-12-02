@@ -5,6 +5,13 @@ All notable changes to the GitHub See MCP Server project will be documented in t
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.0.0/),
 and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.5.1] - 2025-01-12
+
+### Changed
+
+- Updated and simplified `README.md` for clarity.
+- Updated the connection command for Claude.
+
 ## [1.5.0] - 2025-08-25
 
 ### Added
@@ -87,4 +94,3 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 - Resolved connection handling issues with certain model types
 - Fixed webhook payload parsing for large events
 - Improved error handling and logging
-  
