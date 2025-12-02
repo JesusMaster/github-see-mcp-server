@@ -10,7 +10,6 @@ function findAndLoadToken(): string | undefined {
         logger.info('GitHub token loaded successfully.');
         return token;
     }
-
     logger.warn('WARNING: No GitHub token found. API requests may be rate limited or fail.');
     return undefined;
 }

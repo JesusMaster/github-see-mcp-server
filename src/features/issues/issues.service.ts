@@ -13,32 +13,32 @@ export interface SearchIssuesOptions { owner: string; repo: string; q: string; s
 
 class Issues extends GitHubClient {
 
-    async getIssues(options: GetIssuesOptions) {
+    async getIssues(options: GetIssuesOptions, token: string) {
         const { owner, repo, issueNumber } = options;
-        return this.get(`repos/${owner}/${repo}/issues/${issueNumber}`);
+        return this.get(`repos/${owner}/${repo}/issues/${issueNumber}`, {}, token);
     }
 
-    async getComments(options: GetCommentsOptions) {
+    async getComments(options: GetCommentsOptions, token: string) {
         const { owner, repo, issueNumber } = options;
-        return this.get(`repos/${owner}/${repo}/issues/${issueNumber}/comments`);
+        return this.get(`repos/${owner}/${repo}/issues/${issueNumber}/comments`, {}, token);
     }
 
-    async createIssue(options: CreateIssueOptions) {
+    async createIssue(options: CreateIssueOptions, token: string) {
         const { owner, repo, ...payload } = options;
         if (payload.title) payload.title = sanitize(payload.title);
         if (payload.body) payload.body = sanitize(payload.body);
-        return this.post(`repos/${owner}/${repo}/issues`, payload);
+        return this.post(`repos/${owner}/${repo}/issues`, payload, token);
     }
 
-    async addComment(options: AddCommentOptions) {
+    async addComment(options: AddCommentOptions, token: string) {
         const { owner, repo, issueNumber, comment } = options;
         const payload = { body: sanitize(comment) };
-        return this.post(`repos/${owner}/${repo}/issues/${issueNumber}/comments`, payload);
+        return this.post(`repos/${owner}/${repo}/issues/${issueNumber}/comments`, payload, token);
     }
 
-    async listIssues(options: ListIssuesOptions) {
+    async listIssues(options: ListIssuesOptions, token: string) {
         const { owner, repo, fields, ...params } = options;
-        const results = await this.get(`repos/${owner}/${repo}/issues`, { per_page: 5, ...params });
+        const results = await this.get(`repos/${owner}/${repo}/issues`, { per_page: 5, ...params }, token);
         
         if (fields?.length) {
             return (results as any[]).map((item: any) => {
@@ -54,17 +54,17 @@ class Issues extends GitHubClient {
         return results;
     }
 
-    async updateIssue(options: UpdateIssueOptions) {
+    async updateIssue(options: UpdateIssueOptions, token: string) {
         const { owner, repo, issueNumber, ...payload } = options;
         if (payload.title) payload.title = sanitize(payload.title);
         if (payload.body) payload.body = sanitize(payload.body);
-        return this.patch(`repos/${owner}/${repo}/issues/${issueNumber}`, payload);
+        return this.patch(`repos/${owner}/${repo}/issues/${issueNumber}`, payload, token);
     }
 
-    async searchIssues(options: SearchIssuesOptions) {
+    async searchIssues(options: SearchIssuesOptions, token: string) {
         const { owner, repo, fields, q, ...params } = options;
         const payload = { q: sanitize(q), per_page: 5, ...params };
-        const results: any = await this.get('search/issues', payload);
+        const results: any = await this.get('search/issues', payload, token);
         
         if (fields?.length && results.items) {
             results.items = results.items.map((item: any) => {

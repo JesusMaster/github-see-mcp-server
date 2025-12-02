@@ -21,11 +21,7 @@ export const authenticate = (req: Request, res: Response, next: NextFunction): v
 
     const token = tokenParts[1];
 
-    if (token !== config.apiKey) {
-        logger.warn('Authentication failed: Invalid API key');
-        res.status(401).json({ error: 'Invalid API key' });
-        return;
-    }
+    req.githubToken = token;
 
     logger.info('Authentication successful');
     next();
