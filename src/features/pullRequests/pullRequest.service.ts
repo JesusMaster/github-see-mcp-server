@@ -18,15 +18,15 @@ export interface UpdatePullRequestOptions { owner: string; repo: string; pullNum
 
 class PullRequest extends GitHubClient {
 
-    async getPullRequest(options: GetPullRequestOptions) {
+    async getPullRequest(options: GetPullRequestOptions, token: string) {
         const { owner, repo, pullNumber } = options;
-        return this.get(`repos/${owner}/${repo}/pulls/${pullNumber}`);
+        return this.get(`repos/${owner}/${repo}/pulls/${pullNumber}`, {}, token);
     }
 
-    async getListPullRequests(options: ListPullRequestsOptions) {
+    async getListPullRequests(options: ListPullRequestsOptions, token: string) {
         const { owner, repo, fields, ...params } = options;
         const payload = { state: "open", per_page: 5, page: 1, ...params };
-        const results = await this.get(`repos/${owner}/${repo}/pulls`, payload);
+        const results = await this.get(`repos/${owner}/${repo}/pulls`, payload, token);
 
         if (fields?.length) {
             return (results as any[]).map((item: any) => {
@@ -40,64 +40,64 @@ class PullRequest extends GitHubClient {
         return results;
     }
 
-    async mergePullRequest(options: MergePullRequestOptions) {
+    async mergePullRequest(options: MergePullRequestOptions, token: string) {
         const { owner, repo, pullNumber, ...payload } = options;
         if (payload.commit_title) payload.commit_title = sanitize(payload.commit_title);
         if (payload.commitMessage) payload.commitMessage = sanitize(payload.commitMessage);
-        return this.put(`repos/${owner}/${repo}/pulls/${pullNumber}/merge`, payload);
+        return this.put(`repos/${owner}/${repo}/pulls/${pullNumber}/merge`, payload, token);
     }
 
-    async getPullRequestFiles(options: GetPullRequestFilesOptions) {
+    async getPullRequestFiles(options: GetPullRequestFilesOptions, token: string) {
         const { owner, repo, pullNumber } = options;
-        return this.get(`repos/${owner}/${repo}/pulls/${pullNumber}/files`);
+        return this.get(`repos/${owner}/${repo}/pulls/${pullNumber}/files`, {}, token);
     }
 
-    async getPullRequestStatus(options: GetPullRequestStatusOptions) {
+    async getPullRequestStatus(options: GetPullRequestStatusOptions, token: string) {
         const { owner, repo, pullNumber } = options;
-        return this.get(`repos/${owner}/${repo}/pulls/${pullNumber}/merge`);
+        return this.get(`repos/${owner}/${repo}/pulls/${pullNumber}/merge`, {}, token);
     }
 
-    async updatePullRequestBranch(options: UpdatePullRequestBranchOptions) {
+    async updatePullRequestBranch(options: UpdatePullRequestBranchOptions, token: string) {
         const { owner, repo, pullNumber, ...params } = options;
-        return this.get(`repos/${owner}/${repo}/pulls/${pullNumber}/update-branch`, params);
+        return this.put(`repos/${owner}/${repo}/pulls/${pullNumber}/update-branch`, params, token);
     }
 
-    async getPullRequestComments(options: GetPullRequestCommentsOptions) {
+    async getPullRequestComments(options: GetPullRequestCommentsOptions, token: string) {
         const { owner, repo, pullNumber } = options;
-        return this.get(`repos/${owner}/${repo}/pulls/${pullNumber}/comments`);
+        return this.get(`repos/${owner}/${repo}/pulls/${pullNumber}/comments`, {}, token);
     }
 
-    async getPullRequestReviews(options: GetPullRequestReviewsOptions) {
+    async getPullRequestReviews(options: GetPullRequestReviewsOptions, token: string) {
         const { owner, repo, pullNumber } = options;
-        return this.get(`repos/${owner}/${repo}/pulls/${pullNumber}/reviews`);
+        return this.get(`repos/${owner}/${repo}/pulls/${pullNumber}/reviews`, {}, token);
     }
 
-    async createPullRequestReview(options: CreatePullRequestReviewOptions) {
+    async createPullRequestReview(options: CreatePullRequestReviewOptions, token: string) {
         const { owner, repo, pullNumber, commitId, ...rest } = options;
         const payload: any = { ...rest };
         if (payload.body) payload.body = sanitize(payload.body);
         if (commitId) payload.commit_id = commitId;
-        return this.post(`repos/${owner}/${repo}/pulls/${pullNumber}/reviews`, payload);
+        return this.post(`repos/${owner}/${repo}/pulls/${pullNumber}/reviews`, payload, token);
     }
 
-    async createPullRequest(options: CreatePullRequestOptions) {
+    async createPullRequest(options: CreatePullRequestOptions, token: string) {
         const { owner, repo, ...payload } = options;
         if (payload.title) payload.title = sanitize(payload.title);
         if (payload.body) payload.body = sanitize(payload.body);
-        return this.post(`repos/${owner}/${repo}/pulls`, payload);
+        return this.post(`repos/${owner}/${repo}/pulls`, payload, token);
     }
 
-    async addPullRequestReviewComment(options: AddPullRequestReviewCommentOptions) {
+    async addPullRequestReviewComment(options: AddPullRequestReviewCommentOptions, token: string) {
         const { owner, repo, pullNumber, ...payload } = options;
         if (payload.body) payload.body = sanitize(payload.body);
-        return this.post(`repos/${owner}/${repo}/pulls/${pullNumber}/comments`, payload);
+        return this.post(`repos/${owner}/${repo}/pulls/${pullNumber}/comments`, payload, token);
     }
 
-    async updatePullRequest(options: UpdatePullRequestOptions) {
+    async updatePullRequest(options: UpdatePullRequestOptions, token: string) {
         const { owner, repo, pullNumber, ...payload } = options;
         if (payload.title) payload.title = sanitize(payload.title);
         if (payload.body) payload.body = sanitize(payload.body);
-        return this.patch(`repos/${owner}/${repo}/pulls/${pullNumber}`, payload);
+        return this.patch(`repos/${owner}/${repo}/pulls/${pullNumber}`, payload, token);
     }
 }
 

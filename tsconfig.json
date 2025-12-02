@@ -28,6 +28,9 @@
         ],
         "#config/*": [
           "config/*"
+        ],
+        "#middleware/*": [
+          "middleware/*"
         ]
       }
     },

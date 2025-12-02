@@ -3,100 +3,112 @@ import { z } from 'zod';
 import Issues from "#features/issues/issues.service";
 
 export function registerIssueTools(server: McpServer, issuesInstance: Issues) {
-    server.tool(
+
+
+    server.registerTool(
         'get_issue',
-        'Gets the contents of an issue within a repository',
         {
-            owner: z.string().describe('Repository owner (string, required)'),
-            repo: z.string().describe('Repository name (string, required)'),
-            issueNumber: z.number().describe('Issue number (number, required)'),
+            description: 'Gets the contents of an issue within a repository',
+            inputSchema: {
+                owner: z.string().describe('Repository owner (string, required)'),
+                repo: z.string().describe('Repository name (string, required)'),
+                issueNumber: z.number().describe('Issue number (number, required)'),
+            }
         },
-        async (args) => {
+        async (args, req: any) => {
             try {
-                let info = await issuesInstance.getIssues(args);
+                let info = await issuesInstance.getIssues(args, req.requestInfo.headers.github_token);
                 return { content: [{ type: 'text', text: JSON.stringify(info, null, 2) }] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
         }
     );
-    
-    server.tool(
+
+    server.registerTool(
         'get_issue_comments',
-        'Get comments for a GitHub issue',
         {
-            owner: z.string().describe('Repository owner (string, required)'),
-            repo: z.string().describe('Repository name (string, required)'),
-            issueNumber: z.number().describe('Issue number (number, required)'),
+            description: 'Get comments for a GitHub issue',
+            inputSchema: {
+                owner: z.string().describe('Repository owner (string, required)'),
+                repo: z.string().describe('Repository name (string, required)'),
+                issueNumber: z.number().describe('Issue number (number, required)'),
+            },
         },
-        async (args) => {
+        async (args, req: any) => {
             try {
-                let info = await issuesInstance.getComments(args);
+                let info = await issuesInstance.getComments(args, req.requestInfo.headers.github_token);
                 return { content: [{ type: 'text', text: JSON.stringify(info, null, 2) }] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
         }
     );
-    
-    server.tool(
+
+    server.registerTool(
         'create_issue',
-        'Create a new issue in a GitHub repository',
         {
-            owner: z.string().describe('Repository owner (string, required)'),
-            repo: z.string().describe('Repository name (string, required)'),
-            title: z.string().describe('Issue title (string, required)'),
-            body: z.string().optional().describe('Issue body (string, optional)'),
-            assignees: z.array(z.string()).optional().describe('Usernames to assign to this issue (string[], optional)'),
-            labels: z.array(z.string()).optional().describe('Labels to apply to this issue (string[], optional)'),
-            milestone: z.number().optional().describe('ID of the milestone to associate this issue with (number, optional)'),
+            description: 'Create a new issue in a GitHub repository',
+            inputSchema: {
+                owner: z.string().describe('Repository owner (string, required)'),
+                repo: z.string().describe('Repository name (string, required)'),
+                title: z.string().describe('Issue title (string, required)'),
+                body: z.string().optional().describe('Issue body (string, optional)'),
+                assignees: z.array(z.string()).optional().describe('Usernames to assign to this issue (string[], optional)'),
+                labels: z.array(z.string()).optional().describe('Labels to apply to this issue (string[], optional)'),
+                milestone: z.number().optional().describe('ID of the milestone to associate this issue with (number, optional)'),
+            },
         },
-        async (args) => {
+        async (args, req: any) => {
             try {
-                let info = await issuesInstance.createIssue(args);
+                let info = await issuesInstance.createIssue(args, req.requestInfo.headers.github_token);
                 return { content: [{ type: 'text', text: JSON.stringify(info, null, 2) }] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
         }
     );
-    
-    server.tool(
+
+    server.registerTool(
         'add_issue_comment',
-        'Add a comment to an issue',
         {
-            owner: z.string().describe('Repository owner (string, required)'),
-            repo: z.string().describe('Repository name (string, required)'),
-            issueNumber: z.number().describe('Issue number (number, required)'),
-            comment: z.string().describe('Comment text (string, required)'),
+            description: 'Add a comment to an issue',
+            inputSchema: {
+                owner: z.string().describe('Repository owner (string, required)'),
+                repo: z.string().describe('Repository name (string, required)'),
+                issueNumber: z.number().describe('Issue number (number, required)'),
+                comment: z.string().describe('Comment text (string, required)'),
+            },
         },
-        async (args) => {
+        async (args, req: any) => {
             try {
-                let info = await issuesInstance.addComment(args);
+                let info = await issuesInstance.addComment(args, req.requestInfo.headers.github_token);
                 return { content: [{ type: 'text', text: JSON.stringify(info, null, 2) }] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
         }
     );
-    
-    server.tool(
+
+    server.registerTool(
         'list_issues',
-        'List and filter repository issues',
         {
-            owner: z.string().describe('Repository owner (string, required)'),
-            repo: z.string().describe('Repository name (string, required)'),
-            state: z.enum(['open', 'closed','all']).optional().describe("Filter by state ('open', 'closed', 'all') (string, optional)"),
-            labels: z.array(z.string()).optional().describe('Labels to filter by (string[], optional)'),
-            sort: z.enum(['created', 'updated', 'comments']).optional().describe("Sort by ('created', 'updated', 'comments') (string, optional)"),
-            direction: z.enum(['asc', 'desc']).optional().describe("Sort direction ('asc', 'desc') (string, optional)"),
-            since: z.string().optional().describe('Filter by date (ISO 8601 timestamp) (string, optional)'),
-            page: z.number().optional().describe('Page number (number, optional)'),
-            per_page: z.number().optional().describe('Results per page (number, optional)'),
+            description: 'List and filter repository issues',
+            inputSchema: {
+                owner: z.string().describe('Repository owner (string, required)'),
+                repo: z.string().describe('Repository name (string, required)'),
+                state: z.enum(['open', 'closed', 'all']).optional().describe("Filter by state ('open', 'closed', 'all') (string, optional)"),
+                labels: z.array(z.string()).optional().describe('Labels to filter by (string[], optional)'),
+                sort: z.enum(['created', 'updated', 'comments']).optional().describe("Sort by ('created', 'updated', 'comments') (string, optional)"),
+                direction: z.enum(['asc', 'desc']).optional().describe("Sort direction ('asc', 'desc') (string, optional)"),
+                since: z.string().optional().describe('Filter by date (ISO 8601 timestamp) (string, optional)'),
+                page: z.number().optional().describe('Page number (number, optional)'),
+                per_page: z.number().optional().describe('Results per page (number, optional)'),
+            },
         },
-        async (args) => {
+        async (args, req: any) => {
             try {
-                let info = await issuesInstance.listIssues(args);
+                let info = await issuesInstance.listIssues(args, req.requestInfo.headers.github_token);
                 return { content: [{ type: 'text', text: JSON.stringify(info, null, 2) }] };
             }
             catch (error: any) {
@@ -104,47 +116,51 @@ export function registerIssueTools(server: McpServer, issuesInstance: Issues) {
             }
         }
     );
-    
-    server.tool(
+
+    server.registerTool(
         'update_issue',
-        'Update an issue in a GitHub repository',
         {
-            owner: z.string().describe('Repository owner (string, required)'),
-            repo: z.string().describe('Repository name (string, required)'),
-            issueNumber: z.number().describe('Issue number (number, required)'),
-            title: z.string().optional().describe('New issue title (string, optional)'),
-            body: z.string().optional().describe('New issue body (string, optional)'),
-            assignees: z.array(z.string()).optional().describe('Usernames to assign to this issue (string[], optional)'),
-            state: z.enum(['open', 'closed']).optional().describe("New issue state ('open', 'closed') (string, optional)"),
-            milestone: z.number().optional().describe('New milestone ID (number, optional)'),
-            labels: z.array(z.string()).optional().describe('New labels (string[], optional)'),
+            description: 'Update an issue in a GitHub repository',
+            inputSchema: {
+                owner: z.string().describe('Repository owner (string, required)'),
+                repo: z.string().describe('Repository name (string, required)'),
+                issueNumber: z.number().describe('Issue number (number, required)'),
+                title: z.string().optional().describe('New issue title (string, optional)'),
+                body: z.string().optional().describe('New issue body (string, optional)'),
+                assignees: z.array(z.string()).optional().describe('Usernames to assign to this issue (string[], optional)'),
+                state: z.enum(['open', 'closed']).optional().describe("New issue state ('open', 'closed') (string, optional)"),
+                milestone: z.number().optional().describe('New milestone ID (number, optional)'),
+                labels: z.array(z.string()).optional().describe('New labels (string[], optional)'),
+            },
         },
-        async (args) => {
+        async (args, req: any) => {
             try {
-                let info = await issuesInstance.updateIssue(args);
+                let info = await issuesInstance.updateIssue(args, req.requestInfo.headers.github_token);
                 return { content: [{ type: 'text', text: JSON.stringify(info, null, 2) }] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
             }
         }
     );
-    
-    server.tool(
+
+    server.registerTool(
         'search_issues',
-        'Search for issues and pull requests',
         {
-            owner: z.string().describe('Repository owner (string, required)'),
-            repo: z.string().describe('Repository name (string, required)'),
-            q: z.string().describe('Search query (string, required)'),
-            sort: z.enum(['created', 'updated', 'comments']).optional().describe("Sort by ('created', 'updated', 'comments') (string, optional)"),
-            order: z.enum(['asc', 'desc']).optional().describe("Sort order ('asc', 'desc') (string, optional)"),
-            page: z.number().optional().describe('Page number (number, optional)'),
-            per_page: z.number().optional().describe('Results per page (number, optional)'),
-            fields: z.array(z.string()).optional().describe('Fields to return (string[], optional)'),
+            description: 'Search for issues and pull requests',
+            inputSchema: {
+                owner: z.string().describe('Repository owner (string, required)'),
+                repo: z.string().describe('Repository name (string, required)'),
+                q: z.string().describe('Search query (string, required)'),
+                sort: z.enum(['created', 'updated', 'comments']).optional().describe("Sort by ('created', 'updated', 'comments') (string, optional)"),
+                order: z.enum(['asc', 'desc']).optional().describe("Sort order ('asc', 'desc') (string, optional)"),
+                page: z.number().optional().describe('Page number (number, optional)'),
+                per_page: z.number().optional().describe('Results per page (number, optional)'),
+                fields: z.array(z.string()).optional().describe('Fields to return (string[], optional)'),
+            },
         },
-        async (args) => {
+        async (args, req: any) => {
             try {
-                let info = await issuesInstance.searchIssues(args);
+                let info = await issuesInstance.searchIssues(args, req.requestInfo.headers.github_token);
                 return { content: [{ type: 'text', text: JSON.stringify(info, null, 2) }] };
             } catch (error: any) {
                 return { content: [{ type: 'text', text: `Error : ${error.message}` }], isError: true };
